@@ -2,6 +2,10 @@
   "name": "nosdeputes2-front",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "16.17.1",
+    "yarn": "1.22.19"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
