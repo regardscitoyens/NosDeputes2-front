@@ -10,10 +10,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "yarn prettier --write .",
+    "checkformat": "yarn prettier --check ."
   },
   "dependencies": {
     "next": "12.3.1",
+    "prettier": "^2.7.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
