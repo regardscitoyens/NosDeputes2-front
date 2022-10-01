@@ -15,7 +15,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
   }
 }
 
-function PageDeputes({
+export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
@@ -27,5 +27,3 @@ function PageDeputes({
     </div>
   )
 }
-
-export default PageDeputes
