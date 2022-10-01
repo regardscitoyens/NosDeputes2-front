@@ -12,10 +12,7 @@ function BasicLink({ to }: { to: string }) {
 const Home: NextPage = () => {
   return (
     <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <h1>Nos deputes homepage</h1>
-
-      <BasicLink to="/big" />
+      <BasicLink to="/page-with-long-content" />
       <BasicLink to="/deputes" />
       <BasicLink to="/damien-abad" />
     </div>
