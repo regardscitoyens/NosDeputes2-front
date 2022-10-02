@@ -45,7 +45,7 @@ export default function Page({
           return (
             <li
               key={depute.id}
-              className="my-2 max-w-fit rounded-lg bg-slate-100 p-4 text-center drop-shadow"
+              className="my-2 rounded-lg bg-slate-100 p-4 text-center drop-shadow md:max-w-fit"
             >
               <Link href={`/${depute.slug}`}>
                 <a className="font-semibold">{depute.nom}</a>
