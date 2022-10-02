@@ -2,6 +2,7 @@ import { AppContext } from 'next/app'
 import { Depute, fetchDeputes } from '../api/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { Todo } from '../components/Todo'
 
 type Data = {
   deputes: Depute[]
@@ -35,11 +36,11 @@ export default function Page({
         Retrouvez ici l'ensemble des {deputes.length} députés de la{' '}
         {legislatureNumber}ème législature (dont {deputesEnCoursMandat.length}{' '}
         en cours de mandat). Les informations relatives aux députés des
-        précédentes législatures restent accessibles sur les liens suivants :{' '}
-        <span className="font-bold text-violet-600">
-          TODO liens vers les autres législatures
-        </span>
+        précédentes législatures restent accessibles sur les liens suivants :
+        <Todo inline>liens vers les autres législatures</Todo>
       </p>
+      <Todo>graphe de la répartition des groupes parlementaire</Todo>
+
       <ul className="list-none">
         {data.deputes.map((depute) => {
           return (
