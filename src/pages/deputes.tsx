@@ -49,7 +49,10 @@ export default function Page({
               className="my-2 rounded-lg bg-slate-100 p-4 text-center drop-shadow md:max-w-fit"
             >
               <Link href={`/${depute.slug}`}>
-                <a className="font-semibold">{depute.nom}</a>
+                <a className="font-semibold">
+                  {depute.nom}{' '}
+                  <Todo inline>afficher groupe, circo (departement)</Todo>
+                </a>
               </Link>
             </li>
           )

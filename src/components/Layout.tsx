@@ -39,6 +39,7 @@ export function Layout({ children }: Props) {
             </Link>
           </header>
           <nav className="my-2 flex space-x-2 bg-slate-200 py-4 px-4">
+            <BasicLink to="/" />
             <BasicLink to="/deputes" />
             <BasicLink to="/damien-abad" />
             <BasicLink to="/page-with-long-content" />
