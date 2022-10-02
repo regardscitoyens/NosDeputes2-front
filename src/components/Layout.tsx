@@ -6,6 +6,13 @@ type Props = {
   children: ReactNode
 }
 
+function BasicLink({ to }: { to: string }) {
+  return (
+    <Link href={to}>
+      <a className="block bg-slate-300 py-2 px-4 underline">{to}</a>
+    </Link>
+  )
+}
 export function Layout({ children }: Props) {
   return (
     <>
@@ -31,6 +38,11 @@ export function Layout({ children }: Props) {
               </a>
             </Link>
           </header>
+          <nav className="my-2 flex space-x-2 bg-slate-200 py-4 px-4">
+            <BasicLink to="/deputes" />
+            <BasicLink to="/damien-abad" />
+            <BasicLink to="/page-with-long-content" />
+          </nav>
           <main className="grow px-8 py-8 text-slate-800 ">{children}</main>
           <footer className="rounded bg-slate-200 px-4 py-4 text-center">
             <p className="text-slate-400">Footer</p>
