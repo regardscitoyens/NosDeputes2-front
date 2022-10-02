@@ -1,5 +1,5 @@
 import { AppContext } from 'next/app'
-import { Depute, fetchDeputes } from '../api/api'
+import { Depute, fetchDeputes } from '../logic/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 export default function Page() {

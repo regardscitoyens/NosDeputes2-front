@@ -1,5 +1,5 @@
 import { AppContext } from 'next/app'
-import { Depute, fetchDeputes } from '../api/api'
+import { Depute, fetchDeputes } from '../logic/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { Todo } from '../components/Todo'
@@ -34,9 +34,10 @@ export default function Page({
       <h1 className="text-2xl">Tous les députés par ordre alphabétique</h1>
       <p>
         Retrouvez ici l'ensemble des {deputes.length} députés de la{' '}
-        {legislatureNumber}ème législature (dont {deputesEnCoursMandat.length}{' '}
-        en cours de mandat). Les informations relatives aux députés des
-        précédentes législatures restent accessibles sur les liens suivants :
+        <Todo inline>num legislature</Todo>ème législature (dont{' '}
+        {deputesEnCoursMandat.length} en cours de mandat). Les informations
+        relatives aux députés des précédentes législatures restent accessibles
+        sur les liens suivants :
         <Todo inline>liens vers les autres législatures</Todo>
       </p>
       <Todo>graphe de la répartition des groupes parlementaire</Todo>
