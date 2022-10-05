@@ -24,6 +24,37 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
   }
 }
 
+function InformationsBlock({ depute }: { depute: Depute }) {
+  const age = getAge(depute.date_naissance)
+  const dateNaissanceFormatted = formatDate(depute.date_naissance)
+  const mandatStartFormatted = formatDate(depute.debut_mandat)
+  return (
+    <div className="bg-slate-200  px-8 py-4 shadow-md">
+      <h2 className="font-bold">Informations</h2>
+      <div className="py-4">
+        <ul className="list-none">
+          <li>
+            {depute.fin_mandat
+              ? `Était en mandat du ${mandatStartFormatted} au ${formatDate(
+                  depute.fin_mandat,
+                )}`
+              : `Mandat en cours depuis le ${mandatStartFormatted}`}
+          </li>
+          <li>
+            Né(e) le {dateNaissanceFormatted} ({age} ans)
+          </li>
+          <li>Profession : {depute.profession ?? 'Non renseignée'}</li>
+          <li>
+            Groupe {depute.groupe_acronyme}{' '}
+            <Todo inline>(+ membre ou apparenté)</Todo>
+          </li>
+        </ul>
+        <Todo inline>liens twitter wikipedia etc.</Todo>
+      </div>
+    </div>
+  )
+}
+
 export default function Page({
   data: { depute },
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -47,21 +78,7 @@ export default function Page({
 
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-8">
-          <div className="bg-slate-200  px-8 py-4 shadow-md">
-            <h2 className=" font-bold">Informations</h2>
-            <div className="py-4">
-              <ul className="list-none">
-                <li>
-                  Né(e) le {formatDate(depute.date_naissance)} (
-                  {getAge(depute.date_naissance)} ans)
-                </li>
-                <li>Profession : {depute.profession ?? 'Non déclarée'}</li>
-              </ul>
-              <Todo inline>mandat</Todo>
-              <Todo inline>groupe (+ membre ou apparenté)</Todo>
-              <Todo inline>liens twitter wikipedia etc.</Todo>
-            </div>
-          </div>
+          <InformationsBlock {...{ depute }} />
           <Todo>Adresses email, adresses postale, collaborateurs</Todo>
           <Todo>
             Responsabilités (commissions, missions, groupes extraparlementaires
