@@ -40,32 +40,19 @@ export type Organisme = {
   slug: string
 }
 
-export type ParlementaireOrganisme = {
-  id: number
-  organisme_id: number
-  parlementaire_id: number
-  parlementaire_groupe_acronyme: string
-  fonction: string
-  importance: number
-  debut_fonction: string
-  fin_fonction: string | null
-  created_at: Date
-  updated_at: Date
-}
-
 export async function fetchDeputes(): Promise<Depute[]> {
   return await fetchJson(`/parlementaire`)
 }
 
-export async function fetchDepute(id: number): Promise<Depute[]> {
-  return await fetchJson(`/parlementaire/${id}`)
+export async function fetchDepute(slug: string): Promise<Depute> {
+  return await fetchJson(`/parlementaire/${slug}`)
 }
 
 export async function fetchOrganismes(): Promise<Organisme[]> {
   return await fetchJson(`/organisme`)
 }
 
-export async function fetchOrganisme(id: number): Promise<Organisme[]> {
+export async function fetchOrganisme(id: number): Promise<Organisme> {
   return await fetchJson(`/organisme/${id}`)
 }
 
