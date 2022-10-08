@@ -1,17 +1,16 @@
-import { AppContext } from 'next/app'
-import { Depute, fetchDeputes } from '../logic/api'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { Todo } from '../components/Todo'
+import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../logic/api'
 
 type Data = {
-  deputes: Depute[]
+  deputes: DeputeWithGroupe[]
 }
 
 export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
   context,
 ) => {
-  const deputes = (await fetchDeputes()).sort((a, b) =>
+  const deputes = (await fetchDeputesWithGroupe()).sort((a, b) =>
     a.nom.localeCompare(b.nom),
   )
   return {
@@ -51,8 +50,8 @@ export default function Page({
             >
               <Link href={`/${depute.slug}`}>
                 <a className="font-semibold">
-                  {depute.nom}{' '}
-                  <Todo inline>afficher groupe, circo (departement)</Todo>
+                  {depute.nom} {depute.groupe?.acronym}
+                  <Todo inline>afficher circo (departement)</Todo>
                 </a>
               </Link>
             </li>
