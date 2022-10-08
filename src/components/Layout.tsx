@@ -49,9 +49,15 @@ export function Layout({ children }: Props) {
               <BasicLink to="/hasard" label="Au hasard" />
             </div>
             <div className="flex space-x-2">
-              <BasicLink to="/dossiers/date" label="Les dossiers" />
-              <BasicLink to="/dossiers/coms" label="Les plus commentés" />
+              <BasicLink
+                to="/dossiers/date"
+                label="Les dossiers (les derniers dossiers)"
+              />
+              <BasicLink to="/dossiers/plus" label="Les plus discutés" />
               <BasicLink to="/16/scrutins" label="Les scrutins publics" />
+            </div>
+            <div className="flex space-x-2">
+              <BasicLink to="/recherche/foobar" label="Recherche" />
             </div>
           </nav>
           <main className="grow px-8 py-8 text-slate-800 ">{children}</main>
