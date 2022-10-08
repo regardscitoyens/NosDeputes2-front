@@ -6,6 +6,7 @@ import {
   fetchDeputesWithGroupe,
   GroupeForDepute,
 } from '../logic/api'
+import { GroupeColorsByAcronyme } from '../logic/hardcodedStuff'
 
 type Data = {
   deputes: DeputeWithGroupe[]
@@ -29,8 +30,13 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
 function GroupeBadge({ groupe }: { groupe: GroupeForDepute | null }) {
   if (groupe) {
     const { acronym, fonction } = groupe
+    const color = GroupeColorsByAcronyme[acronym] ?? 'black'
+
     return (
-      <span className="mx-2 rounded bg-slate-400 py-1 px-1 text-center">
+      <span
+        className={`mx-2 inline-block py-1 px-2  font-normal text-white`}
+        style={{ background: color }}
+      >
         {groupe?.acronym} {fonction !== 'membre' ? `(${fonction})` : null}
       </span>
     )
