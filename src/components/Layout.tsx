@@ -14,44 +14,6 @@ function BasicLink({ to, label }: { to: string; label?: string }) {
   )
 }
 
-function Nav() {
-  // TODO faire tout les sous menus. Les afficher tous, pas de hover
-  return (
-    <nav className="my-2 space-y-2 bg-slate-200 py-4 px-4">
-      <div className="flex space-x-2">
-        <BasicLink to="/deputes" label="Les députés" />
-        <BasicLink to="/circonscription" label="Par circonscription" />
-        <BasicLink to="/organismes" label="Par organisme" />
-        <BasicLink to="/deputes/tags" label="Par mot clé" />
-        <BasicLink to="/synthese" label="Synthese" />
-        <BasicLink to="/hasard" label="Au hasard" />
-      </div>
-      <div className="flex space-x-2">
-        <BasicLink to="/dossiers/date" label="Les dossiers" />
-        <BasicLink to="/dossiers/coms" label="Les plus commentés" />
-        <BasicLink to="/16/scrutins" label="Les scrutins publics" />
-      </div>
-      <div className="flex space-x-2">
-        <BasicLink to="/faq" label="FAQ" />
-        <BasicLink to="/assister-aux-debats" label="Assister aux débats" />
-        <BasicLink to="/mentions-legales" label="Mention légales" />
-        <BasicLink to="/nous-contacter" label="Nous contacter" />
-      </div>
-    </nav>
-  )
-}
-
-function NavFooter() {
-  return (
-    <nav className="my-2 flex space-y-2 space-x-2  bg-slate-200 py-4 px-4">
-      <BasicLink to="/faq" label="FAQ" />
-      <BasicLink to="/assister-aux-debats" label="Assister aux débats" />
-      <BasicLink to="/mentions-legales" label="Mention légales" />
-      <BasicLink to="/nous-contacter" label="Nous contacter" />
-    </nav>
-  )
-}
-
 export function Layout({ children }: Props) {
   return (
     <>
@@ -77,18 +39,43 @@ export function Layout({ children }: Props) {
               </a>
             </Link>
           </header>
-          <Nav />
+          <nav className="my-2 space-y-2 bg-slate-200 py-4 px-4">
+            <div className="flex space-x-2">
+              <BasicLink to="/deputes" label="Les députés" />
+              <BasicLink to="/circonscription" label="Par circonscription" />
+              <BasicLink to="/organismes" label="Par organisme" />
+              <BasicLink to="/deputes/tags" label="Par mot clé" />
+              <BasicLink to="/synthese" label="Synthese" />
+              <BasicLink to="/hasard" label="Au hasard" />
+            </div>
+            <div className="flex space-x-2">
+              <BasicLink to="/dossiers/date" label="Les dossiers" />
+              <BasicLink to="/dossiers/coms" label="Les plus commentés" />
+              <BasicLink to="/16/scrutins" label="Les scrutins publics" />
+            </div>
+          </nav>
           <main className="grow px-8 py-8 text-slate-800 ">{children}</main>
           <footer className="rounded bg-slate-200">
             <nav className="flex space-x-2  py-4 px-4">
               <BasicLink to="/faq" label="Questions fréquentes (FAQ)" />
-              <BasicLink to="/donnees" label="Données" />
               <BasicLink
                 to="/assister-aux-debats"
                 label="Assister aux débats"
               />
+              <BasicLink
+                to="/donnees"
+                label="Données (dont api, dumps, etc.)"
+              />
+              <BasicLink
+                to="/to-be-defined"
+                label="Législature précédente/suivante"
+              />
               <BasicLink to="/mentions-legales" label="Mention légales" />
               <BasicLink to="/nous-contacter" label="Nous contacter" />
+              <BasicLink
+                to="https://www.regardscitoyens.org"
+                label="Regards citoyens"
+              />
             </nav>
           </footer>
         </div>
