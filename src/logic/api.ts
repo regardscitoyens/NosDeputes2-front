@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 
-const apiBase = 'http://localhost:4545/v0.1'
+// l'api Postgres
+const apiBase = 'http://localhost:4001'
 
 export type Depute = {
   id: number
@@ -8,6 +9,7 @@ export type Depute = {
   nom_de_famille: string
   sexe: 'H' | 'F'
   date_naissance: string
+  lieu_naissance: string
   num_circo: number
   nom_circo: string
   sites_web: 'string' | null
@@ -44,8 +46,12 @@ export async function fetchDeputes(): Promise<Depute[]> {
   return await fetchJson(`/parlementaire`)
 }
 
-export async function fetchDepute(slug: string): Promise<Depute> {
-  return await fetchJson(`/parlementaire/${slug}`)
+export async function fetchDeputeBySlug(slug: string): Promise<Depute | null> {
+  const res = (await fetchJson(`/parlementaire?slug=eq.${slug}`)) as Depute[]
+  if (res.length) {
+    return res[0]
+  }
+  return null
 }
 
 export async function fetchOrganismes(): Promise<Organisme[]> {

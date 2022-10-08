@@ -1,5 +1,5 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { Depute, fetchDepute, fetchDeputes } from '../../logic/api'
+import { Depute, fetchDeputeBySlug, fetchDeputes } from '../../logic/api'
 import { Todo } from '../../components/Todo'
 import { formatDate, getAge } from '../../logic/utils'
 
@@ -11,7 +11,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
   context,
 ) => {
   const slug = context.query.slug_or_legislature as string
-  const depute = await fetchDepute(slug)
+  const depute = await fetchDeputeBySlug(slug)
   if (!depute) {
     return {
       notFound: true,
