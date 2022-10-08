@@ -33,7 +33,21 @@ function Nav() {
       </div>
       <div className="flex space-x-2">
         <BasicLink to="/faq" label="FAQ" />
+        <BasicLink to="/assister-aux-debats" label="Assister aux débats" />
+        <BasicLink to="/mentions-legales" label="Mention légales" />
+        <BasicLink to="/nous-contacter" label="Nous contacter" />
       </div>
+    </nav>
+  )
+}
+
+function NavFooter() {
+  return (
+    <nav className="my-2 flex space-y-2 space-x-2  bg-slate-200 py-4 px-4">
+      <BasicLink to="/faq" label="FAQ" />
+      <BasicLink to="/assister-aux-debats" label="Assister aux débats" />
+      <BasicLink to="/mentions-legales" label="Mention légales" />
+      <BasicLink to="/nous-contacter" label="Nous contacter" />
     </nav>
   )
 }
@@ -65,8 +79,17 @@ export function Layout({ children }: Props) {
           </header>
           <Nav />
           <main className="grow px-8 py-8 text-slate-800 ">{children}</main>
-          <footer className="rounded bg-slate-200 px-4 py-4 text-center">
-            <p className="text-slate-400">Footer</p>
+          <footer className="rounded bg-slate-200">
+            <nav className="flex space-x-2  py-4 px-4">
+              <BasicLink to="/faq" label="Questions fréquentes (FAQ)" />
+              <BasicLink to="/donnees" label="Données" />
+              <BasicLink
+                to="/assister-aux-debats"
+                label="Assister aux débats"
+              />
+              <BasicLink to="/mentions-legales" label="Mention légales" />
+              <BasicLink to="/nous-contacter" label="Nous contacter" />
+            </nav>
           </footer>
         </div>
       </div>
