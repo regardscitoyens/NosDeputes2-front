@@ -1,7 +1,11 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { Todo } from '../components/Todo'
-import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../logic/api'
+import {
+  DeputeWithGroupe,
+  fetchDeputesWithGroupe,
+  GroupeForDepute,
+} from '../logic/api'
 
 type Data = {
   deputes: DeputeWithGroupe[]
@@ -20,6 +24,18 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
       },
     },
   }
+}
+
+function GroupeBadge({ groupe }: { groupe: GroupeForDepute | null }) {
+  if (groupe) {
+    const { acronym, fonction } = groupe
+    return (
+      <span className="mx-2 rounded bg-slate-400 py-1 px-1 text-center">
+        {groupe?.acronym} {fonction !== 'membre' ? `(${fonction})` : null}
+      </span>
+    )
+  }
+  return null
 }
 
 export default function Page({
@@ -50,7 +66,7 @@ export default function Page({
             >
               <Link href={`/${depute.slug}`}>
                 <a className="font-semibold">
-                  {depute.nom} {depute.groupe?.acronym}
+                  {depute.nom} <GroupeBadge groupe={depute.groupe} />
                   <Todo inline>afficher circo (departement)</Todo>
                 </a>
               </Link>
