@@ -40,8 +40,12 @@ export type Groupe = {
   acronym: string
 }
 
+export type GroupeForDepute = Groupe & {
+  fonction: string
+}
+
 export type DeputeWithGroupe = Depute & {
-  groupe: Groupe | null
+  groupe: GroupeForDepute | null
 }
 
 export type Organisme = {
@@ -68,11 +72,12 @@ export async function fetchDeputeBySlug(slug: string): Promise<Depute | null> {
 export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
   // join parlementaire -> parlementaire_organisme -> organisme
   // Keep only the "groupe" and the ones still ongoing (fin_fonction NULL)
-  const url = `/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fin_fonction,organisme(id,%20nom,%20type,%20slug)))&parlementaire_organisme.organisme.type=eq.groupe&parlementaire_organisme.fin_fonction=is.null`
+  const url = `/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fonction,fin_fonction,organisme(id,%20nom,%20type,%20slug)))&parlementaire_organisme.organisme.type=eq.groupe&parlementaire_organisme.fin_fonction=is.null`
   type QueryResult = (Depute & {
     parlementaire_organisme: {
       organisme_id: string
       parlementaire_groupe_acronyme: string
+      fonction: string
       fin_fonction: null
       organisme: {
         id: number
@@ -86,15 +91,11 @@ export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
 
   return rawResult.map((deputeWithJoinedData) => {
     const { parlementaire_organisme, ...restOfDepute } = deputeWithJoinedData
-    let groupe: {
-      id: number
-      nom: string
-      slug: string
-      acronym: string
-    } | null = null
+    let groupe: GroupeForDepute | null = null
     parlementaire_organisme.forEach((_) => {
       if (_.organisme !== null) {
         groupe = {
+          fonction: _.fonction,
           id: _.organisme.id,
           nom: _.organisme.nom,
           slug: _.organisme.slug,
