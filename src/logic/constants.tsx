@@ -2,7 +2,7 @@
 export const CURRENT_LEGISLATURE = 16
 
 // Colors copied from conf/app.yml in nosdeputes.fr
-export const GroupeColorsByAcronyme: { [k: string]: string } = {
+ const GroupeColorsByAcronyme: { [k: string]: string } = {
   LFI: rgbToHex(204, 42, 70),
   GDR: rgbToHex(207, 77, 39),
   SOC: rgbToHex(255, 149, 145),
@@ -22,4 +22,8 @@ function rgbToHex(r: number, g: number, b: number) {
     return hex.length == 1 ? '0' + hex : hex
   }
   return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
+}
+
+export function getColorForGroupeAcronym(acronym: string) {
+  return GroupeColorsByAcronyme[acronym] ?? 'black'
 }
