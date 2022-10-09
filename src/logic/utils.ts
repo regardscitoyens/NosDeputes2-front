@@ -13,3 +13,19 @@ export function formatDate(dateIsoString: string) {
   const res = `${dd}/${mm}/${yyyy}`
   return res
 }
+
+export function uniqBy<A, B>(arr: A[], fn: (a: A) => B): A[] {
+  const foundAlready: B[] = []
+  return arr.filter((a) => {
+    const b = fn(a)
+    if (foundAlready.includes(b)) {
+      return false
+    }
+    foundAlready.push(b)
+    return true
+  })
+}
+
+export function notNull<A>(value: A | null): value is A {
+  return value !== null
+}

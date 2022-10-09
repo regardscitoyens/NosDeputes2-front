@@ -1,12 +1,17 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { GrapheRepartitionGroupes } from '../components/GrapheRepartitionGroupes'
+import { GroupeBadge } from '../components/GroupeBadge'
 import { Todo } from '../components/Todo'
 import {
   DeputeWithGroupe,
   fetchDeputesWithGroupe,
   GroupeForDepute,
 } from '../logic/api'
-import { CURRENT_LEGISLATURE, GroupeColorsByAcronyme } from '../logic/constants'
+import {
+  CURRENT_LEGISLATURE,
+  getColorForGroupeAcronym,
+} from '../logic/constants'
 
 type Data = {
   deputes: DeputeWithGroupe[]
@@ -27,23 +32,6 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
   }
 }
 
-function GroupeBadge({ groupe }: { groupe: GroupeForDepute | null }) {
-  if (groupe) {
-    const { acronym, fonction } = groupe
-    const color = GroupeColorsByAcronyme[acronym] ?? 'black'
-
-    return (
-      <span
-        className={`mx-2 inline-block py-1 px-2 text-white`}
-        style={{ background: color }}
-      >
-        {groupe?.acronym} {fonction !== 'membre' ? `(${fonction})` : null}
-      </span>
-    )
-  }
-  return null
-}
-
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -59,8 +47,7 @@ export default function Page({
         précédentes législatures restent accessibles sur les liens suivants :
         <Todo inline>liens vers les autres législatures</Todo>
       </p>
-      <Todo>graphe de la répartition des groupes parlementaire</Todo>
-
+      <GrapheRepartitionGroupes {...{ deputes }} />
       <ul className="list-none">
         {data.deputes.map((depute) => {
           return (
