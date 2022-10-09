@@ -1,5 +1,8 @@
 import { DeputeWithGroupe } from '../logic/api'
-import { getColorForGroupeAcronym } from '../logic/hardcodedData'
+import {
+  getColorForGroupeAcronym,
+  groupesDisplayOrder,
+} from '../logic/hardcodedData'
 import { notNull } from '../logic/utils'
 
 type Props = {
@@ -40,6 +43,9 @@ function buildGroupesData(deputes: DeputeWithGroupe[]): GroupeData[] {
 }
 
 function Graphe({ groupesData }: { groupesData: GroupeData[] }) {
+  function getFlexOrder(acronym: string) {
+    return groupesDisplayOrder.indexOf(acronym) ?? 0
+  }
   return (
     <div className="flex h-10 flex-row shadow-lg">
       {groupesData.map((g) => {
@@ -50,6 +56,7 @@ function Graphe({ groupesData }: { groupesData: GroupeData[] }) {
             style={{
               background: getColorForGroupeAcronym(g.acronym),
               width: `${g.deputesShareOfTotal * 100}%`,
+              order: groupesDisplayOrder.indexOf(g.acronym) ?? 0,
             }}
           >
             {g.acronym}
