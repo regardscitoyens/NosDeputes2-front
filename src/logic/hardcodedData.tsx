@@ -1,6 +1,21 @@
 // TODO voir comment gérer les différentes législatures
 export const CURRENT_LEGISLATURE = 16
 
+// L'ordre serait peut-être déductible à partir des places dans l'hémicycle de chaque député ?
+export const groupesDisplayOrder: string[] = [
+  'LFI',
+  'GDR',
+  'SOC',
+  'ECO',
+  'LIOT',
+  'REN',
+  'MODEM',
+  'HOR',
+  'LR',
+  'RN',
+  'NI',
+]
+
 // Colors copied from conf/app.yml in nosdeputes.fr
 const GroupeColorsByAcronyme: { [k: string]: string } = {
   LFI: rgbToHex(204, 42, 70),
