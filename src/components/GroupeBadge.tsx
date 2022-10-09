@@ -1,5 +1,5 @@
 import { GroupeForDepute } from '../logic/api'
-import { getColorForGroupeAcronym } from '../logic/constants'
+import { getColorForGroupeAcronym } from '../logic/hardcodedData'
 
 export function GroupeBadge({ groupe }: { groupe: GroupeForDepute | null }) {
   if (groupe) {

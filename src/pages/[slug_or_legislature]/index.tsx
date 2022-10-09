@@ -1,10 +1,12 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { Depute, fetchDeputeBySlug, fetchDeputes } from '../../logic/api'
+import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
+import { Depute, DeputeWithGroupe, fetchDeputeBySlug } from '../../logic/api'
+import { addPrefixToDepartement } from '../../logic/hardcodedData'
 import { formatDate, getAge } from '../../logic/utils'
 
 type Data = {
-  depute: Depute
+  depute: DeputeWithGroupe
 }
 
 export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
@@ -23,7 +25,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
   }
 }
 
-function InformationsBlock({ depute }: { depute: Depute }) {
+function InformationsBlock({ depute }: { depute: DeputeWithGroupe }) {
   const age = getAge(depute.date_naissance)
   const dateNaissanceFormatted = formatDate(depute.date_naissance)
   const mandatStartFormatted = formatDate(depute.debut_mandat)
@@ -44,8 +46,8 @@ function InformationsBlock({ depute }: { depute: Depute }) {
           </li>
           <li>Profession : {depute.profession ?? 'Non renseignée'}</li>
           <li>
-            Groupe {depute.groupe_acronyme}{' '}
-            <Todo inline>(+ membre ou apparenté)</Todo>
+            Groupe
+            <GroupeBadge groupe={depute.groupe} />
           </li>
         </ul>
         <Todo inline>liens twitter wikipedia etc.</Todo>
@@ -54,16 +56,24 @@ function InformationsBlock({ depute }: { depute: Depute }) {
   )
 }
 
+function getOrdinalSuffixFeminine(n: number) {
+  return n === 1 ? 'ère' : `ème`
+}
+
 export default function Page({
   data: { depute },
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div className="grid grid-cols-12 gap-4">
       <h1 className="col-span-full  text-center text-2xl">
-        <span className="font-bold">{depute.nom}</span>, député{' '}
-        {depute.groupe_acronyme}{' '}
-        <Todo inline>si membre du groupe ou apparenté</Todo>
-        <Todo inline>sa circonscription</Todo>
+        <span className="font-bold">
+          {depute.nom}
+          <GroupeBadge groupe={depute.groupe} />
+        </span>
+        député de la {depute.num_circo}
+        <sup>
+          {getOrdinalSuffixFeminine(depute.num_circo)}
+        </sup> circonscription {addPrefixToDepartement(depute.nom_circo)}
       </h1>
       <div className="col-span-2">
         <Todo>photo</Todo>

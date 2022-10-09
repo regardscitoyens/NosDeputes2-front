@@ -3,15 +3,8 @@ import Link from 'next/link'
 import { GrapheRepartitionGroupes } from '../components/GrapheRepartitionGroupes'
 import { GroupeBadge } from '../components/GroupeBadge'
 import { Todo } from '../components/Todo'
-import {
-  DeputeWithGroupe,
-  fetchDeputesWithGroupe,
-  GroupeForDepute,
-} from '../logic/api'
-import {
-  CURRENT_LEGISLATURE,
-  getColorForGroupeAcronym,
-} from '../logic/constants'
+import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../logic/api'
+import { CURRENT_LEGISLATURE } from '../logic/hardcodedData'
 
 type Data = {
   deputes: DeputeWithGroupe[]
