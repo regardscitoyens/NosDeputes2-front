@@ -1,9 +1,9 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 type Props = {
-  children: string
+  children: ReactNode
   inline?: boolean
 }
 

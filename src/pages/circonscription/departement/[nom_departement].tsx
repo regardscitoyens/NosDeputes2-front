@@ -1,6 +1,5 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import Link from 'next/link'
-import { Todo } from '../../components/Todo'
+import { Todo } from '../../../components/Todo'
 
 type Data = {}
 
@@ -19,13 +18,8 @@ export default function Page({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <Todo>
-      Carte de tous les départements, avec lien vers chaque département (ex:{' '}
-      <Link href="/circonscription/departement/Bouches-du-Rhône">
-        <a className="font-bold underline">
-          /circonscription/departement/Bouches-du-Rhône
-        </a>
-      </Link>
-      )
+      Carte des quelques circonscriptions constituant le département, et liste
+      le député pour chacune de ces circonscriptions
     </Todo>
   )
 }
