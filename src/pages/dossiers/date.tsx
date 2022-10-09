@@ -1,7 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { Todo } from '../../components/Todo'
-import { CURRENT_LEGISLATURE } from '../../logic/constants'
+import { CURRENT_LEGISLATURE } from '../../logic/hardcodedData'
 
 type Data = {
   recentDossiers: {

@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import { CURRENT_LEGISLATURE } from '../logic/constants'
+import { CURRENT_LEGISLATURE } from '../logic/hardcodedData'
 
 type Props = {
   children: ReactNode

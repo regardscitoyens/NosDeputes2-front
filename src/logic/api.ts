@@ -61,12 +61,10 @@ export async function fetchDeputes(): Promise<Depute[]> {
   return await fetchJson(`/parlementaire`)
 }
 
-export async function fetchDeputeBySlug(slug: string): Promise<Depute | null> {
-  const res = (await fetchJson(`/parlementaire?slug=eq.${slug}`)) as Depute[]
-  if (res.length) {
-    return res[0]
-  }
-  return null
+export async function fetchDeputeBySlug(
+  slug: string,
+): Promise<DeputeWithGroupe | null> {
+  return (await fetchDeputesWithGroupe()).find((_) => _.slug == slug) ?? null
 }
 
 export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {

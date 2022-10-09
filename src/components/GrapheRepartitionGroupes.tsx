@@ -1,5 +1,5 @@
 import { DeputeWithGroupe } from '../logic/api'
-import { getColorForGroupeAcronym } from '../logic/constants'
+import { getColorForGroupeAcronym } from '../logic/hardcodedData'
 import { notNull } from '../logic/utils'
 
 type Props = {
