@@ -1,5 +1,5 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { Todo } from '../../../components/Todo'
+import { Todo } from '../../components/Todo'
 
 type Data = {}
 
@@ -16,10 +16,5 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return (
-    <Todo>
-      Carte des circonscriptions pour un département, et liens vers les députés
-      de cette circonscription
-    </Todo>
-  )
+  return <Todo>Liste des groupes d'étude et d'amitié</Todo>
 }
