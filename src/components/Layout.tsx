@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { ReactNode } from 'react'
+import { CURRENT_LEGISLATURE } from '../logic/constants'
 
 type Props = {
   children: ReactNode
@@ -54,7 +55,10 @@ export function Layout({ children }: Props) {
                 label="Les dossiers (les derniers dossiers)"
               />
               <BasicLink to="/dossiers/plus" label="Les plus discutés" />
-              <BasicLink to="/16/scrutins" label="Les scrutins publics" />
+              <BasicLink
+                to={`${CURRENT_LEGISLATURE}/scrutins`}
+                label="Les scrutins publics"
+              />
             </div>
             <div className="flex space-x-2">
               <BasicLink to="/recherche/foobar" label="Recherche" />

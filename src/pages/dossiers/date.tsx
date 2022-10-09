@@ -1,6 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { Todo } from '../../components/Todo'
+import { CURRENT_LEGISLATURE } from '../../logic/constants'
 
 type Data = {
   recentDossiers: {
@@ -37,7 +38,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
             date: '2022-08-04T00:00:00.000',
           },
         ],
-        legislatureNumber: 16,
+        legislatureNumber: CURRENT_LEGISLATURE,
       },
     },
   }

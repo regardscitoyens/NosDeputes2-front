@@ -6,7 +6,7 @@ import {
   fetchDeputesWithGroupe,
   GroupeForDepute,
 } from '../logic/api'
-import { GroupeColorsByAcronyme } from '../logic/hardcodedStuff'
+import { CURRENT_LEGISLATURE, GroupeColorsByAcronyme } from '../logic/constants'
 
 type Data = {
   deputes: DeputeWithGroupe[]
@@ -34,7 +34,7 @@ function GroupeBadge({ groupe }: { groupe: GroupeForDepute | null }) {
 
     return (
       <span
-        className={`mx-2 inline-block py-1 px-2  font-normal text-white`}
+        className={`mx-2 inline-block py-1 px-2 text-white`}
         style={{ background: color }}
       >
         {groupe?.acronym} {fonction !== 'membre' ? `(${fonction})` : null}
@@ -49,16 +49,14 @@ export default function Page({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { deputes } = data
   const deputesEnCoursMandat = deputes.filter((_) => !_.fin_mandat)
-  const legislatureNumber = 16 // TODO get from api
   return (
     <div>
       <h1 className="text-2xl">Tous les députés par ordre alphabétique</h1>
       <p>
         Retrouvez ici l'ensemble des {deputes.length} députés de la{' '}
-        <Todo inline>num legislature</Todo>ème législature (dont{' '}
-        {deputesEnCoursMandat.length} en cours de mandat). Les informations
-        relatives aux députés des précédentes législatures restent accessibles
-        sur les liens suivants :
+        {CURRENT_LEGISLATURE}ème législature (dont {deputesEnCoursMandat.length}{' '}
+        en cours de mandat). Les informations relatives aux députés des
+        précédentes législatures restent accessibles sur les liens suivants :
         <Todo inline>liens vers les autres législatures</Todo>
       </p>
       <Todo>graphe de la répartition des groupes parlementaire</Todo>
@@ -71,9 +69,12 @@ export default function Page({
               className="my-2 rounded-lg bg-slate-100 p-4 text-center drop-shadow md:max-w-fit"
             >
               <Link href={`/${depute.slug}`}>
-                <a className="font-semibold">
-                  {depute.nom} <GroupeBadge groupe={depute.groupe} />
-                  <Todo inline>afficher circo (departement)</Todo>
+                <a>
+                  <span className="font-semibold">{depute.nom}</span>{' '}
+                  <GroupeBadge groupe={depute.groupe} />
+                  <span className="bg-blue text-slate-400">
+                    {depute.nom_circo}
+                  </span>
                 </a>
               </Link>
             </li>
