@@ -1,5 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { DeputeItem } from '../../components/DeputeItem'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
@@ -7,9 +8,8 @@ import {
   fetchDeputesWithGroupe,
   NormalizedFonction,
 } from '../../logic/api'
-import { buildGroupesData, GroupeData } from '../../logic/buildGroupesData'
+import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
-import { notNull, uniqBy } from '../../logic/utils'
 
 type Data = {
   groupeData: GroupeData
@@ -47,7 +47,8 @@ export function SameFonctionBlock({
   deputes: DeputeWithGroupe[]
   fonction: NormalizedFonction
 }) {
-  if (deputes.length === 0) return null
+  const deputesFiltered = deputes.filter((_) => _.groupe?.fonction === fonction)
+  if (deputesFiltered.length === 0) return null
   return (
     <>
       <h2 className="text-2xl">
@@ -58,26 +59,13 @@ export function SameFonctionBlock({
           : 'Membres'}
       </h2>
       <ul className="list-none">
-        {deputes
-          .filter((_) => _.groupe?.fonction === fonction)
-          .map((depute) => {
-            return (
-              <li
-                key={depute.id}
-                className="my-2 rounded-lg bg-slate-100 p-4 text-center drop-shadow md:max-w-fit"
-              >
-                <Link href={`/${depute.slug}`}>
-                  <a>
-                    <span className="font-semibold">{depute.nom}</span>{' '}
-                    <GroupeBadge groupe={depute.groupe} />
-                    <span className="bg-blue text-slate-400">
-                      {depute.nom_circo}
-                    </span>
-                  </a>
-                </Link>
-              </li>
-            )
-          })}
+        {deputes.map((depute) => {
+          return (
+            <li key={depute.id} className="">
+              <DeputeItem {...{ depute }} withCirco />
+            </li>
+          )
+        })}
       </ul>
     </>
   )

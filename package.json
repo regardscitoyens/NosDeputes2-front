@@ -15,7 +15,9 @@
     "checkformat": "yarn prettier --check ."
   },
   "dependencies": {
+    "@types/lodash": "^4.14.186",
     "autoprefixer": "^10.4.12",
+    "lodash": "^4.17.21",
     "next": "12.3.1",
     "node-fetch": "^3.2.10",
     "postcss": "^8.4.17",

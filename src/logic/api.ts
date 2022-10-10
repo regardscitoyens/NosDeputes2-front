@@ -1,4 +1,5 @@
 import fetch from 'node-fetch'
+import { notNull } from './utils'
 
 // l'api Postgres
 const apiBase = 'http://localhost:4001'
@@ -49,21 +50,25 @@ export type Groupe = {
   acronym: string
 }
 
+export type Organisme = {
+  id: number
+  nom: string
+  slug: string
+}
+
 export type GroupeForDepute = Groupe & {
   fonction: NormalizedFonction
+}
+export type OrganismeForDepute = Organisme & {
+  fonction: string
 }
 
 export type DeputeWithGroupe = Depute & {
   groupe: GroupeForDepute | null
 }
 
-export type Organisme = {
-  id: number
-  nom: string
-  type: string
-  created_at: string
-  updated_at: string
-  slug: string
+export type DeputeWithOrganismes = Depute & {
+  organismes: OrganismeForDepute[]
 }
 
 export async function fetchDeputes(): Promise<Depute[]> {
@@ -77,14 +82,6 @@ export async function fetchDeputeBySlug(
 }
 
 export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
-  // TODO standardize "fonction"
-  // Current possibles values :
-  // présidente
-  // apparentée
-  // président
-  // apparenté
-  // membre
-
   // join parlementaire -> parlementaire_organisme -> organisme
   // Keep only the "groupe" and the ones still ongoing (fin_fonction NULL)
   const url = `/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fonction,fin_fonction,organisme(id,%20nom,%20type,%20slug)))&parlementaire_organisme.organisme.type=eq.groupe&parlementaire_organisme.fin_fonction=is.null`
@@ -125,14 +122,49 @@ export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
   })
 }
 
-// http://localhost:4001/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fin_fonction,organisme(id,%20nom,%20type,%20slug)))&parlementaire_organisme.organisme.type=eq.groupe&parlementaire_organisme.fin_fonction=is.null
+// deputes with their organismes (except groupes parlementaires)
+export async function fetchDeputesWithOtherOrganismes(): Promise<
+  DeputeWithOrganismes[]
+> {
+  // Same query as for the groupes, replace just eq.groupe with neq.groupe
+  const url = `/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fonction,fin_fonction,organisme(id,%20nom,%20type,%20slug)))&parlementaire_organisme.organisme.type=neq.groupe&parlementaire_organisme.fin_fonction=is.null`
+  type QueryResult = (Depute & {
+    parlementaire_organisme: {
+      organisme_id: string
+      parlementaire_groupe_acronyme: string
+      // ici les fonctions sont plus variées, pour l'instant on ne les type pas
+      fonction: string
+      fin_fonction: null
+      organisme: {
+        id: number
+        nom: string
+        type: string
+        slug: string
+      } | null
+    }[]
+  })[]
+  const rawResult = (await fetchJson(url)) as QueryResult
 
-export async function fetchOrganismes(): Promise<Organisme[]> {
-  return await fetchJson(`/organisme`)
-}
-
-export async function fetchOrganisme(id: number): Promise<Organisme> {
-  return await fetchJson(`/organisme/${id}`)
+  return rawResult.map((deputeWithJoinedData) => {
+    const { parlementaire_organisme, ...restOfDepute } = deputeWithJoinedData
+    const organismes = parlementaire_organisme
+      .map((_) => {
+        if (_.organisme !== null) {
+          return {
+            fonction: _.fonction,
+            id: _.organisme.id,
+            nom: _.organisme.nom,
+            slug: _.organisme.slug,
+          }
+        }
+        return null
+      })
+      .filter(notNull)
+    return {
+      ...restOfDepute,
+      organismes,
+    }
+  })
 }
 
 export async function fetchJson<T>(path: string): Promise<T> {
