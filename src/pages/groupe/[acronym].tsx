@@ -2,7 +2,11 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
-import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../../logic/api'
+import {
+  DeputeWithGroupe,
+  fetchDeputesWithGroupe,
+  NormalizedFonction,
+} from '../../logic/api'
 import { buildGroupesData, GroupeData } from '../../logic/buildGroupesData'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
 import { notNull, uniqBy } from '../../logic/utils'
@@ -41,31 +45,39 @@ export function SameFonctionBlock({
   fonction,
 }: {
   deputes: DeputeWithGroupe[]
-  fonction: string
+  fonction: NormalizedFonction
 }) {
   if (deputes.length === 0) return null
   return (
     <>
-      <h2 className="text-2xl">{fonction}</h2>
+      <h2 className="text-2xl">
+        {fonction === 'president'
+          ? 'Président(e)'
+          : fonction === 'apparente'
+          ? 'Apparentés'
+          : 'Membres'}
+      </h2>
       <ul className="list-none">
-        {deputes.map((depute) => {
-          return (
-            <li
-              key={depute.id}
-              className="my-2 rounded-lg bg-slate-100 p-4 text-center drop-shadow md:max-w-fit"
-            >
-              <Link href={`/${depute.slug}`}>
-                <a>
-                  <span className="font-semibold">{depute.nom}</span>{' '}
-                  <GroupeBadge groupe={depute.groupe} />
-                  <span className="bg-blue text-slate-400">
-                    {depute.nom_circo}
-                  </span>
-                </a>
-              </Link>
-            </li>
-          )
-        })}
+        {deputes
+          .filter((_) => _.groupe?.fonction === fonction)
+          .map((depute) => {
+            return (
+              <li
+                key={depute.id}
+                className="my-2 rounded-lg bg-slate-100 p-4 text-center drop-shadow md:max-w-fit"
+              >
+                <Link href={`/${depute.slug}`}>
+                  <a>
+                    <span className="font-semibold">{depute.nom}</span>{' '}
+                    <GroupeBadge groupe={depute.groupe} />
+                    <span className="bg-blue text-slate-400">
+                      {depute.nom_circo}
+                    </span>
+                  </a>
+                </Link>
+              </li>
+            )
+          })}
       </ul>
     </>
   )
@@ -86,27 +98,9 @@ export default function Page({
           {groupeData.acronym}
         </span>
       </h1>
-
-      <SameFonctionBlock
-        fonction={'Président(e)'}
-        deputes={deputes.filter(
-          (_) =>
-            _.groupe && ['président', 'présidente'].includes(_.groupe.fonction),
-        )}
-      />
-      <SameFonctionBlock
-        fonction={'Membres'}
-        deputes={deputes.filter(
-          (_) => _.groupe && ['membre'].includes(_.groupe.fonction),
-        )}
-      />
-      <SameFonctionBlock
-        fonction={'Apparentés'}
-        deputes={deputes.filter(
-          (_) =>
-            _.groupe && ['apparenté', 'apparentée'].includes(_.groupe.fonction),
-        )}
-      />
+      <SameFonctionBlock fonction={'president'} {...{ deputes }} />
+      <SameFonctionBlock fonction={'membre'} {...{ deputes }} />
+      <SameFonctionBlock fonction={'apparente'} {...{ deputes }} />
       <Todo>Afficher aussi les anciens membres</Todo>
     </div>
   )

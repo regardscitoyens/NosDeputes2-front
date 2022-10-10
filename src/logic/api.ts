@@ -3,6 +3,15 @@ import fetch from 'node-fetch'
 // l'api Postgres
 const apiBase = 'http://localhost:4001'
 
+type RawFonctionFromApi =
+  | 'présidente'
+  | 'apparentée'
+  | 'président'
+  | 'apparenté'
+  | 'membre'
+
+export type NormalizedFonction = 'president' | 'membre' | 'apparente'
+
 export type Depute = {
   id: number
   nom: string
@@ -41,7 +50,7 @@ export type Groupe = {
 }
 
 export type GroupeForDepute = Groupe & {
-  fonction: string
+  fonction: NormalizedFonction
 }
 
 export type DeputeWithGroupe = Depute & {
@@ -68,6 +77,14 @@ export async function fetchDeputeBySlug(
 }
 
 export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
+  // TODO standardize "fonction"
+  // Current possibles values :
+  // présidente
+  // apparentée
+  // président
+  // apparenté
+  // membre
+
   // join parlementaire -> parlementaire_organisme -> organisme
   // Keep only the "groupe" and the ones still ongoing (fin_fonction NULL)
   const url = `/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fonction,fin_fonction,organisme(id,%20nom,%20type,%20slug)))&parlementaire_organisme.organisme.type=eq.groupe&parlementaire_organisme.fin_fonction=is.null`
@@ -75,7 +92,7 @@ export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
     parlementaire_organisme: {
       organisme_id: string
       parlementaire_groupe_acronyme: string
-      fonction: string
+      fonction: RawFonctionFromApi
       fin_fonction: null
       organisme: {
         id: number
@@ -93,7 +110,7 @@ export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
     parlementaire_organisme.forEach((_) => {
       if (_.organisme !== null) {
         groupe = {
-          fonction: _.fonction,
+          fonction: normalizeFonction(_.fonction),
           id: _.organisme.id,
           nom: _.organisme.nom,
           slug: _.organisme.slug,
@@ -122,4 +139,17 @@ export async function fetchJson<T>(path: string): Promise<T> {
   const url = `${apiBase}${path}`
   console.log(`>> fetching ${url}`)
   return (await (await fetch(url)).json()) as any as T
+}
+
+function normalizeFonction(f: RawFonctionFromApi): NormalizedFonction {
+  switch (f) {
+    case 'présidente':
+    case 'président':
+      return 'president'
+    case 'apparentée':
+    case 'apparenté':
+      return 'apparente'
+    case 'membre':
+      return 'membre'
+  }
 }
