@@ -1,4 +1,4 @@
-import { DeputeWithGroupe } from './api'
+import { DeputeWithGroupe, DeputeWithOrganismes } from './api'
 import { notNull } from './utils'
 
 export type GroupeData = {
@@ -32,4 +32,32 @@ export function buildGroupesData(deputes: DeputeWithGroupe[]): GroupeData[] {
   })
 
   return groupesData
+}
+
+export type OrganismeData = {
+  id: number
+  nom: string
+  slug: string
+  deputesCount: number
+}
+
+export function buildOrganismeData(
+  deputes: DeputeWithOrganismes[],
+): OrganismeData[] {
+  const organismesData: OrganismeData[] = []
+  deputes.forEach((depute) => {
+    depute.organismes.forEach((organisme) => {
+      let organismeData = organismesData.find((_) => _.id === organisme.id)
+      if (!organismeData) {
+        const { fonction, ...restOfOrganisme } = organisme
+        organismeData = {
+          ...restOfOrganisme,
+          deputesCount: 0,
+        }
+        organismesData.push(organismeData)
+      }
+      organismeData.deputesCount++
+    })
+  })
+  return organismesData
 }

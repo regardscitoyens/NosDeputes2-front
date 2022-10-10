@@ -1,4 +1,4 @@
-import { GroupeData } from '../logic/buildGroupesData'
+import { GroupeData } from '../logic/rearrangeData'
 import {
   getColorForGroupeAcronym,
   groupesDisplayOrder,

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { NormalizedFonction } from '../logic/api'
 import { getColorForGroupeAcronym } from '../logic/hardcodedData'
 
@@ -30,12 +31,14 @@ function BaseGroupeBadge({
   fonction?: NormalizedFonction
 }) {
   return (
-    <span
-      className={`mx-2 inline-block py-1 px-2 text-white`}
-      style={{ background: getColorForGroupeAcronym(acronym) }}
-    >
-      {acronym}
-      {fonction && fonction !== 'membre' ? ` (${fonction})` : null}
-    </span>
+    <Link href={`/groupe/${acronym}`}>
+      <a
+        className={`mx-2 inline-block py-1 px-2 text-white`}
+        style={{ background: getColorForGroupeAcronym(acronym) }}
+      >
+        {acronym}
+        {fonction && fonction !== 'membre' ? ` (${fonction})` : null}
+      </a>
+    </Link>
   )
 }

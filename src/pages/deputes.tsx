@@ -1,10 +1,9 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import Link from 'next/link'
+import { DeputeItem } from '../components/DeputeItem'
 import { GrapheRepartitionGroupes } from '../components/GrapheRepartitionGroupes'
-import { GroupeBadge, GroupeBadgeWithFonction } from '../components/GroupeBadge'
 import { Todo } from '../components/Todo'
 import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../logic/api'
-import { buildGroupesData, GroupeData } from '../logic/buildGroupesData'
+import { buildGroupesData, GroupeData } from '../logic/rearrangeData'
 import { CURRENT_LEGISLATURE } from '../logic/hardcodedData'
 
 type Data = {
@@ -47,19 +46,8 @@ export default function Page({
       <ul className="list-none">
         {data.deputes.map((depute) => {
           return (
-            <li
-              key={depute.id}
-              className="my-2 rounded-lg bg-slate-100 p-4 text-center drop-shadow md:max-w-fit"
-            >
-              <Link href={`/${depute.slug}`}>
-                <a>
-                  <span className="font-semibold">{depute.nom}</span>{' '}
-                  <GroupeBadgeWithFonction groupe={depute.groupe} />
-                  <span className="bg-blue text-slate-400">
-                    {depute.nom_circo}
-                  </span>
-                </a>
-              </Link>
+            <li key={depute.id}>
+              <DeputeItem {...{ depute }} withCirco />
             </li>
           )
         })}
