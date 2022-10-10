@@ -4,10 +4,12 @@ import { GrapheRepartitionGroupes } from '../components/GrapheRepartitionGroupes
 import { GroupeBadge } from '../components/GroupeBadge'
 import { Todo } from '../components/Todo'
 import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../logic/api'
+import { buildGroupesData, GroupeData } from '../logic/buildGroupesData'
 import { CURRENT_LEGISLATURE } from '../logic/hardcodedData'
 
 type Data = {
   deputes: DeputeWithGroupe[]
+  groupesData: GroupeData[]
 }
 
 export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
@@ -20,6 +22,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
     props: {
       data: {
         deputes,
+        groupesData: buildGroupesData(deputes),
       },
     },
   }
@@ -28,7 +31,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { deputes } = data
+  const { deputes, groupesData } = data
   const deputesEnCoursMandat = deputes.filter((_) => !_.fin_mandat)
   return (
     <div>
@@ -40,7 +43,7 @@ export default function Page({
         précédentes législatures restent accessibles sur les liens suivants :
         <Todo inline>liens vers les autres législatures</Todo>
       </p>
-      <GrapheRepartitionGroupes {...{ deputes }} />
+      <GrapheRepartitionGroupes {...{ groupesData }} />
       <ul className="list-none">
         {data.deputes.map((depute) => {
           return (
