@@ -1,7 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { GrapheRepartitionGroupes } from '../components/GrapheRepartitionGroupes'
-import { GroupeBadge } from '../components/GroupeBadge'
+import { GroupeBadge, GroupeBadgeWithFonction } from '../components/GroupeBadge'
 import { Todo } from '../components/Todo'
 import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../logic/api'
 import { buildGroupesData, GroupeData } from '../logic/buildGroupesData'
@@ -54,7 +54,7 @@ export default function Page({
               <Link href={`/${depute.slug}`}>
                 <a>
                   <span className="font-semibold">{depute.nom}</span>{' '}
-                  <GroupeBadge groupe={depute.groupe} />
+                  <GroupeBadgeWithFonction groupe={depute.groupe} />
                   <span className="bg-blue text-slate-400">
                     {depute.nom_circo}
                   </span>
