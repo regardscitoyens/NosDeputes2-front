@@ -1,18 +1,41 @@
-import { GroupeForDepute } from '../logic/api'
+import { NormalizedFonction } from '../logic/api'
 import { getColorForGroupeAcronym } from '../logic/hardcodedData'
 
-export function GroupeBadge({ groupe }: { groupe: GroupeForDepute | null }) {
-  if (groupe) {
-    const { acronym, fonction } = groupe
-    const color = getColorForGroupeAcronym(acronym)
+export function GroupeBadgeWithFonction({
+  groupe,
+}: {
+  groupe: { acronym: string; fonction: NormalizedFonction } | null
+}) {
+  if (groupe)
     return (
-      <span
-        className={`mx-2 inline-block py-1 px-2 text-white`}
-        style={{ background: color }}
-      >
-        {groupe?.acronym} {fonction !== 'membre' ? `(${fonction})` : null}
-      </span>
+      <BaseGroupeBadge acronym={groupe.acronym} fonction={groupe.fonction} />
     )
-  }
-  return null
+  else return null
+}
+
+export function GroupeBadge({
+  groupe,
+}: {
+  groupe: { acronym: string } | null
+}) {
+  if (groupe) return <BaseGroupeBadge acronym={groupe.acronym} />
+  else return null
+}
+
+function BaseGroupeBadge({
+  acronym,
+  fonction,
+}: {
+  acronym: string
+  fonction?: NormalizedFonction
+}) {
+  return (
+    <span
+      className={`mx-2 inline-block py-1 px-2 text-white`}
+      style={{ background: getColorForGroupeAcronym(acronym) }}
+    >
+      {acronym}
+      {fonction && fonction !== 'membre' ? ` (${fonction})` : null}
+    </span>
+  )
 }
