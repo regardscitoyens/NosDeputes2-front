@@ -1,10 +1,10 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { DeputeItem } from '../components/DeputeItem'
-import { GrapheRepartitionGroupes } from '../components/GrapheRepartitionGroupes'
-import { Todo } from '../components/Todo'
-import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../logic/api'
-import { buildGroupesData, GroupeData } from '../logic/rearrangeData'
-import { CURRENT_LEGISLATURE } from '../logic/hardcodedData'
+import { DeputeItem } from '../../components/DeputeItem'
+import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
+import { Todo } from '../../components/Todo'
+import { DeputeWithGroupe, fetchDeputesWithGroupe } from '../../logic/api'
+import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
+import { CURRENT_LEGISLATURE } from '../../logic/hardcodedData'
 
 type Data = {
   deputes: DeputeWithGroupe[]
