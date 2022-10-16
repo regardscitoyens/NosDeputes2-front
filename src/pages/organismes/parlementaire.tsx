@@ -34,17 +34,13 @@ export default function Page({
     <div>
       <Todo inline>Trier cette table avec un ordre d'importance </Todo>
       <Todo inline>Afficher si ce sont des commissions permanentes </Todo>
+      <Todo inline>Faire le lien vers la fiche pour chacun d'entre eux </Todo>
       <table>
         <thead>
           <tr>
             <th>Nom</th>
             <th>Membres</th>
             <th>Réunions publiques</th>
-          </tr>
-          <tr>
-            <td>Nom</td>
-            <td>Membres</td>
-            <td>Réunions publiques</td>
           </tr>
         </thead>
         <tbody>
