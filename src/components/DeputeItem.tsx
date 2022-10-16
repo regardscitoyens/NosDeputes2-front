@@ -14,14 +14,14 @@ export function DeputeItem({
   return (
     <div className="my-2 w-fit rounded bg-slate-100 p-2 drop-shadow">
       <Link href={`/${slug}`}>
-        <a>
-          <span className="font-semibold">{nom}</span>{' '}
-          <GroupeBadgeWithFonction groupe={groupe} />
-          {withCirco && (
-            <span className="bg-blue text-slate-400">{nom_circo}</span>
-          )}
-        </a>
+        <a className="font-semibold">{nom}</a>
       </Link>
+      <GroupeBadgeWithFonction groupe={groupe} />
+      {withCirco && (
+        <span className="bg-blue ml-1 cursor-pointer text-slate-400">
+          {nom_circo}
+        </span>
+      )}
     </div>
   )
 }

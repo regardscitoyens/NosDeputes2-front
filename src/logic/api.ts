@@ -122,6 +122,20 @@ export async function fetchDeputesWithGroupe(): Promise<DeputeWithGroupe[]> {
   })
 }
 
+// TODO il faudrait rajouter le groupe actuel, et donc faire une sorte de jointure encore ??
+export async function fetchAncienMembresOfGroupe(
+  groupeId: number,
+): Promise<Depute[]> {
+  // Note : cette query doit être faite sur l'id, pas l'acronyme, car la table parlementaire_organisme contient les acronym même quand il ne s'agit pas du groupe
+  // TODO attention pour les NI je crois que ça remonte beaucoup trop de monde, comme si tout le monde était passé par les NI à une époque ?
+  const url = `/parlementaire_organisme?select=parlementaire(*)))&organisme_id=eq.${groupeId}&fin_fonction=not.is.null`
+  type QueryResult = {
+    parlementaire: Depute
+  }[]
+  const rawResult = (await fetchJson(url)) as QueryResult
+  return rawResult.map((_) => _.parlementaire)
+}
+
 // deputes with their organismes (except groupes parlementaires)
 export async function fetchDeputesWithOtherOrganismes(): Promise<
   DeputeWithOrganismes[]

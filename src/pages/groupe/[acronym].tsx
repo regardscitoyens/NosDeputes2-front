@@ -4,7 +4,9 @@ import { DeputeItem } from '../../components/DeputeItem'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
+  Depute,
   DeputeWithGroupe,
+  fetchAncienMembresOfGroupe,
   fetchDeputesWithGroupe,
   NormalizedFonction,
 } from '../../logic/api'
@@ -30,6 +32,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
     )
   }
   const groupeData = groupesData[0]
+  // const anciens = await fetchAncienMembresOfGroupe(groupeData.id)
   return {
     props: {
       data: {
@@ -45,7 +48,7 @@ export function SameFonctionBlock({
   fonction,
 }: {
   deputes: DeputeWithGroupe[]
-  fonction: NormalizedFonction
+  fonction: NormalizedFonction | 'anciens'
 }) {
   const deputesFiltered = deputes.filter((_) => _.groupe?.fonction === fonction)
   if (deputesFiltered.length === 0) return null
@@ -56,7 +59,9 @@ export function SameFonctionBlock({
           ? 'Président(e)'
           : fonction === 'apparente'
           ? 'Apparentés'
-          : 'Membres'}
+          : fonction === 'membre'
+          ? 'Membres'
+          : 'Anciens membres'}
       </h2>
       <ul className="list-none">
         {deputes.map((depute) => {
@@ -89,7 +94,8 @@ export default function Page({
       <SameFonctionBlock fonction={'president'} {...{ deputes }} />
       <SameFonctionBlock fonction={'membre'} {...{ deputes }} />
       <SameFonctionBlock fonction={'apparente'} {...{ deputes }} />
-      <Todo>Afficher aussi les anciens membres</Todo>
+      <Todo>make anciens deputes work</Todo>
+      {/* <SameFonctionBlock fonction={'anciens'} deputes={anciens} /> */}
     </div>
   )
 }
