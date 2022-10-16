@@ -54,6 +54,7 @@ export type Organisme = {
   id: number
   nom: string
   slug: string
+  type: 'groupe' | 'extra' | 'parlementaire'
 }
 
 export type GroupeForDepute = Groupe & {
@@ -141,7 +142,7 @@ export async function fetchDeputesWithOtherOrganismes(): Promise<
   DeputeWithOrganismes[]
 > {
   // Same query as for the groupes, replace just eq.groupe with neq.groupe
-  const url = `/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fonction,fin_fonction,organisme(id,%20nom,%20type,%20slug)))&parlementaire_organisme.organisme.type=neq.groupe&parlementaire_organisme.fin_fonction=is.null`
+  const url = `/parlementaire?select=*,parlementaire_organisme(organisme_id,parlementaire_groupe_acronyme,fonction,fin_fonction,organisme(id,nom,type,slug)))&parlementaire_organisme.organisme.type=neq.groupe&parlementaire_organisme.fin_fonction=is.null`
   type QueryResult = (Depute & {
     parlementaire_organisme: {
       organisme_id: string
@@ -168,6 +169,7 @@ export async function fetchDeputesWithOtherOrganismes(): Promise<
             fonction: _.fonction,
             id: _.organisme.id,
             nom: _.organisme.nom,
+            type: _.organisme.type,
             slug: _.organisme.slug,
           }
         }
