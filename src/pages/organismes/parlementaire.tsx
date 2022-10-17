@@ -1,7 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { debugPort } from 'process'
 import { Todo } from '../../components/Todo'
-import { fetchDeputesWithOtherOrganismes } from '../../logic/api'
+import { fetchDeputesWithOtherOrganismes } from '../../logic/apiDeputes'
 import {
   buildOrganismeData as buildOrganismesData,
   OrganismeData,

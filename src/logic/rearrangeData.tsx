@@ -1,4 +1,4 @@
-import { DeputeWithGroupe, DeputeWithOrganismes } from './api'
+import { DeputeWithGroupe, DeputeWithOrganismes } from './apiDeputes'
 import { notNull } from './utils'
 
 export type GroupeData = {
