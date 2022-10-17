@@ -1,7 +1,11 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
-import { Depute, DeputeWithGroupe, fetchDeputeBySlug } from '../../logic/api'
+import {
+  Depute,
+  DeputeWithGroupe,
+  fetchDeputeBySlug,
+} from '../../logic/apiDeputes'
 import { addPrefixToDepartement } from '../../logic/hardcodedData'
 import { formatDate, getAge } from '../../logic/utils'
 

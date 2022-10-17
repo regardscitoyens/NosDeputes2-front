@@ -1,7 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
-import { fetchDeputesWithGroupe } from '../../logic/api'
+import { fetchDeputesWithGroupe } from '../../logic/apiDeputes'
 import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
 

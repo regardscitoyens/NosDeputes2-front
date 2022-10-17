@@ -1,65 +1,81 @@
+import groupBy from 'lodash/groupBy'
+import reverse from 'lodash/reverse'
+import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { Todo } from '../../components/Todo'
+import { fetchSections, Section } from '../../logic/apiDossiers'
 import { CURRENT_LEGISLATURE } from '../../logic/hardcodedData'
 
 type Data = {
-  recentDossiers: {
-    id: number
-    nom: string
-    date: string
-    nbInterventions?: number
-  }[]
-  legislatureNumber: number
+  sectionsGroupedByMonth: (readonly [string, SectionFiltered[]])[]
 }
+
+type SectionFiltered = Section & { min_date: string }
 
 export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
   context,
 ) => {
+  const sections = await fetchSections()
+  const sectionsFiltered = sections
+    .filter((_) => _.id === _.section_id)
+    .filter((_) => _.min_date != null) as SectionFiltered[]
+  const sectionsGrouped = Object.entries(
+    groupBy(sectionsFiltered, extractMonth),
+  )
+  const sectionGroupedAndSorted = reverse(
+    sortBy(sectionsGrouped, ([month]) => month).map(([month, sections]) => {
+      return [month, reverse(sortBy(sections, (_) => _.min_date))] as const
+    }),
+  )
+
   return {
     props: {
       data: {
-        recentDossiers: [
-          {
-            id: 312,
-            nom: 'Clôture de la session extraordinaire',
-            date: '2022-08-04T00:00:00.000',
-          },
-          {
-            id: 302,
-            nom: 'Partenariat france-qatar relatif à la sécurité de la coupe du monde de football de 2022',
-            nbInterventions: 137,
-            date: '2022-08-04T00:00:00.000',
-          },
-          {
-            id: 134,
-            nom: 'Projet de loi de finances rectificative pour 2022',
-            nbInterventions: 2878,
-            date: '2022-08-04T00:00:00.000',
-          },
-        ],
-        legislatureNumber: CURRENT_LEGISLATURE,
+        sectionsGroupedByMonth: sectionGroupedAndSorted,
       },
     },
   }
 }
 
+function extractMonth(section: SectionFiltered): string {
+  // These dates are weirdly formatted
+  const [year, month] = section.min_date.split('-')
+  return `${month}/${year}`
+}
+
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { recentDossiers, legislatureNumber } = data
+  const { sectionsGroupedByMonth } = data
   return (
     <div>
       <h1 className="text-2xl">Les dossiers parlementaires</h1>
-
       <div>
         <ul className="list-none">
-          {recentDossiers.map((dossier) => {
+          {sectionsGroupedByMonth.map((entry) => {
+            const [month, sections] = entry
             return (
-              <li key={dossier.id}>
-                <Link href={`/${legislatureNumber}/dossier/${dossier.id}`}>
-                  <a>{dossier.nom}</a>
-                </Link>
+              <li key={month} className="my-4">
+                <h2 className="text-xl font-bold">{month}</h2>
+                <ul className="list-none">
+                  {sections.map((section) => {
+                    return (
+                      <li key={section.id}>
+                        <Link
+                          href={`${CURRENT_LEGISLATURE}/dossier/${section.id}`}
+                        >
+                          <a>
+                            <span className="text-slate-500">
+                              {section.min_date}
+                            </span>{' '}
+                            {section.titre_complet}
+                          </a>
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
               </li>
             )
           })}

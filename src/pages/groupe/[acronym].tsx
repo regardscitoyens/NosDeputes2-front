@@ -9,7 +9,7 @@ import {
   fetchAncienMembresOfGroupe,
   fetchDeputesWithGroupe,
   NormalizedFonction,
-} from '../../logic/api'
+} from '../../logic/apiDeputes'
 import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
 
