@@ -1,15 +1,14 @@
 import Link from 'next/link'
 import { DeputeWithGroupe } from '../logic/apiDeputes'
-import { SimpleDepute } from '../logic/deputesService'
 import { GroupeBadgeWithFonction } from './GroupeBadge'
 
 type Props = {
-  depute: SimpleDepute
+  depute: DeputeWithGroupe
   withCirco?: boolean
 }
 
-export function DeputeItem({
-  depute: { slug, latestGroup, nom, nom_circo },
+export function DeputeItemOld({
+  depute: { slug, groupe, nom, nom_circo },
   withCirco,
 }: Props) {
   return (
@@ -17,7 +16,14 @@ export function DeputeItem({
       <Link href={`/${slug}`}>
         <a className="font-semibold">{nom}</a>
       </Link>
-      <GroupeBadgeWithFonction groupe={latestGroup} />
+      <GroupeBadgeWithFonction
+        groupe={
+          groupe && {
+            acronym: groupe.acronym,
+            function: groupe.fonction,
+          }
+        }
+      />
       {withCirco && (
         <span className="bg-blue ml-1 cursor-pointer text-slate-400">
           {nom_circo}

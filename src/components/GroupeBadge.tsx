@@ -5,11 +5,11 @@ import { getColorForGroupeAcronym } from '../logic/hardcodedData'
 export function GroupeBadgeWithFonction({
   groupe,
 }: {
-  groupe: { acronym: string; fonction: NormalizedFonction } | null
+  groupe: { acronym: string; function: NormalizedFonction } | null
 }) {
   if (groupe)
     return (
-      <BaseGroupeBadge acronym={groupe.acronym} fonction={groupe.fonction} />
+      <BaseGroupeBadge acronym={groupe.acronym} fonction={groupe.function} />
     )
   else return null
 }
