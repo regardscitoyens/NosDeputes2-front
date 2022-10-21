@@ -1,4 +1,7 @@
 import { sql } from 'kysely'
+import groupBy from 'lodash/groupBy'
+import mapValues from 'lodash/mapValues'
+import maxBy from 'lodash/maxBy'
 import { NormalizedFonction } from './apiDeputes'
 import { db } from './db'
 
@@ -53,6 +56,7 @@ GROUP BY parlementaire_id`
     slug: string
     parlementaire_groupe_acronyme: string | null
     fonction: string | null
+    importance: number
   }
   const query = sql<Row>`
 WITH last_group_dates AS (
@@ -72,7 +76,8 @@ SELECT
   parlementaire.fin_mandat,
   parlementaire.slug,
   parlementaire_organisme.parlementaire_groupe_acronyme,
-  parlementaire_organisme.fonction
+  parlementaire_organisme.fonction,
+  parlementaire_organisme.importance
 FROM parlementaire
 LEFT JOIN last_group_dates
 ON parlementaire.id = last_group_dates.parlementaire_id
@@ -86,8 +91,12 @@ ORDER BY nom
 
   const { rows } = await query.execute(db)
 
-  // TODO fix : pk j'ai pas le bon nb de deputes ? des doublons
-  return rows.map(
+  // There are some duplicates because in the DB
+  // a depute is sometimes both member and president for the same groupe at the same time
+  // with exactly the same dates
+  // We could do another GROUP BY in SQL but it would start to be a bit complicated
+
+  const resultsWithDuplicates = rows.map(
     ({
       id,
       nom,
@@ -96,6 +105,7 @@ ORDER BY nom
       fin_mandat,
       parlementaire_groupe_acronyme,
       fonction,
+      importance,
     }) => {
       const latestGroup =
         parlementaire_groupe_acronyme && fonction
@@ -111,7 +121,17 @@ ORDER BY nom
         slug,
         mandatOngoing: fin_mandat === null,
         latestGroup,
+        importance,
       }
     },
   )
+  const grouped = groupBy(resultsWithDuplicates, _ => _.id)
+  const finalResult = Object.values(grouped).map(duplicates => {
+    const mostImportant = maxBy(duplicates, _ => _.importance)
+    if (mostImportant) {
+      return mostImportant
+    }
+    throw new Error('Cannot take max of empty array')
+  })
+  return finalResult
 }
