@@ -1,6 +1,5 @@
 import { sql } from 'kysely'
 import groupBy from 'lodash/groupBy'
-import mapValues from 'lodash/mapValues'
 import maxBy from 'lodash/maxBy'
 import { NormalizedFonction } from './apiDeputes'
 import { db } from './db'
@@ -8,6 +7,8 @@ import { db } from './db'
 export type SimpleDepute = {
   id: number
   nom: string
+  nom_de_famille: string
+  prenom: string
   nom_circo: string
   slug: string
   mandatOngoing: boolean
@@ -51,6 +52,7 @@ GROUP BY parlementaire_id`
   type Row = {
     id: number
     nom: string
+    nom_de_famille: string
     nom_circo: string
     fin_mandat: Date
     slug: string
@@ -72,6 +74,7 @@ WITH last_group_dates AS (
 SELECT 
   parlementaire.id,
   parlementaire.nom,
+  parlementaire.nom_de_famille,
   parlementaire.nom_circo,
   parlementaire.fin_mandat,
   parlementaire.slug,
@@ -100,6 +103,7 @@ ORDER BY nom
     ({
       id,
       nom,
+      nom_de_famille,
       nom_circo,
       slug,
       fin_mandat,
@@ -117,6 +121,8 @@ ORDER BY nom
       return {
         id,
         nom,
+        nom_de_famille,
+        prenom: nom.replace(nom_de_famille, '').trim(),
         nom_circo,
         slug,
         mandatOngoing: fin_mandat === null,
