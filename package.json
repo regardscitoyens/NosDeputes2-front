@@ -17,7 +17,9 @@
   "dependencies": {
     "@types/lodash": "^4.14.186",
     "autoprefixer": "^10.4.12",
+    "kysely": "^0.22.0",
     "lodash": "^4.17.21",
+    "mysql2": "^2.3.3",
     "next": "12.3.1",
     "node-fetch": "^3.2.10",
     "postcss": "^8.4.17",

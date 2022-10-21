@@ -1,6 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
-import { DeputeItem } from '../../components/DeputeItem'
+import { DeputeItemOld } from '../../components/DeputeItemOld'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
@@ -67,7 +67,7 @@ export function SameFonctionBlock({
         {deputes.map((depute) => {
           return (
             <li key={depute.id} className="">
-              <DeputeItem {...{ depute }} withCirco />
+              <DeputeItemOld {...{ depute }} withCirco />
             </li>
           )
         })}

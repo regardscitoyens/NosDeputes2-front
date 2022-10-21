@@ -29,3 +29,11 @@ export function uniqBy<A, B>(arr: A[], fn: (a: A) => B): A[] {
 export function notNull<A>(value: A | null): value is A {
   return value !== null
 }
+
+export function readFromEnv(name: string): string {
+  const value = process.env[name]
+  if (value === undefined) {
+    throw new Error(`Missing env variable ${value}`)
+  }
+  return value
+}
