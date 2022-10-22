@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { NormalizedFonction } from '../logic/apiDeputes'
 import { getColorForGroupeAcronym } from '../logic/hardcodedData'
+import { NormalizedFonction } from '../repositories/deputesAndGroupesRepository';
 
 export function GroupeBadgeWithFonction({
   groupe,

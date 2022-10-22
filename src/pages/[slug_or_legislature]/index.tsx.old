@@ -1,11 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
-import {
-  Depute,
-  DeputeWithGroupe,
-  fetchDeputeBySlug,
-} from '../../logic/apiDeputes'
+
 import { addPrefixToDepartement } from '../../logic/hardcodedData'
 import { formatDate, getAge } from '../../logic/utils'
 
@@ -13,9 +9,9 @@ type Data = {
   depute: DeputeWithGroupe
 }
 
-export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
-  context,
-) => {
+export const getServerSideProps: GetServerSideProps<{
+  data: Data
+}> = async context => {
   const slug = context.query.slug_or_legislature as string
   const depute = await fetchDeputeBySlug(slug)
   if (!depute) {

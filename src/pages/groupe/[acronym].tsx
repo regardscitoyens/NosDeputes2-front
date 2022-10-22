@@ -1,26 +1,20 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { DeputeItemOld } from '../../components/DeputeItemOld'
-import { Todo } from '../../components/Todo'
 import groupBy from 'lodash/groupBy'
-import {
-  DeputeWithGroupe,
-  fetchDeputesWithGroupe,
-  NormalizedFonction,
-} from '../../logic/apiDeputes'
+import sortBy from 'lodash/sortBy'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { DeputeItem } from '../../components/DeputeItem'
 import {
   fetchDeputesOfGroupe,
   SimpleDepute,
 } from '../../logic/deputesAndGroupesService'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
+import { NormalizedFonction } from '../../repositories/deputesAndGroupesRepository'
 import {
-  buildGroupesData,
-  buildGroupesDataOld,
-  GroupeData,
-} from '../../logic/rearrangeData'
-import { DeputeItem } from '../../components/DeputeItem'
+  BasicGroupInfo,
+  queryGroupInfo,
+} from '../../repositories/groupeRepository'
 
 type Data = {
-  groupeData: GroupeData
+  groupeInfo: BasicGroupInfo
   deputes: {
     current: SimpleDepute[]
     former: SimpleDepute[]
@@ -32,55 +26,45 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async context => {
   const acronym = context.query.acronym as string
   const deputes = await fetchDeputesOfGroupe(acronym)
-  // const groupesData = buildGroupesData(deputes)
-  // if (groupesData.length !== 1) {
-  //   throw new Error(
-  //     `There should be exactly 1 group here, found ${groupesData.length}`,
-  //   )
-  // }
-  // const groupeData = groupesData[0]
-  // const anciens = await fetchAncienMembresOfGroupe(groupeData.id)
+  const groupeInfo = await queryGroupInfo(acronym)
   return {
     props: {
       data: {
         deputes,
-        groupeData: {} as any, // TODO make it work
+        groupeInfo,
       },
     },
   }
 }
 
-export function SameFonctionBlock({
+function GroupOfDeputes({
+  title,
   deputes,
-  fonction,
 }: {
-  deputes: DeputeWithGroupe[]
-  fonction: NormalizedFonction | 'anciens'
+  title: string
+  deputes: SimpleDepute[]
 }) {
-  const deputesFiltered = deputes.filter(_ => _.groupe?.fonction === fonction)
-  if (deputesFiltered.length === 0) return null
+  if (deputes.length === 0) return null
   return (
-    <>
-      <h2 className="text-2xl">
-        {fonction === 'president'
-          ? 'Président(e)'
-          : fonction === 'apparente'
-          ? 'Apparentés'
-          : fonction === 'membre'
-          ? 'Membres'
-          : 'Anciens membres'}
-      </h2>
+    <div>
+      <h2 className="text-2xl">{title}</h2>
       <ul className="list-none">
         {deputes.map(depute => {
           return (
-            <li key={depute.id} className="">
-              <DeputeItemOld {...{ depute }} withCirco />
+            <li key={depute.id}>
+              <DeputeItem {...{ depute }} withCirco />
             </li>
           )
         })}
       </ul>
-    </>
+    </div>
   )
+}
+
+const displayRankOfFonctions: Record<NormalizedFonction, number> = {
+  president: 1,
+  membre: 2,
+  apparente: 3,
 }
 
 export default function Page({
@@ -88,57 +72,46 @@ export default function Page({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const {
     deputes: { current, former },
-    groupeData,
+    groupeInfo: { nom, acronym },
   } = data
-  const currentByFunction = groupBy(current, _ => _.latestGroup.fonction)
+
+  const groupedByFonction = groupBy(current, _ => _.latestGroup.fonction) as {
+    [fonction in NormalizedFonction]: SimpleDepute[]
+  }
+  const entries = Object.entries(groupedByFonction) as [
+    NormalizedFonction,
+    SimpleDepute[],
+  ][]
+
+  const groupedByFonctionAndOrdered = sortBy(
+    entries,
+    _ => displayRankOfFonctions[_[0]],
+  )
   return (
     <div>
       <h1 className="text-center text-2xl">
-        Groupe {groupeData.nom}
+        Groupe {nom}
         <span
           className={`mx-2 inline-block py-1 px-2 text-white`}
-          style={{ background: getColorForGroupeAcronym(groupeData.acronym) }}
+          style={{ background: getColorForGroupeAcronym(acronym) }}
         >
-          {groupeData.acronym}
+          {acronym}
         </span>
+        ({current.length} députés)
       </h1>
-      {Object.entries(currentByFunction).map(([fonction, deputes]) => {
+      {groupedByFonctionAndOrdered.map(([fonction, deputes]) => {
         if (deputes.length === 0) return null
-        return (
-          <>
-            <h2 className="text-2xl">
-              {fonction === 'president'
-                ? 'Président(e)'
-                : fonction === 'apparente'
-                ? 'Apparentés'
-                : fonction === 'membre'
-                ? 'Membres'
-                : fonction}
-            </h2>
-            <ul className="list-none">
-              {deputes.map(depute => {
-                return (
-                  <li key={depute.id}>
-                    <DeputeItem {...{ depute }} withCirco />
-                  </li>
-                )
-              })}
-            </ul>
-          </>
-        )
+        const title =
+          fonction === 'president'
+            ? 'Président(e)'
+            : fonction === 'apparente'
+            ? 'Apparentés'
+            : fonction === 'membre'
+            ? 'Membres'
+            : fonction
+        return <GroupOfDeputes key={fonction} {...{ title, deputes }} />
       })}
-      <>
-        <h2 className="text-2xl">Anciens membres</h2>
-        <ul className="list-none">
-          {former.map(depute => {
-            return (
-              <li key={depute.id}>
-                <DeputeItem {...{ depute }} withCirco />
-              </li>
-            )
-          })}
-        </ul>
-      </>
+      <GroupOfDeputes title="Anciens membres" deputes={former} />
     </div>
   )
 }

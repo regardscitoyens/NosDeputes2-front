@@ -2,7 +2,6 @@ import { sql } from 'kysely'
 import sortBy from 'lodash/sortBy'
 import groupBy from 'lodash/groupBy'
 import maxBy from 'lodash/maxBy'
-import { NormalizedFonction } from './apiDeputes'
 import { db } from './db'
 
 export type DeputesWithAllGroups = {
@@ -23,6 +22,7 @@ export type DeputesWithAllGroups = {
     fin_fonction: Date | null
   }[]
 }
+export type NormalizedFonction = 'president' | 'membre' | 'apparente'
 
 // Big shared query to get deputes, groups, etc.
 // Includes all past groupes of each depute

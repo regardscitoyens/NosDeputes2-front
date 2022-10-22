@@ -1,9 +1,9 @@
 import { DeputeItem } from '../components/DeputeItem'
-import { NormalizedFonction } from './apiDeputes'
 import {
   DeputesWithAllGroups,
-  getAllDeputesAndGroupesFromCurrentLegislature,
-} from './repository'
+  getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
+  NormalizedFonction,
+} from '../repositories/deputesAndGroupesRepository'
 
 export type SimpleDepute = {
   id: number
@@ -36,7 +36,7 @@ function buildSimpleDepute(depute: DeputesWithAllGroups): SimpleDepute {
 }
 
 export async function fetchDeputesList(): Promise<SimpleDepute[]> {
-  const deputes = await getAllDeputesAndGroupesFromCurrentLegislature()
+  const deputes = await queryAllDeputesAndGroupesFromCurrentLegislature()
   return deputes.map(buildSimpleDepute)
 }
 
@@ -65,7 +65,7 @@ export async function fetchDeputesOfGroupe(acronym: string): Promise<{
   current: SimpleDepute[]
   former: SimpleDepute[]
 }> {
-  const deputes = (await getAllDeputesAndGroupesFromCurrentLegislature()).map(
+  const deputes = (await queryAllDeputesAndGroupesFromCurrentLegislature()).map(
     withoutMinorPassageInNonInscrit,
   )
   const current = deputes
@@ -76,6 +76,5 @@ export async function fetchDeputesOfGroupe(acronym: string): Promise<{
     .filter(_ => _.groupes.some(_ => _.acronym == acronym))
     .map(buildSimpleDepute)
     .filter(_ => _.latestGroup.acronym != acronym || !_.mandatOngoing)
-
   return { current, former }
 }
