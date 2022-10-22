@@ -16,7 +16,7 @@ export type DeputesWithAllGroups = {
   groupes: {
     id: number
     acronym: string
-    function: NormalizedFonction
+    fonction: NormalizedFonction
     nom: string
     slug: string
     debut_fonction: Date
@@ -144,7 +144,7 @@ ORDER BY parlementaire_id, organisme_id, debut_fonction, importance
           return {
             id: organisme_id,
             acronym: group_acronym,
-            function: normalizeFonctionFromDb(fonction),
+            fonction: normalizeFonctionFromDb(fonction),
             nom: group_nom,
             slug: group_slug,
             debut_fonction,

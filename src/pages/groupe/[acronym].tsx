@@ -1,39 +1,50 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItemOld } from '../../components/DeputeItemOld'
 import { Todo } from '../../components/Todo'
+import groupBy from 'lodash/groupBy'
 import {
   DeputeWithGroupe,
   fetchDeputesWithGroupe,
   NormalizedFonction,
 } from '../../logic/apiDeputes'
+import {
+  fetchDeputesOfGroupe,
+  SimpleDepute,
+} from '../../logic/deputesAndGroupesService'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
-import { buildGroupesDataOld, GroupeData } from '../../logic/rearrangeData'
+import {
+  buildGroupesData,
+  buildGroupesDataOld,
+  GroupeData,
+} from '../../logic/rearrangeData'
+import { DeputeItem } from '../../components/DeputeItem'
 
 type Data = {
   groupeData: GroupeData
-  deputes: DeputeWithGroupe[]
+  deputes: {
+    current: SimpleDepute[]
+    former: SimpleDepute[]
+  }
 }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
   const acronym = context.query.acronym as string
-  const deputes = (await fetchDeputesWithGroupe())
-    .sort((a, b) => a.nom.localeCompare(b.nom))
-    .filter(_ => _.groupe?.acronym === acronym)
-  const groupesData = buildGroupesDataOld(deputes)
-  if (groupesData.length !== 1) {
-    throw new Error(
-      `There should be exactly 1 group here, found ${groupesData.length}`,
-    )
-  }
-  const groupeData = groupesData[0]
+  const deputes = await fetchDeputesOfGroupe(acronym)
+  // const groupesData = buildGroupesData(deputes)
+  // if (groupesData.length !== 1) {
+  //   throw new Error(
+  //     `There should be exactly 1 group here, found ${groupesData.length}`,
+  //   )
+  // }
+  // const groupeData = groupesData[0]
   // const anciens = await fetchAncienMembresOfGroupe(groupeData.id)
   return {
     props: {
       data: {
         deputes,
-        groupeData,
+        groupeData: {} as any, // TODO make it work
       },
     },
   }
@@ -75,7 +86,11 @@ export function SameFonctionBlock({
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { deputes, groupeData } = data
+  const {
+    deputes: { current, former },
+    groupeData,
+  } = data
+  const currentByFunction = groupBy(current, _ => _.latestGroup.fonction)
   return (
     <div>
       <h1 className="text-center text-2xl">
@@ -87,11 +102,43 @@ export default function Page({
           {groupeData.acronym}
         </span>
       </h1>
-      <SameFonctionBlock fonction={'president'} {...{ deputes }} />
-      <SameFonctionBlock fonction={'membre'} {...{ deputes }} />
-      <SameFonctionBlock fonction={'apparente'} {...{ deputes }} />
-      <Todo>make anciens deputes work</Todo>
-      {/* <SameFonctionBlock fonction={'anciens'} deputes={anciens} /> */}
+      {Object.entries(currentByFunction).map(([fonction, deputes]) => {
+        if (deputes.length === 0) return null
+        return (
+          <>
+            <h2 className="text-2xl">
+              {fonction === 'president'
+                ? 'Président(e)'
+                : fonction === 'apparente'
+                ? 'Apparentés'
+                : fonction === 'membre'
+                ? 'Membres'
+                : fonction}
+            </h2>
+            <ul className="list-none">
+              {deputes.map(depute => {
+                return (
+                  <li key={depute.id}>
+                    <DeputeItem {...{ depute }} withCirco />
+                  </li>
+                )
+              })}
+            </ul>
+          </>
+        )
+      })}
+      <>
+        <h2 className="text-2xl">Anciens membres</h2>
+        <ul className="list-none">
+          {former.map(depute => {
+            return (
+              <li key={depute.id}>
+                <DeputeItem {...{ depute }} withCirco />
+              </li>
+            )
+          })}
+        </ul>
+      </>
     </div>
   )
 }
