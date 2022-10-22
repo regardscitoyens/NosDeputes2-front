@@ -3,6 +3,7 @@ import {
   getColorForGroupeAcronym,
   groupesDisplayOrder,
 } from '../logic/hardcodedData'
+import Link from 'next/link'
 
 type Props = {
   groupesData: GroupeData[]
@@ -11,7 +12,7 @@ type Props = {
 function Graphe({ groupesData }: { groupesData: GroupeData[] }) {
   return (
     <div className="flex h-10 flex-row shadow-lg">
-      {groupesData.map((g) => {
+      {groupesData.map(g => {
         return (
           <div
             key={g.id}
@@ -33,17 +34,21 @@ function Graphe({ groupesData }: { groupesData: GroupeData[] }) {
 function Legend({ groupesData }: { groupesData: GroupeData[] }) {
   return (
     <ul className="flex list-none flex-wrap items-baseline space-y-4 space-x-4">
-      {groupesData.map((g) => (
+      {groupesData.map(g => (
         <li key={g.id} className="block">
-          <span
-            className={`mx-2 inline-block  py-1 px-2 text-white`}
-            style={{
-              background: getColorForGroupeAcronym(g.acronym),
-            }}
-          >
-            {g?.acronym}
-          </span>
-          <span className="text-slate-400">{g.nom}</span>
+          <Link href={`/groupe/${g.acronym}`}>
+            <a>
+              <span
+                className={`mx-2 inline-block  py-1 px-2 text-white`}
+                style={{
+                  background: getColorForGroupeAcronym(g.acronym),
+                }}
+              >
+                {g?.acronym}
+              </span>
+              <span className="text-slate-400">{g.nom}</span>
+            </a>
+          </Link>
         </li>
       ))}
       <li></li>
