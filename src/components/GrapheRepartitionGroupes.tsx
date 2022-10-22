@@ -2,6 +2,7 @@ import { GroupeData } from '../logic/rearrangeData'
 import {
   getColorForGroupeAcronym,
   groupesDisplayOrder,
+  sortGroupes,
 } from '../logic/hardcodedData'
 import Link from 'next/link'
 
@@ -20,7 +21,7 @@ function Graphe({ groupesData }: { groupesData: GroupeData[] }) {
             style={{
               background: getColorForGroupeAcronym(g.acronym),
               width: `${g.deputesShareOfTotal * 100}%`,
-              order: groupesDisplayOrder.indexOf(g.acronym) ?? 0,
+              // order: groupesDisplayOrder.indexOf(g.acronym) ?? 0,
             }}
           >
             {g.acronym}

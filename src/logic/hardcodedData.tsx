@@ -1,3 +1,5 @@
+import sortBy from 'lodash/sortBy'
+
 // TODO voir comment gérer les différentes législatures
 export const CURRENT_LEGISLATURE = 16
 
@@ -15,6 +17,10 @@ export const groupesDisplayOrder: string[] = [
   'RN',
   'NI',
 ]
+
+export function sortGroupes<A extends { acronym: string }>(groupes: A[]): A[] {
+  return sortBy(groupes, _ => groupesDisplayOrder.indexOf(_.acronym))
+}
 
 // Colors copied from conf/app.yml in nosdeputes.fr
 const GroupeColorsByAcronyme: { [k: string]: string } = {

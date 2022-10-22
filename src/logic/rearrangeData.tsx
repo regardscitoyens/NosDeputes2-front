@@ -48,30 +48,6 @@ export function buildGroupesData(deputes: SimpleDepute[]): GroupeData[] {
   return finalGroupesData
 }
 
-export function buildGroupesDataOld(deputes: DeputeWithGroupe[]): GroupeData[] {
-  const groupesData: GroupeData[] = []
-  const groupesFromDeputes = deputes.map(_ => _.groupe).filter(notNull)
-  const nbDeputesWithGroupe = groupesFromDeputes.length
-  groupesFromDeputes.forEach(groupe => {
-    if (groupe) {
-      let groupeData = groupesData.find(_ => _.id === groupe.id)
-      if (!groupeData) {
-        groupeData = {
-          ...groupe,
-          deputesCount: 0,
-          deputesShareOfTotal: 0,
-        }
-        groupesData.push(groupeData)
-      }
-      groupeData.deputesCount++
-      groupeData.deputesShareOfTotal =
-        groupeData.deputesCount / nbDeputesWithGroupe
-    }
-  })
-
-  return groupesData
-}
-
 export type OrganismeData = {
   id: number
   nom: string

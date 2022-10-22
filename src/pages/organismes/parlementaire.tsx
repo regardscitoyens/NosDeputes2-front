@@ -1,7 +1,5 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { debugPort } from 'process'
 import { Todo } from '../../components/Todo'
-import { fetchDeputesWithOtherOrganismes } from '../../logic/apiDeputes'
 import {
   buildOrganismeData as buildOrganismesData,
   OrganismeData,
@@ -9,14 +7,14 @@ import {
 
 type Data = { organismes: OrganismeData[] }
 
-export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
-  context,
-) => {
+export const getServerSideProps: GetServerSideProps<{
+  data: Data
+}> = async context => {
   const deputes = await fetchDeputesWithOtherOrganismes()
   const organismes = buildOrganismesData(
-    deputes.map((d) => ({
+    deputes.map(d => ({
       ...d,
-      organismes: d.organismes.filter((_) => _.type === 'parlementaire'),
+      organismes: d.organismes.filter(_ => _.type === 'parlementaire'),
     })),
   )
   return {
@@ -44,7 +42,7 @@ export default function Page({
           </tr>
         </thead>
         <tbody>
-          {organismes.map((o) => (
+          {organismes.map(o => (
             <tr key={o.id}>
               <td>{o.nom}</td>
               <td>{o.deputesCount}</td>
