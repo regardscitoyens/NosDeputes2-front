@@ -4,7 +4,6 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { Todo } from '../../components/Todo'
-import { fetchDeputesWithGroupe } from '../../logic/apiDeputes'
 import {
   getAllDeputesFromCurrentLegislature,
   SimpleDepute,
@@ -21,15 +20,12 @@ type Data = {
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
-  const deputesOld = (await fetchDeputesWithGroupe()).sort((a, b) =>
-    a.nom.localeCompare(b.nom),
-  )
   const deputes = await getAllDeputesFromCurrentLegislature()
   return {
     props: {
       data: {
         deputes,
-        groupesData: buildGroupesData(deputesOld),
+        groupesData: buildGroupesData(deputes.filter(_ => _.mandatOngoing)),
       },
     },
   }

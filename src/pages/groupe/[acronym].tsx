@@ -10,7 +10,7 @@ import {
   fetchDeputesWithGroupe,
   NormalizedFonction,
 } from '../../logic/apiDeputes'
-import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
+import { buildGroupesDataOld, GroupeData } from '../../logic/rearrangeData'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
 
 type Data = {
@@ -18,14 +18,14 @@ type Data = {
   deputes: DeputeWithGroupe[]
 }
 
-export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
-  context,
-) => {
+export const getServerSideProps: GetServerSideProps<{
+  data: Data
+}> = async context => {
   const acronym = context.query.acronym as string
   const deputes = (await fetchDeputesWithGroupe())
     .sort((a, b) => a.nom.localeCompare(b.nom))
-    .filter((_) => _.groupe?.acronym === acronym)
-  const groupesData = buildGroupesData(deputes)
+    .filter(_ => _.groupe?.acronym === acronym)
+  const groupesData = buildGroupesDataOld(deputes)
   if (groupesData.length !== 1) {
     throw new Error(
       `There should be exactly 1 group here, found ${groupesData.length}`,
@@ -50,7 +50,7 @@ export function SameFonctionBlock({
   deputes: DeputeWithGroupe[]
   fonction: NormalizedFonction | 'anciens'
 }) {
-  const deputesFiltered = deputes.filter((_) => _.groupe?.fonction === fonction)
+  const deputesFiltered = deputes.filter(_ => _.groupe?.fonction === fonction)
   if (deputesFiltered.length === 0) return null
   return (
     <>
@@ -64,7 +64,7 @@ export function SameFonctionBlock({
           : 'Anciens membres'}
       </h2>
       <ul className="list-none">
-        {deputes.map((depute) => {
+        {deputes.map(depute => {
           return (
             <li key={depute.id} className="">
               <DeputeItemOld {...{ depute }} withCirco />
