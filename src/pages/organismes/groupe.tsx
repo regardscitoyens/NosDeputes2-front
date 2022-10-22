@@ -2,23 +2,23 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { fetchDeputesWithGroupe } from '../../logic/apiDeputes'
-import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
+import { buildGroupesDataOld, GroupeData } from '../../logic/rearrangeData'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
 
 type Data = {
   groupesData: GroupeData[]
 }
 
-export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
-  context,
-) => {
+export const getServerSideProps: GetServerSideProps<{
+  data: Data
+}> = async context => {
   const deputes = (await fetchDeputesWithGroupe()).sort((a, b) =>
     a.nom.localeCompare(b.nom),
   )
   return {
     props: {
       data: {
-        groupesData: buildGroupesData(deputes),
+        groupesData: buildGroupesDataOld(deputes),
       },
     },
   }
@@ -36,7 +36,7 @@ export default function Page({
           <th>Intitulé</th>
           <th>Membres</th>
         </tr>
-        {groupesData.map((g) => (
+        {groupesData.map(g => (
           <tr key={g.id}>
             <td className="py-2">
               <Link href={`/groupe/${g.acronym}`}>

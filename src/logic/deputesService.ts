@@ -13,8 +13,11 @@ export type SimpleDepute = {
   slug: string
   mandatOngoing: boolean
   latestGroup: {
+    id: number
     acronym: string
     function: NormalizedFonction
+    nom: string
+    slug: string
   } | null
 }
 
@@ -39,15 +42,6 @@ export async function getAllDeputesFromCurrentLegislature(): Promise<
 > {
   // We have to use a subquery because we want the last group for each depute
   // https://stackoverflow.com/questions/14770671/mysql-order-by-before-group-by
-  const selectLastGroup = `
-SELECT 
-  parlementaire_id,
-  MAX(debut_fonction) as debut_fonction
-FROM parlementaire_organisme
-LEFT JOIN organisme
-ON organisme.id = parlementaire_organisme.organisme_id
-WHERE type = 'groupe'
-GROUP BY parlementaire_id`
 
   type Row = {
     id: number
@@ -56,21 +50,37 @@ GROUP BY parlementaire_id`
     nom_circo: string
     fin_mandat: Date
     slug: string
-    parlementaire_groupe_acronyme: string | null
+    acronym: string | null
     fonction: string | null
     importance: number
+    organisme_id: number | null
+    nom_group: string | null
+    slug_group: string | null
   }
   const query = sql<Row>`
-WITH last_group_dates AS (
+WITH
+parlementaire_groupe AS (
+  SELECT 
+    organisme_id,
+    parlementaire_id,
+    parlementaire_groupe_acronyme AS acronym,
+    fonction,
+    importance,
+    debut_fonction,
+    slug,
+    nom
+  FROM parlementaire_organisme
+  INNER JOIN organisme
+  ON parlementaire_organisme.organisme_id = organisme.id
+  WHERE type = 'groupe'	
+), 
+last_group_dates AS (
   SELECT 
     parlementaire_id,
     MAX(debut_fonction) as debut_fonction
-  FROM parlementaire_organisme
-  LEFT JOIN organisme
-  ON organisme.id = parlementaire_organisme.organisme_id
-  WHERE type = 'groupe'
+  FROM parlementaire_groupe
   GROUP BY parlementaire_id
-)    
+)
 SELECT 
   parlementaire.id,
   parlementaire.nom,
@@ -78,17 +88,18 @@ SELECT
   parlementaire.nom_circo,
   parlementaire.fin_mandat,
   parlementaire.slug,
-  parlementaire_organisme.parlementaire_groupe_acronyme,
-  parlementaire_organisme.fonction,
-  parlementaire_organisme.importance
+  parlementaire_groupe.acronym,
+  parlementaire_groupe.fonction,
+  parlementaire_groupe.importance,
+  parlementaire_groupe.organisme_id,
+  parlementaire_groupe.nom as nom_group,
+  parlementaire_groupe.slug as slug_group
 FROM parlementaire
 LEFT JOIN last_group_dates
 ON parlementaire.id = last_group_dates.parlementaire_id
-LEFT JOIN parlementaire_organisme
-ON parlementaire_organisme.parlementaire_id = parlementaire.id
-AND parlementaire_organisme.debut_fonction = last_group_dates.debut_fonction
-LEFT JOIN organisme
-ON organisme.id = parlementaire_organisme.organisme_id    
+LEFT JOIN parlementaire_groupe
+ON parlementaire_groupe.parlementaire_id = parlementaire.id
+AND parlementaire_groupe.debut_fonction = last_group_dates.debut_fonction
 ORDER BY nom
 `
 
@@ -107,15 +118,21 @@ ORDER BY nom
       nom_circo,
       slug,
       fin_mandat,
-      parlementaire_groupe_acronyme,
+      acronym,
       fonction,
       importance,
+      organisme_id,
+      nom_group,
+      slug_group,
     }) => {
       const latestGroup =
-        parlementaire_groupe_acronyme && fonction
+        acronym && fonction && organisme_id !== null && nom_group && slug_group
           ? {
-              acronym: parlementaire_groupe_acronyme,
+              acronym,
               function: normalizeFonctionFromDb(fonction),
+              id: organisme_id,
+              nom: nom_group,
+              slug: slug_group,
             }
           : null
       return {
