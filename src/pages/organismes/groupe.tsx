@@ -1,12 +1,12 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
-import { fetchGroupList } from '../../logic/deputesAndGroupesService'
+import { fetchGroupList } from '../../services/deputesAndGroupesService'
 import {
   getColorForGroupeAcronym,
   sortGroupes,
-} from '../../logic/hardcodedData'
-import { GroupeData } from '../../logic/rearrangeData'
+} from '../../services/hardcodedData'
+import { GroupeData } from '../../services/rearrangeData'
 
 type Data = {
   groupes: GroupeData[]

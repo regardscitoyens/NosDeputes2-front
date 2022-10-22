@@ -1,3 +1,5 @@
+import groupBy from 'lodash/groupBy'
+
 export function getAge(date_naissance: string) {
   const dNaissance = new Date(date_naissance)
   const ageDifMs = Date.now() - dNaissance.getTime()
@@ -16,7 +18,7 @@ export function formatDate(dateIsoString: string) {
 
 export function uniqBy<A, B>(arr: A[], fn: (a: A) => B): A[] {
   const foundAlready: B[] = []
-  return arr.filter((a) => {
+  return arr.filter(a => {
     const b = fn(a)
     if (foundAlready.includes(b)) {
       return false
@@ -36,4 +38,9 @@ export function readFromEnv(name: string): string {
     throw new Error(`Missing env variable ${value}`)
   }
   return value
+}
+
+// partition an array into multiple chunks based on a predicate
+export function chunkBy<A, B>(arr: A[], fn: (a: A) => B): A[][] {
+  return Object.values(groupBy(arr, fn))
 }

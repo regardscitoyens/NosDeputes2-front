@@ -1,9 +1,9 @@
-import { GroupeData } from '../logic/rearrangeData'
+import { GroupeData } from '../services/rearrangeData'
 import {
   getColorForGroupeAcronym,
   groupesDisplayOrder,
   sortGroupes,
-} from '../logic/hardcodedData'
+} from '../services/hardcodedData'
 import Link from 'next/link'
 
 type Props = {

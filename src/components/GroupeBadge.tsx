@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { getColorForGroupeAcronym } from '../logic/hardcodedData'
-import { NormalizedFonction } from '../repositories/deputesAndGroupesRepository';
+import { getColorForGroupeAcronym } from '../services/hardcodedData'
+import { FonctionInGroupe } from '../repositories/deputesAndGroupesRepository'
 
 export function GroupeBadgeWithFonction({
   groupe,
 }: {
-  groupe: { acronym: string; function: NormalizedFonction } | null
+  groupe: { acronym: string; function: FonctionInGroupe } | null
 }) {
   if (groupe)
     return (
@@ -28,7 +28,7 @@ function BaseGroupeBadge({
   fonction,
 }: {
   acronym: string
-  fonction?: NormalizedFonction
+  fonction?: FonctionInGroupe
 }) {
   return (
     <Link href={`/groupe/${acronym}`}>

@@ -7,10 +7,10 @@ import { Todo } from '../../components/Todo'
 import {
   SimpleDepute,
   fetchDeputesList,
-} from '../../logic/deputesAndGroupesService'
+} from '../../services/deputesAndGroupesService'
 
-import { CURRENT_LEGISLATURE, sortGroupes } from '../../logic/hardcodedData'
-import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
+import { CURRENT_LEGISLATURE, sortGroupes } from '../../services/hardcodedData'
+import { buildGroupesData, GroupeData } from '../../services/rearrangeData'
 
 type Data = {
   deputes: SimpleDepute[]

@@ -1,6 +1,6 @@
 import { Generated, Kysely, MysqlDialect } from 'kysely'
 import * as mysql from 'mysql2'
-import { readFromEnv } from '../logic/utils'
+import { readFromEnv } from '../services/utils'
 
 export type DbConnectionPool = Kysely<NosDeputesDatabase>
 

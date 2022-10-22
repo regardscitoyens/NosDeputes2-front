@@ -5,9 +5,9 @@ import { DeputeItem } from '../../components/DeputeItem'
 import {
   fetchDeputesOfGroupe,
   SimpleDepute,
-} from '../../logic/deputesAndGroupesService'
-import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
-import { NormalizedFonction } from '../../repositories/deputesAndGroupesRepository'
+} from '../../services/deputesAndGroupesService'
+import { getColorForGroupeAcronym } from '../../services/hardcodedData'
+import { FonctionInGroupe } from '../../repositories/deputesAndGroupesRepository'
 import {
   BasicGroupInfo,
   queryGroupInfo,
@@ -61,7 +61,7 @@ function GroupOfDeputes({
   )
 }
 
-const displayRankOfFonctions: Record<NormalizedFonction, number> = {
+const displayRankOfFonctions: Record<FonctionInGroupe, number> = {
   president: 1,
   membre: 2,
   apparente: 3,
@@ -76,10 +76,10 @@ export default function Page({
   } = data
 
   const groupedByFonction = groupBy(current, _ => _.latestGroup.fonction) as {
-    [fonction in NormalizedFonction]: SimpleDepute[]
+    [fonction in FonctionInGroupe]: SimpleDepute[]
   }
   const entries = Object.entries(groupedByFonction) as [
-    NormalizedFonction,
+    FonctionInGroupe,
     SimpleDepute[],
   ][]
 

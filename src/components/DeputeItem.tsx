@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { SimpleDepute } from '../logic/deputesService'
+import { SimpleDepute } from '../services/deputesService'
 import { GroupeBadgeWithFonction } from './GroupeBadge'
 
 type Props = {
