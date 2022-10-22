@@ -1,31 +1,49 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
+import {
+  fetchDeputesList,
+  SimpleDepute,
+} from '../../logic/deputesAndGroupesService'
 
 import { addPrefixToDepartement } from '../../logic/hardcodedData'
 import { formatDate, getAge } from '../../logic/utils'
+import {
+  BasicDeputeInfo,
+  queryDeputeInfo,
+} from '../../repositories/deputeRepository'
 
 type Data = {
-  depute: DeputeWithGroupe
+  depute: SimpleDepute & BasicDeputeInfo
 }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
   const slug = context.query.slug_or_legislature as string
-  const depute = await fetchDeputeBySlug(slug)
-  if (!depute) {
+
+  const basicDeputeInfo = await queryDeputeInfo(slug)
+  // we query everything, not ideal but acceptable for now
+  const deputeWithLatestGroup = (await fetchDeputesList()).find(
+    _ => _.slug === slug,
+  )
+  if (!basicDeputeInfo || !deputeWithLatestGroup) {
     return {
       notFound: true,
     }
   }
-  const data = { depute }
+  const data = {
+    depute: {
+      ...basicDeputeInfo,
+      ...deputeWithLatestGroup,
+    },
+  }
   return {
     props: { data },
   }
 }
 
-function InformationsBlock({ depute }: { depute: DeputeWithGroupe }) {
+function InformationsBlock({ depute }: Data) {
   const age = getAge(depute.date_naissance)
   const dateNaissanceFormatted = formatDate(depute.date_naissance)
   const mandatStartFormatted = formatDate(depute.debut_mandat)
@@ -47,7 +65,7 @@ function InformationsBlock({ depute }: { depute: DeputeWithGroupe }) {
           <li>Profession : {depute.profession ?? 'Non renseignée'}</li>
           <li>
             Groupe
-            <GroupeBadge groupe={depute.groupe} />
+            <GroupeBadge groupe={depute.latestGroup} />
           </li>
         </ul>
         <Todo inline>liens twitter wikipedia etc.</Todo>
@@ -68,7 +86,7 @@ export default function Page({
       <h1 className="col-span-full  text-center text-2xl">
         <span className="font-bold">
           {depute.nom}
-          <GroupeBadge groupe={depute.groupe} />
+          <GroupeBadge groupe={depute.latestGroup} />
         </span>
         député de la {depute.num_circo}
         <sup>
