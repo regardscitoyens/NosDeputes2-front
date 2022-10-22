@@ -1,17 +1,13 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import Link from 'next/link'
 import { DeputeItemOld } from '../../components/DeputeItemOld'
-import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
-  Depute,
   DeputeWithGroupe,
-  fetchAncienMembresOfGroupe,
   fetchDeputesWithGroupe,
   NormalizedFonction,
 } from '../../logic/apiDeputes'
-import { buildGroupesDataOld, GroupeData } from '../../logic/rearrangeData'
 import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
+import { buildGroupesDataOld, GroupeData } from '../../logic/rearrangeData'
 
 type Data = {
   groupeData: GroupeData
