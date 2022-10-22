@@ -8,13 +8,24 @@ type Props = {
 }
 
 export function DeputeItem({
-  depute: { slug, latestGroup, prenom, nom_de_famille, nom_circo },
+  depute: {
+    slug,
+    latestGroup,
+    prenom,
+    nom_de_famille,
+    nom_circo,
+    mandatOngoing,
+  },
   withCirco,
 }: Props) {
+  const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
+  const textClasses = mandatOngoing
+    ? 'font-semibold'
+    : 'font-normal text-slate-500 line-through'
   return (
-    <div className="my-2 rounded bg-slate-100 p-2 drop-shadow">
+    <div className={`my-2 rounded p-2 drop-shadow ${bg}`}>
       <Link href={`/${slug}`}>
-        <a className="font-semibold">
+        <a className={textClasses}>
           {nom_de_famille}, {prenom}
         </a>
       </Link>
