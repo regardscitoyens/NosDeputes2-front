@@ -1,24 +1,24 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
-import { fetchDeputesWithGroupe } from '../../logic/apiDeputes'
-import { buildGroupesDataOld, GroupeData } from '../../logic/rearrangeData'
-import { getColorForGroupeAcronym } from '../../logic/hardcodedData'
+import { fetchGroupList } from '../../logic/deputesAndGroupesService'
+import {
+  getColorForGroupeAcronym,
+  sortGroupes,
+} from '../../logic/hardcodedData'
+import { GroupeData } from '../../logic/rearrangeData'
 
 type Data = {
-  groupesData: GroupeData[]
+  groupes: GroupeData[]
 }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
-  const deputes = (await fetchDeputesWithGroupe()).sort((a, b) =>
-    a.nom.localeCompare(b.nom),
-  )
   return {
     props: {
       data: {
-        groupesData: buildGroupesDataOld(deputes),
+        groupes: sortGroupes(await fetchGroupList()),
       },
     },
   }
@@ -27,7 +27,7 @@ export const getServerSideProps: GetServerSideProps<{
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { groupesData } = data
+  const { groupes } = data
   return (
     <div className="space-y-4">
       <h1 className="text-center text-2xl">List des groupes politiques</h1>
@@ -36,7 +36,7 @@ export default function Page({
           <th>Intitulé</th>
           <th>Membres</th>
         </tr>
-        {groupesData.map(g => (
+        {groupes.map(g => (
           <tr key={g.id}>
             <td className="py-2">
               <Link href={`/groupe/${g.acronym}`}>
@@ -55,7 +55,7 @@ export default function Page({
           </tr>
         ))}
       </table>
-      <GrapheRepartitionGroupes {...{ groupesData }} />
+      <GrapheRepartitionGroupes groupesData={groupes} />
     </div>
   )
 }

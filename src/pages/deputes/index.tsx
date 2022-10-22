@@ -9,7 +9,7 @@ import {
   fetchDeputesList,
 } from '../../logic/deputesAndGroupesService'
 
-import { CURRENT_LEGISLATURE } from '../../logic/hardcodedData'
+import { CURRENT_LEGISLATURE, sortGroupes } from '../../logic/hardcodedData'
 import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
 
 type Data = {
@@ -25,7 +25,9 @@ export const getServerSideProps: GetServerSideProps<{
     props: {
       data: {
         deputes,
-        groupesData: buildGroupesData(deputes.filter(_ => _.mandatOngoing)),
+        groupesData: sortGroupes(
+          buildGroupesData(deputes.filter(_ => _.mandatOngoing)),
+        ),
       },
     },
   }
