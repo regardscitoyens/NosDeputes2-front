@@ -69,7 +69,6 @@ export default function Page({
         ([letter, deputes]) => {
           const deputesCols = prepare3Cols(
             sortBy(deputes, _ => _.nom_de_famille),
-            3,
           )
           return (
             <div key={letter}>
@@ -77,7 +76,7 @@ export default function Page({
               <div className="flex">
                 {deputesCols.map((deputes, idx) => {
                   return (
-                    <ul key={idx} className=" list-none">
+                    <ul key={idx} className="grow-1 w-1/3">
                       {sortBy(deputes, _ => _.nom_de_famille).map(depute => {
                         return (
                           <li key={depute.id}>

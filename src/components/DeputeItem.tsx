@@ -12,7 +12,7 @@ export function DeputeItem({
   withCirco,
 }: Props) {
   return (
-    <div className="my-2 w-fit rounded bg-slate-100 p-2 drop-shadow">
+    <div className="my-2 rounded bg-slate-100 p-2 drop-shadow">
       <Link href={`/${slug}`}>
         <a className="font-semibold">
           {nom_de_famille}, {prenom}
