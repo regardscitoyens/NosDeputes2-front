@@ -2,7 +2,7 @@ import groupBy from 'lodash/groupBy'
 import {
   DeputesWithAllGroups,
   getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
-  NormalizedFonction,
+  FonctionInGroupe,
 } from '../repositories/deputesAndGroupesRepository'
 import { GroupeData } from './rearrangeData'
 
@@ -17,7 +17,7 @@ export type SimpleDepute = {
   latestGroup: {
     id: number
     acronym: string
-    fonction: NormalizedFonction
+    fonction: FonctionInGroupe
     nom: string
     slug: string
   }

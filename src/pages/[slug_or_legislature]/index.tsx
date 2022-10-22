@@ -4,10 +4,10 @@ import { Todo } from '../../components/Todo'
 import {
   fetchDeputesList,
   SimpleDepute,
-} from '../../logic/deputesAndGroupesService'
+} from '../../services/deputesAndGroupesService'
 
-import { addPrefixToDepartement } from '../../logic/hardcodedData'
-import { formatDate, getAge } from '../../logic/utils'
+import { addPrefixToDepartement } from '../../services/hardcodedData'
+import { formatDate, getAge } from '../../services/utils'
 import {
   BasicDeputeInfo,
   queryDeputeInfo,

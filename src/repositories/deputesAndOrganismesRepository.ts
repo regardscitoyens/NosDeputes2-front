@@ -2,7 +2,7 @@ import sortBy from 'lodash/sortBy'
 import { chunkBy } from '../services/utils'
 import { db } from './db'
 
-export type DeputesWithAllGroups = {
+export type DeputesWithAllOrganisms = {
   id: number
   slug: string
   nom: string
@@ -10,23 +10,19 @@ export type DeputesWithAllGroups = {
   prenom: string
   nom_circo: string
   mandatOngoing: boolean
-  groupes: {
+  organisms: {
     id: number
-    acronym: string
-    fonction: FonctionInGroupe
+    fonction: FonctionInOrganisme
     nom: string
     slug: string
     debut_fonction: Date
-    fin_fonction: Date | null
   }[]
 }
-export type FonctionInGroupe = 'president' | 'membre' | 'apparente'
 
-// Big shared query to get deputes, groups, etc.
-// Includes all past groupes of each depute
-export async function getAllDeputesAndGroupesFromCurrentLegislature(): Promise<
-  DeputesWithAllGroups[]
-> {
+// Big shared query to get deputes, their current organisms, etc.
+export async function getAllDeputesAndCurrentOrganismesFromCurrentLegislature(
+  organismeType: 'extra' | 'parlementaire',
+): Promise<DeputesWithAllOrganisms[]> {
   // this query produces duplicates because a parlementaire has had multiple groupes over time
   // We will group/reorganize the data in JS to clean it
   const rows = await db
@@ -41,7 +37,11 @@ export async function getAllDeputesAndGroupesFromCurrentLegislature(): Promise<
       'organisme.id',
       'parlementaire_organisme.organisme_id',
     )
-    .where('organisme.type', '=', 'groupe')
+    .where('organisme.type', '=', organismeType)
+    .where('fin_fonction', '!=', null)
+    // on exclut le gouvernement, pas intéressant
+    // et ça étendrait considérablement le nombre de fonctions possibles
+    .where('organisme.slug', '!=', 'gouvernement')
     .select('parlementaire_id')
     .select('parlementaire.slug as parlementaire_slug')
     .select('parlementaire.nom as parlementaire_nom')
@@ -49,19 +49,17 @@ export async function getAllDeputesAndGroupesFromCurrentLegislature(): Promise<
     .select('parlementaire.nom_circo as parlementaire_nom_circo')
     .select('parlementaire.fin_mandat as parlementaire_fin_mandat')
     .select('organisme_id')
-    .select('parlementaire_groupe_acronyme as group_acronym')
     .select('organisme.slug as group_slug')
     .select('organisme.nom as group_nom')
     .select('fonction')
     .select('debut_fonction')
-    .select('fin_fonction')
     .execute()
 
   const rowsByParlementaire = chunkBy(rows, _ => _.parlementaire_id)
-  const deputesWithAllGroups = rowsByParlementaire.map(rows => {
-    const rowsForEachGroupAndDate = chunkBy(
+  const deputesWithAllOrganisms = rowsByParlementaire.map(rows => {
+    const rowsForEachOrganismsAndDate = chunkBy(
       rows,
-      _ => _.group_acronym + _.debut_fonction,
+      _ => _.organisme_id.toString() + ' ' + _.debut_fonction,
     ).map(_ => _[0])
     const {
       parlementaire_id,
@@ -81,46 +79,63 @@ export async function getAllDeputesAndGroupesFromCurrentLegislature(): Promise<
         .trim(),
       nom_circo: parlementaire_nom_circo,
       mandatOngoing: parlementaire_fin_mandat === null,
-      groupes: sortBy(
-        rowsForEachGroupAndDate.map(row => {
+      organisms: sortBy(
+        rowsForEachOrganismsAndDate.map(row => {
           const {
             organisme_id,
-            group_acronym,
             group_slug,
             group_nom,
             fonction,
             debut_fonction,
-            fin_fonction,
           } = row
           return {
             id: organisme_id,
-            acronym: group_acronym,
-            fonction: normalizeFonctionInGroup(fonction),
+            fonction: normalizeFonctionInOrganisme(fonction),
             nom: group_nom,
             slug: group_slug,
             debut_fonction,
-            fin_fonction,
           }
         }),
         _ => _.debut_fonction,
       ),
     }
   })
-  return deputesWithAllGroups
+  return deputesWithAllOrganisms
 }
 
-function normalizeFonctionInGroup(f: string): FonctionInGroupe {
-  switch (f) {
-    case 'présidente':
-    case 'président':
-      return 'president'
-    case 'apparentée':
-    case 'apparenté':
-      return 'apparente'
-    case 'membre':
-      return 'membre'
-    default:
-      console.log('Warning: unknown fonction in groupe', f)
-      return 'membre'
+const fonctionsWithFeminineVersion = {
+  membre: null,
+  'membre avec voix délibérative': null,
+  'membre avec voix consultative': null,
+  apparenté: 'apparentée',
+  président: 'présidente',
+  questeur: 'questeure',
+  'vice-président': 'vice-présidente',
+  secrétaire: null,
+  'rapporteur général': 'rapporteure générale',
+  'membre de droit': null,
+  'membre suppléant': 'membre suppléante',
+  'membre titulaire': null,
+  rapporteur: 'rapporteure',
+  'co-rapporteur': 'co-rapporteure',
+  'président délégué': 'présidente délégué',
+  'membre nommé': 'membre nommée',
+  'deuxième vice-président': 'deuxième vice-présidente',
+  'président de droit': 'présidente de droit',
+  'membre du bureau': null,
+  'chargé de mission': 'chargée de mission',
+  'co-président': 'co-présidente',
+} as const
+
+type FonctionInOrganisme = keyof typeof fonctionsWithFeminineVersion
+
+function normalizeFonctionInOrganisme(f: string): FonctionInOrganisme {
+  const entry = Object.entries(fonctionsWithFeminineVersion).find(([k, v]) => {
+    return f === k || f === v
+  }) as [FonctionInOrganisme, string | null] | undefined
+  if (entry) {
+    return entry[0]
   }
+  console.log('Warning: unknown fonction', f)
+  return 'membre'
 }

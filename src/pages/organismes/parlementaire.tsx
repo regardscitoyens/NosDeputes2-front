@@ -3,7 +3,7 @@ import { Todo } from '../../components/Todo'
 import {
   buildOrganismeData as buildOrganismesData,
   OrganismeData,
-} from '../../logic/rearrangeData'
+} from '../../services/rearrangeData'
 
 type Data = { organismes: OrganismeData[] }
 
