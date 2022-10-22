@@ -5,10 +5,9 @@ import { DeputeItem } from '../../components/DeputeItem'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { Todo } from '../../components/Todo'
 import {
-  getAllDeputesFromCurrentLegislature,
   SimpleDepute,
-} from '../../logic/deputesService'
-import { getAllDeputesFromCurrentLegislature2 } from '../../logic/newDeputesAndGroupesService'
+  fetchDeputesList,
+} from '../../logic/deputesAndGroupesService'
 
 import { CURRENT_LEGISLATURE } from '../../logic/hardcodedData'
 import { buildGroupesData, GroupeData } from '../../logic/rearrangeData'
@@ -21,7 +20,7 @@ type Data = {
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
-  const deputes = await getAllDeputesFromCurrentLegislature2()
+  const deputes = await fetchDeputesList()
   return {
     props: {
       data: {
