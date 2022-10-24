@@ -31,27 +31,6 @@ export type OrganismeWithCounts = {
 
 export type OrganismeType = 'extra' | 'parlementaire'
 
-function joinParlementaireToOrganisme() {
-  return (
-    db
-      .selectFrom('parlementaire')
-      .innerJoin(
-        'parlementaire_organisme',
-        'parlementaire.id',
-        'parlementaire_organisme.parlementaire_id',
-      )
-      // right join car on veut garder les organismes avec 0 parlementaires
-      .rightJoin(
-        'organisme',
-        'organisme.id',
-        'parlementaire_organisme.organisme_id',
-      )
-      // on exclut le gouvernement, pas intéressant
-      // et utilise plein de 'fonctions' spécifiques
-      .where('organisme.slug', '!=', 'gouvernement')
-  )
-}
-
 export async function queryOrganismsList(
   type: OrganismeType,
 ): Promise<OrganismeWithCounts[]> {
@@ -97,6 +76,7 @@ export async function queryOrganismsList(
     .where('organisme.slug', '!=', 'gouvernement')
     .where('organisme.type', '=', type)
     .groupBy('organisme.id')
+    .orderBy('created_at')
     .select('organisme.id as id')
     .select('organisme.slug as slug')
     .select('organisme.nom as nom')
