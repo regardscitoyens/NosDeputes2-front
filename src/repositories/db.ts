@@ -21,6 +21,7 @@ interface NosDeputesDatabase {
   parlementaire: ParlementaireTable
   organisme: OrganismeTable
   parlementaire_organisme: ParlementaireOrganismeTable
+  seance: SeanceTable
 }
 
 interface ParlementaireTable {
@@ -70,6 +71,21 @@ interface ParlementaireOrganismeTable {
   importance: number
   debut_fonction: Date
   fin_fonction: Date | null
+  created_at: Date
+  updated_at: Date
+}
+
+interface SeanceTable {
+  id: Generated<number>
+  nb_commentaires: number
+  date: Date
+  numero_semaine: number
+  annee: number
+  type: 'hemicycle' | 'commission'
+  moment: string
+  organisme_id: number
+  tagged: 1 | null
+  session: string
   created_at: Date
   updated_at: Date
 }

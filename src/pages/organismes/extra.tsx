@@ -1,16 +1,16 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Todo } from '../../components/Todo'
 import {
-  OrganismeWithDeputesCount,
-  queryOrganismsWithDeputesCount,
+  OrganismeWithCounts,
+  queryOrganismsList,
 } from '../../repositories/deputesAndOrganismesRepository'
 
-type Data = { organismes: OrganismeWithDeputesCount[] }
+type Data = { organismes: OrganismeWithCounts[] }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
-  const organismes = await queryOrganismsWithDeputesCount('extra')
+  const organismes = await queryOrganismsList('extra')
   return {
     props: {
       data: { organismes },
