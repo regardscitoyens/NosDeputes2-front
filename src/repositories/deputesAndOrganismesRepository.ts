@@ -1,7 +1,4 @@
 import { sql } from 'kysely'
-import _ from 'lodash'
-import sortBy from 'lodash/sortBy'
-import { chunkBy } from '../services/utils'
 import { db } from './db'
 
 export type DeputesWithAllOrganisms = {
@@ -94,88 +91,54 @@ export async function queryOrganismsList(
   return rows
 }
 
-// Big shared query to get deputes, their current organisms, etc.
-export async function getAllDeputesAndCurrentOrganismesFromCurrentLegislature(
-  organismeType: 'extra' | 'parlementaire',
-): Promise<DeputesWithAllOrganisms[]> {
-  // this query produces duplicates because a parlementaire has had multiple groupes over time
-  // We will group/reorganize the data in JS to clean it
+export type OrganismeBasicData = {
+  id: number
+  nom: string
+}
+
+export async function queryOrganismeBasicData(
+  slug: string,
+): Promise<OrganismeBasicData | null> {
+  const res = await db
+    .selectFrom('organisme')
+    .where('slug', '=', slug)
+    .select('id')
+    .select('nom')
+    .executeTakeFirst()
+  return res ?? null
+}
+
+export async function queryDeputesForOrganisme(slug: string): Promise<void> {
   const rows = await db
-    .selectFrom('parlementaire')
-    .innerJoin(
+    .selectFrom('organisme')
+    .leftJoin(
       'parlementaire_organisme',
-      'parlementaire.id',
-      'parlementaire_organisme.parlementaire_id',
-    )
-    .innerJoin(
-      'organisme',
       'organisme.id',
       'parlementaire_organisme.organisme_id',
     )
-    .where('organisme.type', '=', organismeType)
-    .where('fin_fonction', '!=', null)
-    // on exclut le gouvernement, pas intéressant
-    // et ça étendrait considérablement le nombre de fonctions possibles
-    .where('organisme.slug', '!=', 'gouvernement')
-    .select('parlementaire_id')
-    .select('parlementaire.slug as parlementaire_slug')
-    .select('parlementaire.nom as parlementaire_nom')
-    .select('parlementaire.nom_de_famille as parlementaire_nom_de_famille')
-    .select('parlementaire.nom_circo as parlementaire_nom_circo')
-    .select('parlementaire.fin_mandat as parlementaire_fin_mandat')
-    .select('organisme_id')
-    .select('organisme.slug as group_slug')
-    .select('organisme.nom as group_nom')
-    .select('fonction')
-    .select('debut_fonction')
-    .execute()
-
-  const rowsByParlementaire = chunkBy(rows, _ => _.parlementaire_id)
-  const deputesWithAllOrganisms = rowsByParlementaire.map(rows => {
-    const rowsForEachOrganismsAndDate = chunkBy(
-      rows,
-      _ => _.organisme_id.toString() + ' ' + _.debut_fonction,
-    ).map(_ => _[0])
-    const {
-      parlementaire_id,
-      parlementaire_slug,
-      parlementaire_nom,
-      parlementaire_nom_de_famille,
-      parlementaire_nom_circo,
-      parlementaire_fin_mandat,
-    } = rows[0]
-    return {
-      id: parlementaire_id,
-      slug: parlementaire_slug,
-      nom: parlementaire_nom,
-      nom_de_famille: parlementaire_nom_de_famille,
-      prenom: parlementaire_nom
-        .replace(parlementaire_nom_de_famille, '')
-        .trim(),
-      nom_circo: parlementaire_nom_circo,
-      mandatOngoing: parlementaire_fin_mandat === null,
-      organisms: sortBy(
-        rowsForEachOrganismsAndDate.map(row => {
-          const {
-            organisme_id,
-            group_slug,
-            group_nom,
-            fonction,
-            debut_fonction,
-          } = row
-          return {
-            id: organisme_id,
-            fonction: normalizeFonctionInOrganisme(fonction),
-            nom: group_nom,
-            slug: group_slug,
-            debut_fonction,
-          }
-        }),
-        _ => _.debut_fonction,
+    .leftJoin(
+      'parlementaire',
+      'parlementaire.id',
+      'parlementaire_organisme.parlementaire_id',
+    )
+    .where('organisme.slug', '=', slug)
+    .groupBy('parlementaire.id')
+    .select('parlementaire.id as id')
+    .select('parlementaire.slug as slug')
+    .select('parlementaire.nom as nom')
+    .select('parlementaire_organisme.fonction as fonction')
+    .select(
+      sql<0 | 1>`MAX(parlementaire_organisme.fin_mandat IS NULL)`.as(
+        'has_null_fin_mandat',
       ),
-    }
-  })
-  return deputesWithAllOrganisms
+    )
+    .execute()
+  // TODO en fait c'est pas bon, on pas les infos de groupe pour ces deputes... faire une second query ? => yes faire une query générique "get latest group for a bunch of depute ids"
+  // TODO traduire la "fonction"
+  return {
+    current: rows.filter(_ => _.has_null_fin_mandat === 0),
+    former: rows.filter(_ => _.has_null_fin_mandat === 1),
+  }
 }
 
 const fonctionsWithFeminineVersion = {
