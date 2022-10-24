@@ -19,6 +19,50 @@ export type DeputesWithAllOrganisms = {
   }[]
 }
 
+export type OrganismeWithDeputesCount = {
+  id: number
+  nom: string
+  slug: string
+  deputesCount: number
+}
+
+function joinParlementaire2Organisme() {
+  return (
+    db
+      .selectFrom('parlementaire')
+      .innerJoin(
+        'parlementaire_organisme',
+        'parlementaire.id',
+        'parlementaire_organisme.parlementaire_id',
+      )
+      .innerJoin(
+        'organisme',
+        'organisme.id',
+        'parlementaire_organisme.organisme_id',
+      )
+      // on exclut le gouvernement, pas intéressant
+      // et utilise plein de 'fonctions' spécifiques
+      .where('organisme.slug', '!=', 'gouvernement')
+  )
+}
+
+export async function queryOrganismsWithDeputesCount(
+  organismeType: 'extra' | 'parlementaire',
+): Promise<OrganismeWithDeputesCount[]> {
+  const { count } = db.fn
+  const rows = await joinParlementaire2Organisme()
+    .where('organisme.type', '=', organismeType)
+    .where('fin_fonction', 'is', null)
+    .groupBy('organisme.id')
+    .select('organisme_id as id')
+    .select('organisme.slug as slug')
+    .select('organisme.nom as nom')
+    .select(count<number>('parlementaire.id').as('deputesCount'))
+    .orderBy('importance', 'desc')
+    .execute()
+  return rows
+}
+
 // Big shared query to get deputes, their current organisms, etc.
 export async function getAllDeputesAndCurrentOrganismesFromCurrentLegislature(
   organismeType: 'extra' | 'parlementaire',

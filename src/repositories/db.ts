@@ -14,6 +14,7 @@ export const db: DbConnectionPool = new Kysely<NosDeputesDatabase>({
       database: readFromEnv('DB_NAME'),
     }),
   }),
+  log: ['query'],
 })
 
 interface NosDeputesDatabase {
