@@ -9,12 +9,12 @@ import {
 import { addPrefixToDepartement } from '../../services/hardcodedData'
 import { formatDate, getAge } from '../../services/utils'
 import {
-  BasicDeputeInfo,
-  queryDeputeInfo,
+  DeputeCompleteInfo,
+  queryDeputeForDeputePage,
 } from '../../repositories/deputeRepository'
 
 type Data = {
-  depute: SimpleDepute & BasicDeputeInfo
+  depute: SimpleDepute & DeputeCompleteInfo
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -22,8 +22,9 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async context => {
   const slug = context.query.slug_or_legislature as string
 
-  const basicDeputeInfo = await queryDeputeInfo(slug)
+  const basicDeputeInfo = await queryDeputeForDeputePage(slug)
   // we query everything, not ideal but acceptable for now
+  // TODO rework that
   const deputeWithLatestGroup = (await fetchDeputesList()).find(
     _ => _.slug === slug,
   )

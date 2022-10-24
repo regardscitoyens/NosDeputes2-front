@@ -1,5 +1,6 @@
 import { sql } from 'kysely'
 import { db } from './db'
+import { MinimalDeputeInfo } from './deputeRepository'
 
 export type DeputesWithAllOrganisms = {
   id: number
@@ -108,15 +109,22 @@ export async function queryOrganismeBasicData(
   return res ?? null
 }
 
-export async function queryDeputesForOrganisme(slug: string): Promise<void> {
+export type DeputeInOrganisme = MinimalDeputeInfo & {
+  fonction: FonctionInOrganisme
+}
+
+export async function queryDeputesForOrganisme(slug: string): Promise<{
+  current: DeputeInOrganisme[]
+  former: DeputeInOrganisme[]
+}> {
   const rows = await db
     .selectFrom('organisme')
-    .leftJoin(
+    .innerJoin(
       'parlementaire_organisme',
       'organisme.id',
       'parlementaire_organisme.organisme_id',
     )
-    .leftJoin(
+    .innerJoin(
       'parlementaire',
       'parlementaire.id',
       'parlementaire_organisme.parlementaire_id',
@@ -126,18 +134,23 @@ export async function queryDeputesForOrganisme(slug: string): Promise<void> {
     .select('parlementaire.id as id')
     .select('parlementaire.slug as slug')
     .select('parlementaire.nom as nom')
+    .select('parlementaire.nom_circo as nom_circo')
     .select('parlementaire_organisme.fonction as fonction')
+    .select('fin_mandat')
     .select(
-      sql<0 | 1>`MAX(parlementaire_organisme.fin_mandat IS NULL)`.as(
-        'has_null_fin_mandat',
+      sql<0 | 1>`MAX(parlementaire_organisme.fin_fonction IS NULL)`.as(
+        'has_null_fin_fonction',
       ),
     )
     .execute()
-  // TODO en fait c'est pas bon, on pas les infos de groupe pour ces deputes... faire une second query ? => yes faire une query générique "get latest group for a bunch of depute ids"
-  // TODO traduire la "fonction"
+  const rowsMapped = rows.map(row => ({
+    ...row,
+    fonction: normalizeFonctionInOrganisme(row.fonction),
+    mandatOngoing: row.fin_mandat === null,
+  }))
   return {
-    current: rows.filter(_ => _.has_null_fin_mandat === 0),
-    former: rows.filter(_ => _.has_null_fin_mandat === 1),
+    current: rowsMapped.filter(_ => _.has_null_fin_fonction === 0),
+    former: rowsMapped.filter(_ => _.has_null_fin_fonction === 1),
   }
 }
 
