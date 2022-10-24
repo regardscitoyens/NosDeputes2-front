@@ -1,13 +1,9 @@
 import groupBy from 'lodash/groupBy'
 import {
   DeputesWithAllGroups,
-  getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
   FonctionInGroupe,
+  getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
 } from '../repositories/deputesAndGroupesRepository'
-import {
-  getAllDeputesAndCurrentOrganismesFromCurrentLegislature,
-  getAllDeputesAndOrganismesFromCurrentLegislature,
-} from '../repositories/deputesAndOrganismesRepository'
 import { GroupeData } from './rearrangeData'
 
 export type SimpleDepute = {
@@ -25,19 +21,6 @@ export type SimpleDepute = {
     nom: string
     slug: string
   }
-}
-
-export async function fetchOrganismesParlementaireList(): Promise<
-  SimpleDepute[]
-> {
-  const deputesWithCurrentOrganisms =
-    await getAllDeputesAndCurrentOrganismesFromCurrentLegislature(
-      'parlementaire',
-    )
-
-  // TODO en fait faut refaire une query custom, en groupant par organisme et en comptant le nombre de deputes par organisme
-
-  return deputesWithCurrentOrganisms.map(buildSimpleDepute)
 }
 
 function withoutMinorPassageInNonInscrit(

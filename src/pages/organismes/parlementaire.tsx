@@ -1,22 +1,16 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Todo } from '../../components/Todo'
 import {
-  buildOrganismeData as buildOrganismesData,
-  OrganismeData,
-} from '../../services/rearrangeData'
+  OrganismeWithDeputesCount,
+  queryOrganismsWithDeputesCount,
+} from '../../repositories/deputesAndOrganismesRepository'
 
-type Data = { organismes: OrganismeData[] }
+type Data = { organismes: OrganismeWithDeputesCount[] }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
-  const deputes = await fetchDeputesWithOtherOrganismes()
-  const organismes = buildOrganismesData(
-    deputes.map(d => ({
-      ...d,
-      organismes: d.organismes.filter(_ => _.type === 'parlementaire'),
-    })),
-  )
+  const organismes = await queryOrganismsWithDeputesCount('parlementaire')
   return {
     props: {
       data: { organismes },
@@ -56,31 +50,3 @@ export default function Page({
     </div>
   )
 }
-
-/*
-
-      <table>
-        <tr>
-          <th>Nom</th>
-          <th>Membres</th>
-          <th>Réunions publiques</th>
-        </tr>
-        <tr>
-          <td>Nom</td>
-          <td>Membres</td>
-          <td>Réunions publiques</td>
-        </tr>
-         {organismes.map((o) => (
-          <tr key={o.id}>
-            <td>{o.nom}</td>
-            <td>{o.deputesCount}</td>
-            <td>
-              <Todo inline>?</Todo>
-            </td>
-          </tr>
-        ))}
-        </table>
-
-
-
-        */
