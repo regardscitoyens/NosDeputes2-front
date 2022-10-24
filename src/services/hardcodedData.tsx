@@ -1,7 +1,20 @@
 import sortBy from 'lodash/sortBy'
 
-// TODO voir comment gérer les différentes législatures
+// TODO gérer les différentes législatures
 export const CURRENT_LEGISLATURE = 16
+
+export function isCommissionPermanente(slug: string) {
+  return [
+    'commission-des-lois-constitutionnelles-de-la-legislation-et-de-l-administration-generale-de-la-republique',
+    'commission-des-finances-de-l-economie-generale-et-du-controle-budgetaire',
+    'commission-des-affaires-economiques',
+    'commission-des-affaires-sociales',
+    'commission-des-affaires-culturelles-et-de-l-education',
+    'commission-des-affaires-etrangeres',
+    'commission-du-developpement-durable-et-de-l-amenagement-du-territoire',
+    'commission-de-la-defense-nationale-et-des-forces-armees',
+  ].includes(slug)
+}
 
 // L'ordre serait peut-être déductible à partir des places dans l'hémicycle de chaque député ?
 export const groupesDisplayOrder: string[] = [
