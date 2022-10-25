@@ -22,6 +22,7 @@ interface NosDeputesDatabase {
   organisme: OrganismeTable
   parlementaire_organisme: ParlementaireOrganismeTable
   seance: SeanceTable
+  section: SectionTable
 }
 
 interface ParlementaireTable {
@@ -86,6 +87,23 @@ interface SeanceTable {
   organisme_id: number
   tagged: 1 | null
   session: string
+  created_at: Date
+  updated_at: Date
+}
+
+interface SectionTable {
+  id: Generated<number>
+  nb_commentaires: number
+  md5: string
+  // there is just the section 1 with a null title, it seems to be just noise
+  titre: string | null
+  titre_complet: string
+  section_id: number
+  min_date: string | null
+  max_date: Date | null
+  timestamp: number
+  nb_interventions: number
+  id_dossier_an: string
   created_at: Date
   updated_at: Date
 }
