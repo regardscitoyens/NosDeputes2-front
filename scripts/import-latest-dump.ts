@@ -8,6 +8,13 @@ import readline from 'readline'
 // fetch latest dump from nos deputes
 // import it locally (will drop/recreate the local database !)
 
+const LATEST_DUMP =
+  'https://data.regardscitoyens.org/nosdeputes.fr/nosdeputes.fr_2017_2022_donnees.sql.gz'
+const DUMP_PREVIOUS_LEGISLATURE =
+  'https://data.regardscitoyens.org/nosdeputes.fr/nosdeputes.fr_2017_2022_donnees.sql.gz'
+
+const dumpToUse = LATEST_DUMP
+
 function downloadFile(url: string, destination: string) {
   return new Promise<void>((resolve, reject) => {
     var file = fs.createWriteStream(destination)
@@ -80,8 +87,7 @@ async function start() {
       `sudo mysql -u root -e 'CREATE DATABASE ${process.env.DB_NAME};'`,
     )
     runCommand(`sudo mysql -u root -e 'SHOW DATABASES;'`)
-    const dumpURL =
-      'https://data.regardscitoyens.org/nosdeputes.fr/nosdeputes.fr_donnees.sql.gz'
+    const dumpURL = dumpToUse
     const downloadedFile = './scripts/tmp/dump.sql.gz'
     const unzippedFile = './scripts/tmp/dump.sql'
     deleteIfExists(downloadedFile)
