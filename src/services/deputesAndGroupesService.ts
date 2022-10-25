@@ -10,7 +10,6 @@ export type SimpleDepute = {
   id: number
   nom: string
   nom_de_famille: string
-  prenom: string
   nom_circo: string
   slug: string
   mandatOngoing: boolean

@@ -30,7 +30,7 @@ export default function Page({
   const { groupes } = data
   return (
     <div className="space-y-4">
-      <h1 className="text-center text-2xl">List des groupes politiques</h1>
+      <h1 className="text-center text-2xl">Liste des groupes politiques</h1>
       <table className="w-full bg-slate-100  text-slate-500">
         <thead>
           <tr>

@@ -13,17 +13,22 @@ function SimpleLink({ href, children }: { href: string; children: ReactNode }) {
 
 export default function Page() {
   return (
-    <div className="flex flex-row space-x-4">
-      <SimpleLink href="/organismes/groupe">Groupes politiques</SimpleLink>
-      <SimpleLink href="/organismes/parlementaire">
-        Fonctions parlementaires (commissions, délégations, missions, ...)
-      </SimpleLink>
-      <SimpleLink href="/organismes/extra">
-        Missions extra-parlementaires
-      </SimpleLink>
-      <SimpleLink href="/organismes/groupes">
-        Groupes d'études et d'amitié
-      </SimpleLink>
-    </div>
+    <>
+      <h1 className="mb-4 text-center text-2xl">
+        Liste des différents types d'organismes
+      </h1>
+      <div className="flex flex-row space-x-4">
+        <SimpleLink href="/organismes/groupe">Groupes politiques</SimpleLink>
+        <SimpleLink href="/organismes/parlementaire">
+          Fonctions parlementaires (commissions, délégations, missions, ...)
+        </SimpleLink>
+        <SimpleLink href="/organismes/extra">
+          Missions extra-parlementaires
+        </SimpleLink>
+        <SimpleLink href="/organismes/groupes">
+          Groupes d'études et d'amitié
+        </SimpleLink>
+      </div>
+    </>
   )
 }

@@ -5,11 +5,11 @@ import { FonctionInGroupe } from '../repositories/deputesAndGroupesRepository'
 export function GroupeBadgeWithFonction({
   groupe,
 }: {
-  groupe: { acronym: string; function: FonctionInGroupe } | null
+  groupe: { acronym: string; fonction: FonctionInGroupe } | null
 }) {
   if (groupe)
     return (
-      <BaseGroupeBadge acronym={groupe.acronym} fonction={groupe.function} />
+      <BaseGroupeBadge acronym={groupe.acronym} fonction={groupe.fonction} />
     )
   else return null
 }

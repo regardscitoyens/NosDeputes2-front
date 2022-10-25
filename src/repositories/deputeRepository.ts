@@ -5,6 +5,7 @@ export type MinimalDeputeInfo = {
   id: number
   slug: string
   nom: string
+  nom_de_famille: string
   nom_circo: string
   mandatOngoing: boolean
 }

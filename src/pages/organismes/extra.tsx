@@ -1,5 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { DeputeItem } from '../../components/DeputeItem'
 import { Todo } from '../../components/Todo'
 import {
   OrganismeWithCounts,
@@ -26,31 +27,36 @@ export default function Page({
   const { organismes } = data
 
   return (
-    <table className="w-full">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Membres</th>
-        </tr>
-      </thead>
-      <tbody>
-        {organismes.map(organisme => (
-          <tr key={organisme.id} className="odd:bg-slate-200">
-            <td>
-              <Link href={`/organisme/${organisme.slug}`}>
-                <a>{organisme.nom}</a>
-              </Link>
-            </td>
-            <td
-              className={
-                organisme.deputesCount == 0 ? 'italic text-slate-400' : ''
-              }
-            >
-              {organisme.deputesCount}
-            </td>
+    <>
+      <h1 className="mb-4 text-center text-2xl">
+        Liste des missions extra-parlementaires
+      </h1>
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Membres</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {organismes.map(organisme => (
+            <tr key={organisme.id} className="odd:bg-slate-200">
+              <td>
+                <Link href={`/organisme/${organisme.slug}`}>
+                  <a>{organisme.nom}</a>
+                </Link>
+              </td>
+              <td
+                className={
+                  organisme.deputesCount == 0 ? 'italic text-slate-400' : ''
+                }
+              >
+                {organisme.deputesCount}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   )
 }

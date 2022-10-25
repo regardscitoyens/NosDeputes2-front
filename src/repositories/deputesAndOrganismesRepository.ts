@@ -1,6 +1,7 @@
 import { sql } from 'kysely'
 import { db } from './db'
 import { MinimalDeputeInfo } from './deputeRepository'
+import mapValues from 'lodash/mapValues'
 
 export type DeputesWithAllOrganisms = {
   id: number
@@ -111,12 +112,12 @@ export async function queryOrganismeBasicData(
 
 export type DeputeInOrganisme = MinimalDeputeInfo & {
   fonction: FonctionInOrganisme
+  currentMember: boolean
 }
 
-export async function queryDeputesForOrganisme(slug: string): Promise<{
-  current: DeputeInOrganisme[]
-  former: DeputeInOrganisme[]
-}> {
+export async function queryDeputesForOrganisme(
+  slug: string,
+): Promise<DeputeInOrganisme[]> {
   const rows = await db
     .selectFrom('organisme')
     .innerJoin(
@@ -130,10 +131,17 @@ export async function queryDeputesForOrganisme(slug: string): Promise<{
       'parlementaire_organisme.parlementaire_id',
     )
     .where('organisme.slug', '=', slug)
+    .where(qb =>
+      qb
+        // Remove the very short passages, there's a bunch of them at least for commission des finances
+        .where(sql`TIMESTAMPDIFF(DAY, debut_fonction, fin_fonction)`, '>', '1')
+        .orWhere('fin_fonction', 'is', null),
+    )
     .groupBy('parlementaire.id')
     .select('parlementaire.id as id')
     .select('parlementaire.slug as slug')
     .select('parlementaire.nom as nom')
+    .select('parlementaire.nom_de_famille as nom_de_famille')
     .select('parlementaire.nom_circo as nom_circo')
     .select('parlementaire_organisme.fonction as fonction')
     .select('fin_mandat')
@@ -143,42 +151,55 @@ export async function queryDeputesForOrganisme(slug: string): Promise<{
       ),
     )
     .execute()
-  const rowsMapped = rows.map(row => ({
-    ...row,
-    fonction: normalizeFonctionInOrganisme(row.fonction),
-    mandatOngoing: row.fin_mandat === null,
-  }))
-  return {
-    current: rowsMapped.filter(_ => _.has_null_fin_fonction === 0),
-    former: rowsMapped.filter(_ => _.has_null_fin_fonction === 1),
-  }
+  const rowsMapped = rows.map(
+    ({
+      id,
+      slug,
+      nom,
+      nom_de_famille,
+      nom_circo,
+      fonction,
+      fin_mandat,
+      has_null_fin_fonction,
+    }) => ({
+      id,
+      slug,
+      nom,
+      nom_de_famille,
+      nom_circo,
+      fonction: normalizeFonctionInOrganisme(fonction),
+      mandatOngoing: fin_mandat === null,
+      currentMember: has_null_fin_fonction === 1,
+    }),
+  )
+  return rowsMapped
 }
 
-const fonctionsWithFeminineVersion = {
-  membre: null,
-  'membre avec voix délibérative': null,
-  'membre avec voix consultative': null,
-  apparenté: 'apparentée',
+export const fonctionsWithFeminineVersion = {
+  'président délégué': 'présidente délégué',
+  'président de droit': 'présidente de droit',
   président: 'présidente',
-  questeur: 'questeure',
+  'co-président': 'co-présidente',
   'vice-président': 'vice-présidente',
+  'deuxième vice-président': 'deuxième vice-présidente',
+  questeur: 'questeure',
   secrétaire: null,
   'rapporteur général': 'rapporteure générale',
-  'membre de droit': null,
-  'membre suppléant': 'membre suppléante',
-  'membre titulaire': null,
   rapporteur: 'rapporteure',
   'co-rapporteur': 'co-rapporteure',
-  'président délégué': 'présidente délégué',
-  'membre nommé': 'membre nommée',
-  'deuxième vice-président': 'deuxième vice-présidente',
-  'président de droit': 'présidente de droit',
-  'membre du bureau': null,
   'chargé de mission': 'chargée de mission',
-  'co-président': 'co-présidente',
+  'membre du bureau': null,
+  'membre avec voix délibérative': null,
+  'membre avec voix consultative': null,
+  'membre de droit': null,
+  'membre titulaire': null,
+  'membre nommé': 'membre nommée',
+  membre: null,
+  'membre suppléant': 'membre suppléante',
+  apparenté: 'apparentée',
 } as const
 
-type FonctionInOrganisme = keyof typeof fonctionsWithFeminineVersion
+export type FonctionInOrganisme = keyof typeof fonctionsWithFeminineVersion
 
 function normalizeFonctionInOrganisme(f: string): FonctionInOrganisme {
   const entry = Object.entries(fonctionsWithFeminineVersion).find(([k, v]) => {

@@ -8,20 +8,14 @@ type Props = {
 }
 
 export function DeputeItem({
-  depute: {
-    slug,
-    latestGroup,
-    prenom,
-    nom_de_famille,
-    nom_circo,
-    mandatOngoing,
-  },
+  depute: { slug, latestGroup, nom, nom_de_famille, nom_circo, mandatOngoing },
   withCirco,
 }: Props) {
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
   const textClasses = mandatOngoing
     ? 'font-semibold'
     : 'font-normal text-slate-500 line-through'
+  const prenom = nom.replace(nom_de_famille, '').trim()
   return (
     <div className={`my-2 rounded p-2 drop-shadow ${bg}`}>
       <Link href={`/${slug}`}>

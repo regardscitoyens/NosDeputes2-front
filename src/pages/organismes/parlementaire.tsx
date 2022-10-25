@@ -27,6 +27,10 @@ export default function Page({
 
   return (
     <div>
+      <h1 className="mb-4 text-center text-2xl">
+        Liste des fonctions parlementaires (commissions, délégations,
+        missions...)
+      </h1>
       <Todo inline>
         Distinguer les "missions terminées" des autres ? la query de nosdeputes
         me parait un peu louche à ce niveau, est-ce que c'est vraiment une
