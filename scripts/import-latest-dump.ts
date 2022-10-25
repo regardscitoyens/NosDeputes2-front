@@ -9,11 +9,13 @@ import readline from 'readline'
 // import it locally (will drop/recreate the local database !)
 
 const LATEST_DUMP =
-  'https://data.regardscitoyens.org/nosdeputes.fr/nosdeputes.fr_2017_2022_donnees.sql.gz'
+  'https://data.regardscitoyens.org/nosdeputes.fr/nosdeputes.fr_donnees.sql.gz'
 const DUMP_PREVIOUS_LEGISLATURE =
   'https://data.regardscitoyens.org/nosdeputes.fr/nosdeputes.fr_2017_2022_donnees.sql.gz'
 
 const dumpToUse = LATEST_DUMP
+const dbName = process.env.DB_NAME
+// const dbName = 'nosdeputes'
 
 function downloadFile(url: string, destination: string) {
   return new Promise<void>((resolve, reject) => {
@@ -83,9 +85,7 @@ async function start() {
     runCommand(
       `sudo mysql -u root -e 'DROP DATABASE IF EXISTS ${process.env.DB_NAME};'`,
     )
-    runCommand(
-      `sudo mysql -u root -e 'CREATE DATABASE ${process.env.DB_NAME};'`,
-    )
+    runCommand(`sudo mysql -u root -e 'CREATE DATABASE ${dbName};'`)
     runCommand(`sudo mysql -u root -e 'SHOW DATABASES;'`)
     const dumpURL = dumpToUse
     const downloadedFile = './scripts/tmp/dump.sql.gz'
@@ -97,11 +97,9 @@ async function start() {
     console.log(
       'These next commands use the regular user, the one from your .env.local file. You will be asked its password',
     )
+    runCommand(`mysql -u ${process.env.DB_USER} -p ${dbName} < ${unzippedFile}`)
     runCommand(
-      `mysql -u ${process.env.DB_USER} -p ${process.env.DB_NAME} < ${unzippedFile}`,
-    )
-    runCommand(
-      `mysql -u ${process.env.DB_USER} -p ${process.env.DB_NAME} -e 'SELECT COUNT(*) FROM parlementaire;'`,
+      `mysql -u ${process.env.DB_USER} -p ${dbName} -e 'SELECT COUNT(*) FROM parlementaire;'`,
     )
     console.log(
       'If you see a nice number of parlementaire above (not 0) then the import was probably successful',

@@ -28,7 +28,7 @@ export type OrganismeWithCounts = {
   seancesCount: number
 }
 
-export type OrganismeType = 'extra' | 'parlementaire'
+export type OrganismeType = 'extra' | 'parlementaire' | 'groupes'
 
 export async function queryOrganismsList(
   type: OrganismeType,
