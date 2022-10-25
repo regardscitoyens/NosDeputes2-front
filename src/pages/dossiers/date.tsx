@@ -15,6 +15,7 @@ type LocalSection = {
   id: number
   titre_complet: string
   min_date: string
+  nb_interventions: number
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -31,6 +32,7 @@ export const getServerSideProps: GetServerSideProps<{
     // trick because Kysely doesn't understand that it can't be null
     .select(sql<string>`min_date`.as('min_date'))
     .select('titre_complet')
+    .select('nb_interventions')
     .execute()) as LocalSection[]
 
   const sectionsGrouped = Object.entries(groupBy(sections, extractMonth))
@@ -69,16 +71,19 @@ export default function Page({
               <h2 className="text-xl font-bold">{month}</h2>
               <ul className="list-none">
                 {sections.map(section => {
+                  const { id, min_date, titre_complet, nb_interventions } =
+                    section
                   return (
-                    <li key={section.id}>
-                      <Link
-                        href={`${CURRENT_LEGISLATURE}/dossier/${section.id}`}
-                      >
-                        <a>
-                          <span className="text-slate-500">
-                            {section.min_date}
-                          </span>{' '}
-                          {section.titre_complet}
+                    <li key={id}>
+                      <Link href={`/${CURRENT_LEGISLATURE}/dossier/${id}`}>
+                        <a className="hover:underline">
+                          <span className="text-slate-500">{min_date}</span>{' '}
+                          {titre_complet}{' '}
+                          {nb_interventions > 0 ? (
+                            <span className="italic text-slate-500">
+                              {nb_interventions} intervention(s)
+                            </span>
+                          ) : null}
                         </a>
                       </Link>
                     </li>

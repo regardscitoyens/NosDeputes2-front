@@ -1,7 +1,6 @@
 import { sql } from 'kysely'
 import { db } from './db'
 import { MinimalDeputeInfo } from './deputeRepository'
-import mapValues from 'lodash/mapValues'
 
 export type DeputesWithAllOrganisms = {
   id: number
