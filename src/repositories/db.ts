@@ -23,6 +23,7 @@ interface NosDeputesDatabase {
   parlementaire_organisme: ParlementaireOrganismeTable
   seance: SeanceTable
   section: SectionTable
+  scrutin: ScrutinTable
 }
 
 interface ParlementaireTable {
@@ -104,6 +105,31 @@ interface SectionTable {
   timestamp: number
   nb_interventions: number
   id_dossier_an: string
+  created_at: Date
+  updated_at: Date
+}
+
+interface ScrutinTable {
+  id: Generated<number>
+  numero: number
+  annee: number
+  numero_semaine: number
+  date: Date
+  seance_id: number
+  nombre_votants: number
+  nombre_pours: number
+  nombres_contres: number
+  nombres_abstentions: number
+  type: string
+  sort: string
+  titre: string
+  texteloi_id: number
+  amendement_id: number
+  sujet: string
+  demandeurs: string
+  demandeurs_groupes_acronymes: string
+  avis_gouvernement: string
+  avis_rapporteur: string
   created_at: Date
   updated_at: Date
 }
