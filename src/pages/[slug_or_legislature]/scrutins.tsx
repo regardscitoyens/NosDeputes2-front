@@ -30,14 +30,19 @@ export const getServerSideProps: GetServerSideProps<{
 
   return {
     props: {
-      data: {},
+      data: {
+        scrutinsOnWhole,
+        othersScrutinsByLaw,
+      },
     },
   }
 }
 
-function getLaw(scrutin: LocalScrutin) {
+function getLaw(scrutin: LocalScrutin): string {
   const { titre } = scrutin
+  // TODO faire marcher cette regexp (venue du PHP)
   const regexp = /((?:projet|proposition) de (?:loi|résolution) .*?(?:\)|$))/
+  return 'TODO'
   /*
 
    preg_match_all('/((?:projet|proposition) de (?:loi|résolution) .*?(?:\)|$))/', $this->titre, $matches, PREG_SET_ORDER, 0);

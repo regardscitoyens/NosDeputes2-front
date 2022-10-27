@@ -1,7 +1,5 @@
 import groupBy from 'lodash/groupBy'
-import { DeputeWithGroupe, DeputeWithOrganismes } from './apiDeputes'
-import { SimpleDepute } from './deputesService'
-import { notNull } from './utils'
+import { SimpleDepute } from './deputesAndGroupesService'
 
 export type GroupeData = {
   id: number
@@ -53,25 +51,4 @@ export type OrganismeData = {
   nom: string
   slug: string
   deputesCount: number
-}
-
-export function buildOrganismeData(
-  deputes: DeputeWithOrganismes[],
-): OrganismeData[] {
-  const organismesData: OrganismeData[] = []
-  deputes.forEach(depute => {
-    depute.organismes.forEach(organisme => {
-      let organismeData = organismesData.find(_ => _.id === organisme.id)
-      if (!organismeData) {
-        const { fonction, ...restOfOrganisme } = organisme
-        organismeData = {
-          ...restOfOrganisme,
-          deputesCount: 0,
-        }
-        organismesData.push(organismeData)
-      }
-      organismeData.deputesCount++
-    })
-  })
-  return organismesData
 }

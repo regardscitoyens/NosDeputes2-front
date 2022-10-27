@@ -1,7 +1,4 @@
 import { sql } from 'kysely'
-import groupBy from 'lodash/groupBy'
-import reverse from 'lodash/reverse'
-import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { db } from '../../repositories/db'
@@ -36,12 +33,6 @@ export const getServerSideProps: GetServerSideProps<{
       },
     },
   }
-}
-
-function extractMonth(section: LocalSection): string {
-  // These dates are weirdly formatted
-  const [year, month] = section.min_date.split('-')
-  return `${month}/${year}`
 }
 
 export default function Page({
