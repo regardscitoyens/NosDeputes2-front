@@ -1,10 +1,7 @@
-import groupBy from 'lodash/groupBy'
 import {
   DeputesWithAllGroups,
   FonctionInGroupe,
-  getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
 } from '../repositories/deputesAndGroupesRepository'
-import { GroupeData } from './rearrangeData'
 
 export type SimpleDepute = {
   id: number
@@ -42,41 +39,4 @@ function withoutMinorPassageInNonInscrit(
       },
     ),
   }
-}
-
-export async function fetchDeputesOfGroupe(acronym: string): Promise<{
-  current: SimpleDepute[]
-  former: SimpleDepute[]
-}> {
-  const deputes = (await queryAllDeputesAndGroupesFromCurrentLegislature()).map(
-    withoutMinorPassageInNonInscrit,
-  )
-  const current = deputes
-    .map(buildSimpleDepute)
-    .filter(_ => _.latestGroup.acronym == acronym)
-    .filter(_ => _.mandatOngoing)
-  const former = deputes
-    .filter(_ => _.groupes.some(_ => _.acronym == acronym))
-    .map(buildSimpleDepute)
-    .filter(_ => _.latestGroup.acronym != acronym || !_.mandatOngoing)
-  return { current, former }
-}
-
-export async function fetchGroupList(): Promise<GroupeData[]> {
-  const deputes = await fetchDeputesList()
-  const deputesGrouped = Object.values(
-    groupBy(deputes, _ => _.latestGroup.acronym),
-  )
-  const groupsWithDeputes = deputesGrouped.map(deputes => {
-    const { fonction, ...group } = deputes[0].latestGroup
-    return {
-      ...group,
-      deputesCount: deputes.length,
-    }
-  })
-  const totalDeputes = deputes.length
-  return groupsWithDeputes.map(_ => ({
-    ..._,
-    deputesShareOfTotal: _.deputesCount / totalDeputes,
-  }))
 }
