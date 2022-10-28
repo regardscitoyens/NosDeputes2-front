@@ -120,7 +120,7 @@ interface ScrutinTable {
   nombre_pours: number
   nombres_contres: number
   nombres_abstentions: number
-  type: string
+  type: 'solennel' | 'ordinaire'
   sort: string
   titre: string
   texteloi_id: number
