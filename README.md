@@ -73,7 +73,7 @@ N'hésitez pas à me signaler si vous commencez à bosser sur un truc, pour qu'o
 
 - faisable dès maintenant (pas d'ordre précis)
 
-  - implem la page /16/scrutins - IN PROGRESS
+  - ~~implem la page /16/scrutins~~
   - implem la page /16/scrutin/388
   - implem la page /16/dossier/498
   - implem la page /16/seance/283
