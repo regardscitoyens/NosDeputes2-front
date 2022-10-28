@@ -1,8 +1,9 @@
+import groupBy from 'lodash/groupBy'
+import partition from 'lodash/partition'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { Todo } from '../../components/Todo'
 import { db } from '../../repositories/db'
-import partition from 'lodash/partition'
-import groupBy from 'lodash/groupBy'
+import { formatDate } from '../../services/utils'
 
 type Data = {
   scrutinsOnWhole: LocalScrutin[]
@@ -12,17 +13,24 @@ type Data = {
 type LocalScrutin = {
   id: number
   titre: string
+  date: string
 }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
-  const scrutins = await db
-    .selectFrom('scrutin')
-    .orderBy('numero', 'desc')
-    .select('id')
-    .select('titre')
-    .execute()
+  const scrutins = (
+    await db
+      .selectFrom('scrutin')
+      .orderBy('numero', 'desc')
+      .select('id')
+      .select('titre')
+      .select('date')
+      .execute()
+  ).map(_ => ({
+    ..._,
+    date: _.date.toISOString(),
+  }))
 
   const [scrutinsOnWhole, otherScrutins] = partition(scrutins, isOnWholeText)
 
@@ -38,19 +46,14 @@ export const getServerSideProps: GetServerSideProps<{
   }
 }
 
-function getLaw(scrutin: LocalScrutin): string {
+function getLaw(scrutin: LocalScrutin): string | null {
   const { titre } = scrutin
-  // TODO faire marcher cette regexp (venue du PHP)
   const regexp = /((?:projet|proposition) de (?:loi|résolution) .*?(?:\)|$))/
-  return 'TODO'
-  /*
-
-   preg_match_all('/((?:projet|proposition) de (?:loi|résolution) .*?(?:\)|$))/', $this->titre, $matches, PREG_SET_ORDER, 0);
-    if ($matches) {
-      return $matches[0][0];
-    }
-
-    */
+  const match = titre.match(regexp)
+  if (match) {
+    return match[0]
+  }
+  return null
 }
 
 function isOnWholeText(scrutin: LocalScrutin) {
@@ -92,8 +95,52 @@ function isOnWholeText(scrutin: LocalScrutin) {
   }
 }
 
+function ScrutinList({
+  scrutins,
+  law,
+}: {
+  scrutins: LocalScrutin[]
+  law?: string
+}) {
+  return (
+    <ul className={`${law ? 'ml-16' : ''} list-disc`}>
+      {scrutins.map(scrutin => {
+        const { titre, id, date } = scrutin
+        const finalTitre = law ? titre.replace(law, '...') : titre
+        return (
+          <li key={id}>
+            {formatDate(date)} : {finalTitre}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return <Todo>Les scrutins publics</Todo>
+  const { scrutinsOnWhole, othersScrutinsByLaw } = data
+  return (
+    <>
+      <Todo>lien vers chacun des scrutins</Todo>
+      <div className="flex flex-row">
+        <div className="w-1/2 px-8">
+          <h1 className="my-4 text-2xl">Les scrutins sur l'ensemble</h1>
+          <ScrutinList scrutins={scrutinsOnWhole} />
+        </div>
+        <div className="w-1/2 ">
+          <h1 className="my-4 text-2xl">Autres scrutins</h1>
+          <ul>
+            {Object.entries(othersScrutinsByLaw).map(([law, scrutins]) => (
+              <li key={law}>
+                {law} :
+                <ScrutinList {...{ scrutins, law }} />{' '}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </>
+  )
 }
