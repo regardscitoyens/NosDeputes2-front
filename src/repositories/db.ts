@@ -123,10 +123,10 @@ interface ScrutinTable {
   seance_id: number | null
   nombre_votants: number
   nombre_pours: number
-  nombres_contres: number
-  nombres_abstentions: number
+  nombre_contres: number
+  nombre_abstentions: number
   type: 'solennel' | 'ordinaire'
-  sort: string
+  sort: 'rejeté' | 'adopté'
   titre: string
   texteloi_id: number
   amendement_id: number

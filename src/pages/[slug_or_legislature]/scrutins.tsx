@@ -128,7 +128,6 @@ export default function Page({
   const { scrutinsOnWhole, othersScrutinsByLaw } = data
   return (
     <>
-      <Todo>lien vers chacun des scrutins</Todo>
       <div className="flex flex-row">
         <div className="w-1/2 px-8">
           <h1 className="my-4 text-2xl">Les scrutins sur l'ensemble</h1>

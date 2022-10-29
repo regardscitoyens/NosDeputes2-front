@@ -16,7 +16,11 @@ type LocalScrutin = {
   seance_id: number | null
   date: string
   type: 'solennel' | 'ordinaire'
+  sort: 'rejeté' | 'adopté'
   interventionMd5: string | null
+  nombre_pours: number
+  nombre_contres: number
+  nombre_abstentions: number
 }
 
 function parseIntOrNull(str: string): number | null {
@@ -38,11 +42,17 @@ export const getServerSideProps: GetServerSideProps<{
   const scrutinRaw = await db
     .selectFrom('scrutin')
     .where('id', '=', id)
-    .select('id')
-    .select('type')
-    .select('titre')
-    .select('date')
-    .select('seance_id')
+    .select([
+      'id',
+      'type',
+      'titre',
+      'date',
+      'seance_id',
+      'nombre_pours',
+      'nombre_contres',
+      'nombre_abstentions',
+      'sort',
+    ])
     .executeTakeFirst()
 
   const interventionMd5 = await db
@@ -82,10 +92,19 @@ export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { scrutin } = data
-  const { id, type, titre, date, seance_id, interventionMd5 } = scrutin
+  const {
+    id,
+    type,
+    titre,
+    date,
+    seance_id,
+    interventionMd5,
+    sort,
+    nombre_pours,
+    nombre_contres,
+    nombre_abstentions,
+  } = scrutin
   const sourceUrl = `https://www2.assemblee-nationale.fr/scrutins/detail/(legislature)/${CURRENT_LEGISLATURE}/(num)/${id}`
-
-  // TODO faire un systeme global de style pour les liens OU faire un élément Link générique
 
   return (
     <div>
@@ -109,7 +128,14 @@ export default function Page({
           </>
         ) : null}
       </p>
-
+      <div>
+        Résultat : <span className="font-semibold">{sort}</span>
+        <ul>
+          <li>Pour : {nombre_pours}</li>
+          <li>Contre : {nombre_contres}</li>
+          <li>Abstention : {nombre_abstentions}</li>
+        </ul>
+      </div>
       <Todo>Tout le dossier...</Todo>
     </div>
   )
