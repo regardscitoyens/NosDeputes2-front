@@ -24,6 +24,9 @@ interface NosDeputesDatabase {
   seance: SeanceTable
   section: SectionTable
   scrutin: ScrutinTable
+  intervention: InterventionTable
+  tagging: TaggingTable
+  tag: TagTable
 }
 
 interface ParlementaireTable {
@@ -115,7 +118,9 @@ interface ScrutinTable {
   annee: number
   numero_semaine: number
   date: Date
-  seance_id: number
+  // appears to be some null sometimes, not at all times
+  // I think it's when the data is in a incomplete state
+  seance_id: number | null
   nombre_votants: number
   nombre_pours: number
   nombres_contres: number
@@ -132,4 +137,38 @@ interface ScrutinTable {
   avis_rapporteur: string
   created_at: Date
   updated_at: Date
+}
+
+interface InterventionTable {
+  id: Generated<number>
+  nb_commentaires: number | null
+  nb_mots: number
+  md5: string
+  intervention: string
+  timestamp: number
+  source: string
+  seance_id: number
+  section_id: number | null
+  type: 'loi' | 'commission' | 'question'
+  date: Date
+  personnalite_id: number | null
+  parlementaire_id: number | null
+  parlementaire_groupe_acronyme: string | null
+  fonction: string | null
+  created_at: Date
+  updated_at: Date
+}
+interface TaggingTable {
+  id: Generated<number>
+  tag_id: number
+  taggable_model: 'Amendement' | 'Intervention' | 'Section'
+  taggable_id: number
+}
+interface TagTable {
+  id: Generated<number>
+  name: string
+  is_triple: 1 | 0
+  triple_namespace: 'loi' | 'scrutin' | null
+  triple_key: 'amendement' | 'numero' | null
+  triple_value: string | null
 }
