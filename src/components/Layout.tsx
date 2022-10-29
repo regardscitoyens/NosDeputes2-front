@@ -55,7 +55,7 @@ export function Layout({ children }: Props) {
               />
               <BasicLink to="/dossiers/plus" label="Les plus discutés" />
               <BasicLink
-                to={`${CURRENT_LEGISLATURE}/scrutins`}
+                to={`/${CURRENT_LEGISLATURE}/scrutins`}
                 label="Les scrutins publics"
               />
             </div>
