@@ -2,6 +2,7 @@ import groupBy from 'lodash/groupBy'
 import partition from 'lodash/partition'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
 import { db } from '../../repositories/db'
 import { CURRENT_LEGISLATURE } from '../../services/hardcodedData'
@@ -111,11 +112,9 @@ function ScrutinList({
         const finalTitre = law ? titre.replace(law, '...') : titre
         return (
           <li key={id} className="odd:bg-slate-200 ">
-            <Link href={`/${CURRENT_LEGISLATURE}/scrutin/${id}`}>
-              <a className="hover:underline">
-                {formatDate(date)} : {finalTitre}
-              </a>
-            </Link>
+            <MyLink href={`/${CURRENT_LEGISLATURE}/scrutin/${id}`}>
+              {formatDate(date)} : {finalTitre}
+            </MyLink>
           </li>
         )
       })}

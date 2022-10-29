@@ -4,6 +4,7 @@ import reverse from 'lodash/reverse'
 import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { MyLink } from '../../components/MyLink'
 import { db } from '../../repositories/db'
 import { CURRENT_LEGISLATURE } from '../../services/hardcodedData'
 
@@ -75,17 +76,15 @@ export default function Page({
                     section
                   return (
                     <li key={id}>
-                      <Link href={`/${CURRENT_LEGISLATURE}/dossier/${id}`}>
-                        <a className="hover:underline">
-                          <span className="text-slate-500">{min_date}</span>{' '}
-                          {titre_complet}{' '}
-                          {nb_interventions > 0 ? (
-                            <span className="italic text-slate-500">
-                              {nb_interventions} intervention(s)
-                            </span>
-                          ) : null}
-                        </a>
-                      </Link>
+                      <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${id}`}>
+                        <span className="text-slate-500">{min_date}</span>{' '}
+                        {titre_complet}{' '}
+                        {nb_interventions > 0 ? (
+                          <span className="italic text-slate-500">
+                            {nb_interventions} intervention(s)
+                          </span>
+                        ) : null}
+                      </MyLink>
                     </li>
                   )
                 })}

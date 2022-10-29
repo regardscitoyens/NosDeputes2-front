@@ -1,6 +1,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { DeputeItem } from '../../components/DeputeItem'
+import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
 import {
   OrganismeWithCounts,
@@ -42,9 +43,9 @@ export default function Page({
           {organismes.map(organisme => (
             <tr key={organisme.id} className="odd:bg-slate-200">
               <td>
-                <Link href={`/organisme/${organisme.slug}`}>
-                  <a>{organisme.nom}</a>
-                </Link>
+                <MyLink href={`/organisme/${organisme.slug}`}>
+                  {organisme.nom}
+                </MyLink>
               </td>
               <td
                 className={

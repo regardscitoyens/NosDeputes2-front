@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { SimpleDepute } from '../services/deputesAndGroupesService'
 import { GroupeBadgeWithFonction } from './GroupeBadge'
+import { MyLink } from './MyLink'
 
 type Props = {
   depute: SimpleDepute
@@ -12,17 +13,19 @@ export function DeputeItem({
   withCirco,
 }: Props) {
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
-  const textClasses = mandatOngoing
-    ? 'font-semibold'
-    : 'font-normal text-slate-500 line-through'
   const prenom = nom.replace(nom_de_famille, '').trim()
   return (
     <div className={`my-2 rounded p-2 drop-shadow ${bg}`}>
-      <Link href={`/${slug}`}>
-        <a className={textClasses}>
-          {nom_de_famille}, {prenom}
-        </a>
-      </Link>
+      <MyLink
+        href={`/${slug}`}
+        className={
+          mandatOngoing
+            ? 'font-normal'
+            : 'font-normal text-slate-500 line-through'
+        }
+      >
+        {nom_de_famille}, {prenom}
+      </MyLink>
       <GroupeBadgeWithFonction groupe={latestGroup} />
       {withCirco && (
         <span className="bg-blue ml-1 cursor-pointer text-slate-400">

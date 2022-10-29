@@ -1,5 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
 import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
@@ -92,9 +93,9 @@ export default function Page({
         Scrutin public {type} n°{id}
       </h1>
       <h2 className="text-xl">Sur {titre}</h2>
-      <a className="block text-slate-500 hover:underline" href={sourceUrl}>
+      <MyLink className="block text-slate-500" href={sourceUrl}>
         Source
-      </a>
+      </MyLink>
       <p>
         Voté dans l'hémicycle le {formatDate(date)}
         {seance_id ? (
@@ -103,7 +104,7 @@ export default function Page({
             <Link
               href={`/${CURRENT_LEGISLATURE}/seance/${seance_id}#inter_${interventionMd5}`}
             >
-              <a>en séance publique</a>
+              en séance publique
             </Link>
           </>
         ) : null}

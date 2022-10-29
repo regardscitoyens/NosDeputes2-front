@@ -1,12 +1,13 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
 
 type Data = {}
 
-export const getServerSideProps: GetServerSideProps<{ data: Data }> = async (
-  context,
-) => {
+export const getServerSideProps: GetServerSideProps<{
+  data: Data
+}> = async context => {
   return {
     props: {
       data: {},
@@ -20,11 +21,12 @@ export default function Page({
   return (
     <Todo>
       Carte de tous les départements, avec lien vers chaque département (ex:{' '}
-      <Link href="/circonscription/departement/Bouches-du-Rhône">
-        <a className="font-bold underline">
-          /circonscription/departement/Bouches-du-Rhône
-        </a>
-      </Link>
+      <MyLink
+        href="/circonscription/departement/Bouches-du-Rhône"
+        className="font-bold underline"
+      >
+        /circonscription/departement/Bouches-du-Rhône
+      </MyLink>
       )
     </Todo>
   )

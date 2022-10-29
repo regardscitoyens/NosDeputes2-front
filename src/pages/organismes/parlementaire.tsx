@@ -1,5 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
 import {
   OrganismeWithCounts,
@@ -48,16 +49,14 @@ export default function Page({
           {organismes.map(organisme => (
             <tr key={organisme.id} className="odd:bg-slate-200">
               <td>
-                <Link href={`/organisme/${organisme.slug}`}>
-                  <a>
-                    {isCommissionPermanente(organisme.slug) ? (
-                      <span className="mr-2 text-sm italic text-slate-500">
-                        (commission permanente)
-                      </span>
-                    ) : null}
-                    {organisme.nom}
-                  </a>
-                </Link>
+                {isCommissionPermanente(organisme.slug) ? (
+                  <span className="mr-2 cursor-default text-sm italic text-slate-500">
+                    (commission permanente)
+                  </span>
+                ) : null}
+                <MyLink href={`/organisme/${organisme.slug}`}>
+                  {organisme.nom}
+                </MyLink>
               </td>
               <td
                 className={

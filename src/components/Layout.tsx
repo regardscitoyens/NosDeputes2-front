@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { CURRENT_LEGISLATURE } from '../services/hardcodedData'
+import { MyLink } from './MyLink'
 
 type Props = {
   children: ReactNode
@@ -9,9 +10,9 @@ type Props = {
 
 function BasicLink({ to, label }: { to: string; label?: string }) {
   return (
-    <Link href={to}>
-      <a className="block bg-slate-300 py-2 px-4 underline">{label ?? to}</a>
-    </Link>
+    <MyLink href={to} className="block bg-slate-300 py-2 px-4 underline">
+      {label ?? to}
+    </MyLink>
   )
 }
 
@@ -29,16 +30,14 @@ export function Layout({ children }: Props) {
       <div className="bg-slate-300">
         <div className="container mx-auto flex min-h-screen flex-col  px-4 py-4">
           <header className="rounded bg-slate-200 px-4 py-4 ">
-            <Link href={'/'}>
-              <a>
-                <h1 className="text-2xl font-bold uppercase text-slate-700">
-                  NosDéputés.fr
-                </h1>
-                <p className="text-slate-500">
-                  Observatoire citoyen de l'activité parlementaire
-                </p>
-              </a>
-            </Link>
+            <MyLink href={'/'}>
+              <h1 className="text-2xl font-bold uppercase text-slate-700">
+                NosDéputés.fr
+              </h1>
+              <p className="text-slate-500">
+                Observatoire citoyen de l'activité parlementaire
+              </p>
+            </MyLink>
           </header>
           <nav className="my-2 space-y-2 bg-slate-200 py-4 px-4">
             <div className="flex space-x-2">

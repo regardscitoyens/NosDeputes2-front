@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getColorForGroupeAcronym } from '../services/hardcodedData'
 import { FonctionInGroupe } from '../repositories/deputesAndGroupesRepository'
+import { MyLink } from './MyLink'
 
 export function GroupeBadgeWithFonction({
   groupe,
@@ -31,14 +32,13 @@ function BaseGroupeBadge({
   fonction?: FonctionInGroupe
 }) {
   return (
-    <Link href={`/groupe/${acronym}`}>
-      <a
-        className={`mx-2 inline-block py-1 px-2 text-white`}
-        style={{ background: getColorForGroupeAcronym(acronym) }}
-      >
-        {acronym}
-        {fonction && fonction !== 'membre' ? ` (${fonction})` : null}
-      </a>
-    </Link>
+    <MyLink
+      href={`/groupe/${acronym}`}
+      className={`mx-2 inline-block py-1 px-2 text-white`}
+      style={{ background: getColorForGroupeAcronym(acronym) }}
+    >
+      {acronym}
+      {fonction && fonction !== 'membre' ? ` (${fonction})` : null}
+    </MyLink>
   )
 }

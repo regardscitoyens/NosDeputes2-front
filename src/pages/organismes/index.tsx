@@ -1,13 +1,15 @@
 import Link from 'next/link'
 import { ReactNode } from 'react'
+import { MyLink } from '../../components/MyLink'
 
 function SimpleLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link {...{ href }}>
-      <a className="block basis-1/4 bg-slate-200 px-2 py-2 text-center text-slate-600 underline ">
-        {children}
-      </a>
-    </Link>
+    <MyLink
+      {...{ href }}
+      className="block basis-1/4 bg-slate-200 px-2 py-2 text-center text-slate-600 underline "
+    >
+      {children}
+    </MyLink>
   )
 }
 

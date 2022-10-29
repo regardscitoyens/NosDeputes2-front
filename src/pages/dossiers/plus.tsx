@@ -1,6 +1,7 @@
 import { sql } from 'kysely'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
+import { MyLink } from '../../components/MyLink'
 import { db } from '../../repositories/db'
 import { CURRENT_LEGISLATURE } from '../../services/hardcodedData'
 
@@ -50,16 +51,14 @@ export default function Page({
           const { id, titre_complet, nb_interventions } = section
           return (
             <li key={id} className="">
-              <Link href={`/${CURRENT_LEGISLATURE}/dossier/${id}`}>
-                <a className="hover:underline">
-                  {titre_complet}{' '}
-                  {nb_interventions > 0 ? (
-                    <span className="italic text-slate-500">
-                      {nb_interventions} intervention(s)
-                    </span>
-                  ) : null}
-                </a>
-              </Link>
+              <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${id}`}>
+                {titre_complet}{' '}
+                {nb_interventions > 0 ? (
+                  <span className="italic text-slate-500">
+                    {nb_interventions} intervention(s)
+                  </span>
+                ) : null}
+              </MyLink>
             </li>
           )
         })}

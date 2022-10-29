@@ -5,6 +5,7 @@ import {
   sortGroupes,
 } from '../services/hardcodedData'
 import Link from 'next/link'
+import { MyLink } from './MyLink'
 
 type Props = {
   groupesData: GroupeData[]
@@ -37,19 +38,17 @@ function Legend({ groupesData }: { groupesData: GroupeData[] }) {
     <ul className="flex list-none flex-wrap items-baseline space-y-4 space-x-4">
       {groupesData.map(g => (
         <li key={g.id} className="block">
-          <Link href={`/groupe/${g.acronym}`}>
-            <a>
-              <span
-                className={`mx-2 inline-block  py-1 px-2 text-white`}
-                style={{
-                  background: getColorForGroupeAcronym(g.acronym),
-                }}
-              >
-                {g?.acronym}
-              </span>
-              <span className="text-slate-400">{g.nom}</span>
-            </a>
-          </Link>
+          <MyLink href={`/groupe/${g.acronym}`}>
+            <span
+              className={`mx-2 inline-block  py-1 px-2 text-white`}
+              style={{
+                background: getColorForGroupeAcronym(g.acronym),
+              }}
+            >
+              {g?.acronym}
+            </span>
+            <span className="text-slate-400">{g.nom}</span>
+          </MyLink>
         </li>
       ))}
       <li></li>
