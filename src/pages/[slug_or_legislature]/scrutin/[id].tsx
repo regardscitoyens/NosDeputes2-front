@@ -4,7 +4,7 @@ import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
 import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
-import { formatDate } from '../../../services/utils'
+import { formatDate, parseIntOrNull } from '../../../services/utils'
 import groupBy from 'lodash/groupBy'
 
 type Data = {
@@ -43,12 +43,6 @@ type LocalVote = {
     | 'contre'
     | null
     | 'nonVotantVolontaire'
-}
-
-function parseIntOrNull(str: string): number | null {
-  const parsed = parseInt(str)
-  if (isNaN(parsed)) return null
-  return parsed
 }
 
 export const getServerSideProps: GetServerSideProps<{

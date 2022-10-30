@@ -28,6 +28,7 @@ interface NosDeputesDatabase {
   tagging: TaggingTable
   tag: TagTable
   parlementaire_scrutin: ParlementaireScrutinTable
+  variable_globale: VariableGlobaleTable
 }
 
 interface ParlementaireTable {
@@ -190,6 +191,14 @@ interface ParlementaireScrutinTable {
     | 'contre'
     | null
     | 'nonVotantVolontaire'
+  created_at: Date
+  updated_at: Date
+}
+
+interface VariableGlobaleTable {
+  id: Generated<number>
+  champ: string
+  value: Buffer | null
   created_at: Date
   updated_at: Date
 }
