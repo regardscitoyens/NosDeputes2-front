@@ -6,10 +6,12 @@ export function MyLink({
   children,
   className,
   style,
+  targetBlank,
 }: {
   href: string
   children: ReactNode
   className?: string
+  targetBlank?: boolean
   style?: CSSProperties | undefined
 }) {
   return (
@@ -17,6 +19,7 @@ export function MyLink({
       <a
         className={`underline underline-offset-4 ${className ?? ''}`}
         {...{ style }}
+        target={targetBlank ? '_blank' : undefined}
       >
         {children}
       </a>

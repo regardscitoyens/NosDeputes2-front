@@ -168,7 +168,7 @@ export default function Page({
         Scrutin public {type} n°{id}
       </h1>
       <h2 className="text-xl">Sur {titre}</h2>
-      <MyLink className="block text-slate-500" href={sourceUrl}>
+      <MyLink className="block text-slate-500" href={sourceUrl} targetBlank>
         Source
       </MyLink>
       <p>
@@ -186,7 +186,7 @@ export default function Page({
       </p>
       <div>
         Résultat : <span className="font-semibold">{sort}</span>
-        <ul>
+        <ul className="list-disc">
           <li>Pour : {nombre_pours}</li>
           <li>Contre : {nombre_contres}</li>
           <li>Abstention : {nombre_abstentions}</li>
@@ -196,20 +196,47 @@ export default function Page({
 
       <div>
         Votes:
-        <ul className="ml-8">
+        <ul className="ml-8 list-disc">
           {Object.entries(votesGrouped).map(([acronym, votes]) => {
             return (
               <li key={acronym}>
                 {acronym}
-                <ul className="ml-8">
+                <ul className="ml-8 list-disc">
                   {votes.map(vote => {
                     return (
                       <li key={vote.id}>
                         <MyLink href={`/${vote.parlementaire_slug}`}>
                           {vote.parlementaire_nom}
                         </MyLink>{' '}
-                        {/* TODO continue */}
-                        <span className="font-bold">{vote.position}</span>
+                        <span
+                          className={`font-bold ${getColorClassForPosition(
+                            vote.position,
+                          )}`}
+                        >
+                          {vote.position}
+                        </span>
+                        {vote.par_delegation === 1 ? (
+                          <>
+                            {' '}
+                            <span className="text-slate-500">
+                              (par délégation)
+                            </span>
+                          </>
+                        ) : null}
+                        {vote.mise_au_point_position !== null ? (
+                          <>
+                            {' '}
+                            (Mise au point :{' '}
+                            <span
+                              className={`font-bold ${getColorClassForPosition(
+                                vote.mise_au_point_position,
+                              )}`}
+                            >
+                              {vote.mise_au_point_position}
+                            </span>
+                            )
+                          </>
+                        ) : null}
                       </li>
                     )
                   })}
@@ -235,7 +262,10 @@ function getColorClassForPosition(
 ): string {
   switch (position) {
     case 'pour':
-      return 'bg-green-500'
-    // TODO CONTINUE
+      return 'text-green-700'
+    case 'contre':
+      return 'text-red-700'
+    default:
+      return 'text-slate-600'
   }
 }
