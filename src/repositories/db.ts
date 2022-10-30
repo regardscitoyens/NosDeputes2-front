@@ -29,6 +29,7 @@ interface NosDeputesDatabase {
   tag: TagTable
   parlementaire_scrutin: ParlementaireScrutinTable
   variable_globale: VariableGlobaleTable
+  texteloi: TexteLoiTable
 }
 
 interface ParlementaireTable {
@@ -109,7 +110,7 @@ interface SectionTable {
   max_date: Date | null
   timestamp: number
   nb_interventions: number
-  id_dossier_an: string
+  id_dossier_an: string | null
   created_at: Date
   updated_at: Date
 }
@@ -199,6 +200,32 @@ interface VariableGlobaleTable {
   id: Generated<number>
   champ: string
   value: Buffer | null
+  created_at: Date
+  updated_at: Date
+}
+
+interface TexteLoiTable {
+  id: string
+  nb_commentaires: number
+  legislature: number
+  numero: number
+  annexe: string | null
+  type:
+    | `Proposition de loi`
+    | `Projet de loi`
+    | `Proposition de résolution`
+    | `Rapport`
+    | `Rapport d'information`
+    | `Avis`
+  type_details: string | null
+  categorie: string | null
+  id_dossier_an: string
+  titre: string
+  date: Date
+  source: string
+  organisme_id: number | null
+  signataires: string
+  contenu: string
   created_at: Date
   updated_at: Date
 }
