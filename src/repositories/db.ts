@@ -27,6 +27,7 @@ interface NosDeputesDatabase {
   intervention: InterventionTable
   tagging: TaggingTable
   tag: TagTable
+  parlementaire_scrutin: ParlementaireScrutinTable
 }
 
 interface ParlementaireTable {
@@ -171,4 +172,24 @@ interface TagTable {
   triple_namespace: 'loi' | 'scrutin' | null
   triple_key: 'amendement' | 'numero' | null
   triple_value: string | null
+}
+
+interface ParlementaireScrutinTable {
+  id: number
+  scrutin_id: number
+  parlementaire_id: number
+  parlementaire_groupe_acronyme: string | null
+  position: 'pour' | 'nonVotant' | 'abstention' | 'contre' | null
+  position_groupe: string
+  par_delegation: 1 | 0
+  delegataire_parlementaire_id: number
+  mise_au_point_position:
+    | 'pour'
+    | 'nonVotant'
+    | 'abstention'
+    | 'contre'
+    | null
+    | 'nonVotantVolontaire'
+  created_at: Date
+  updated_at: Date
 }

@@ -5,6 +5,7 @@ import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
 import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
 import { formatDate } from '../../../services/utils'
+import groupBy from 'lodash/groupBy'
 
 type Data = {
   scrutin: LocalScrutin
@@ -21,6 +22,27 @@ type LocalScrutin = {
   nombre_pours: number
   nombre_contres: number
   nombre_abstentions: number
+  demandeurs: string | null
+  votesGrouped: { [acronym: string]: LocalVote[] }
+}
+
+type LocalVote = {
+  id: number
+  parlementaire_id: number
+  parlementaire_nom: string
+  parlementaire_slug: string
+  parlementaire_groupe_acronyme: string | null
+  position: 'pour' | 'nonVotant' | 'abstention' | 'contre' | null
+  position_groupe: string
+  par_delegation: 1 | 0
+  delegataire_parlementaire_id: number
+  mise_au_point_position:
+    | 'pour'
+    | 'nonVotant'
+    | 'abstention'
+    | 'contre'
+    | null
+    | 'nonVotantVolontaire'
 }
 
 function parseIntOrNull(str: string): number | null {
@@ -51,6 +73,7 @@ export const getServerSideProps: GetServerSideProps<{
       'nombre_pours',
       'nombre_contres',
       'nombre_abstentions',
+      'demandeurs',
       'sort',
     ])
     .executeTakeFirst()
@@ -67,6 +90,35 @@ export const getServerSideProps: GetServerSideProps<{
     .select('intervention.md5')
     .executeTakeFirst()
 
+  const votes: LocalVote[] = await db
+    .selectFrom('parlementaire_scrutin')
+    .innerJoin(
+      'parlementaire',
+      'parlementaire.id',
+      'parlementaire_scrutin.parlementaire_id',
+    )
+    .select([
+      'parlementaire_scrutin.id',
+      'parlementaire_scrutin.parlementaire_id',
+      'parlementaire.nom as parlementaire_nom',
+      'parlementaire.slug as parlementaire_slug',
+      'parlementaire_scrutin.parlementaire_groupe_acronyme',
+      'parlementaire_scrutin.position',
+      'parlementaire_scrutin.position_groupe',
+      'parlementaire_scrutin.par_delegation',
+      'parlementaire_scrutin.delegataire_parlementaire_id',
+      'parlementaire_scrutin.mise_au_point_position',
+    ])
+    .orderBy('position', 'desc')
+    .orderBy('nom_de_famille')
+    .where('parlementaire_scrutin.scrutin_id', '=', id)
+    .execute()
+
+  const votesGrouped: { [acronym: string]: LocalVote[] } = groupBy(
+    votes,
+    _ => _.parlementaire_groupe_acronyme,
+  )
+
   if (!scrutinRaw) {
     return {
       notFound: true,
@@ -76,6 +128,8 @@ export const getServerSideProps: GetServerSideProps<{
     ...scrutinRaw,
     date: scrutinRaw.date.toISOString(),
     interventionMd5: interventionMd5?.md5 ?? null,
+    demandeurs: scrutinRaw.demandeurs !== '' ? scrutinRaw.demandeurs : null,
+    votesGrouped,
   }
   return {
     props: {
@@ -103,6 +157,8 @@ export default function Page({
     nombre_pours,
     nombre_contres,
     nombre_abstentions,
+    demandeurs,
+    votesGrouped,
   } = scrutin
   const sourceUrl = `https://www2.assemblee-nationale.fr/scrutins/detail/(legislature)/${CURRENT_LEGISLATURE}/(num)/${id}`
 
@@ -136,7 +192,50 @@ export default function Page({
           <li>Abstention : {nombre_abstentions}</li>
         </ul>
       </div>
+      {demandeurs ? <p>A la demande de : {demandeurs}</p> : null}
+
+      <div>
+        Votes:
+        <ul className="ml-8">
+          {Object.entries(votesGrouped).map(([acronym, votes]) => {
+            return (
+              <li key={acronym}>
+                {acronym}
+                <ul className="ml-8">
+                  {votes.map(vote => {
+                    return (
+                      <li key={vote.id}>
+                        <MyLink href={`/${vote.parlementaire_slug}`}>
+                          {vote.parlementaire_nom}
+                        </MyLink>{' '}
+                        {/* TODO continue */}
+                        <span className="font-bold">{vote.position}</span>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
       <Todo>Tout le dossier...</Todo>
     </div>
   )
+}
+
+function getColorClassForPosition(
+  position:
+    | 'pour'
+    | 'nonVotant'
+    | 'abstention'
+    | 'contre'
+    | null
+    | 'nonVotantVolontaire',
+): string {
+  switch (position) {
+    case 'pour':
+      return 'bg-green-500'
+    // TODO CONTINUE
+  }
 }
