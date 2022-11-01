@@ -1,13 +1,15 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import PHPUnserialize from 'php-unserialize'
+import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
+import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
 import { notNull, parseIntOrNull } from '../../../services/utils'
-import PHPUnserialize from 'php-unserialize'
-import { type } from 'os'
-import { access } from 'fs'
 
 type Data = {
   section: LocalSection
+  seances: LocalSeance[]
+  textesLoi: LocalTexteLoi[]
 }
 
 type LocalSection = {
@@ -15,7 +17,6 @@ type LocalSection = {
   section_id: number
   titre_complet: string
   id_dossier_an: string | null
-  seances: LocalSeance[]
 }
 type LocalSeance = {
   id: number
@@ -25,7 +26,6 @@ type LocalSeance = {
 }
 type LocalTexteLoi = {
   id: string
-  nb_commentaires: number
   numero: number
   type:
     | `Proposition de loi`
@@ -108,25 +108,24 @@ async function getTexteLois(
   if (section.id_dossier_an || texteLoisNumeros.length > 0) {
     return await db
       .selectFrom('texteloi')
-      .where('texteloi.numero', 'in', texteLoisNumeros)
+      .where(qb =>
+        qb
+          .where('annexe', 'is', null)
+          .where('texteloi.numero', 'in', texteLoisNumeros),
+      )
       .if(section.id_dossier_an !== null, qb =>
-        qb.orWhere(
-          'texteloi.id_dossier_an',
-          '=',
-          section.id_dossier_an as string,
+        qb.orWhere(qb =>
+          qb
+            .where('annexe', 'is', null)
+            .where(
+              'texteloi.id_dossier_an',
+              '=',
+              section.id_dossier_an as string,
+            ),
         ),
       )
       .orderBy('numero')
-      .orderBy('annexe')
-      .select([
-        'id',
-        'numero',
-        'type',
-        'type_details',
-        'titre',
-        'signataires',
-        'nb_commentaires',
-      ])
+      .select(['id', 'numero', 'type', 'type_details', 'titre', 'signataires'])
       .execute()
   }
   return []
@@ -150,17 +149,21 @@ export const getServerSideProps: GetServerSideProps<{
     .executeTakeFirst()
 
   const seances: LocalSeance[] = filterSeancesRowNotNull(
-    await db
-      .selectFrom('seance')
-      .fullJoin('intervention', 'intervention.seance_id', 'seance.id')
-      .fullJoin('section', 'section.id', 'intervention.section_id')
-      // sections qui sont filles de la section donnée
-      .where('section.section_id', '=', finalSectionId)
-      // interventions qui ciblent la section donnée
-      .orWhere('intervention.section_id', '=', finalSectionId)
-      .groupBy('seance.id')
-      .select(['seance.id', 'seance.date', 'seance.type', 'seance.moment'])
-      .execute(),
+    // TODO cette query ne marche pas, il y a pas de full join en mysql ? voir comment faire
+    // au pire, splitter en deux queries
+    true
+      ? []
+      : await db
+          .selectFrom('seance')
+          .fullJoin('intervention', 'intervention.seance_id', 'seance.id')
+          .fullJoin('section', 'section.id', 'intervention.section_id')
+          // sections qui sont filles de la section donnée
+          .where('section.section_id', '=', finalSectionId)
+          // interventions qui ciblent la section donnée
+          .orWhere('intervention.section_id', '=', finalSectionId)
+          .groupBy('seance.id')
+          .select(['seance.id', 'seance.date', 'seance.type', 'seance.moment'])
+          .execute(),
   )
 
   if (seances.length === 1 && seances[0].type === 'commission') {
@@ -194,7 +197,7 @@ export const getServerSideProps: GetServerSideProps<{
     .map(parseIntOrNull)
     .filter(notNull)
 
-  const texteLois = await getTexteLois(section, texteLoisNumeros)
+  const textesLoi = await getTexteLois(section, texteLoisNumeros)
 
   // Il y avait aussi un truc avec "titre_loi"  dans le code,
   // mais la table est vide sur au moins deux législatures, donc je n'ai pas repris
@@ -227,10 +230,9 @@ export const getServerSideProps: GetServerSideProps<{
   return {
     props: {
       data: {
-        section: {
-          ...section,
-          seances,
-        },
+        section,
+        seances,
+        textesLoi,
       },
     },
   }
@@ -239,11 +241,35 @@ export const getServerSideProps: GetServerSideProps<{
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { section } = data
+  const { section, seances, textesLoi } = data
   return (
     <div>
       <h1 className="text-2xl">{section.titre_complet}</h1>
+
       <Todo>Tout le dossier...</Todo>
+      <div className="bg-slate-200 p-8">
+        <h2 className="text-xl">Documents législatifs</h2>
+        <ul className="list-disc">
+          {textesLoi.map(({ id, titre, numero, type, type_details }) => {
+            return (
+              <li key={id}>
+                <span className="mr-2 text-slate-500 ">n°{numero}</span>
+                <MyLink href={`/${CURRENT_LEGISLATURE}/document/${id}`}>
+                  {type} {type_details} {titre}
+                </MyLink>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+      <h2>Les débats consacrés à ce dossier</h2>
+      <ul className="list-disc">
+        {seances.map(seance => {
+          return <li key={seance.id}>{seance.date.toISOString()}</li>
+        })}
+      </ul>
+      <h2>Les principaux orateurs sur ce dossier</h2>
+      <h2>Organisation du dossier</h2>
     </div>
   )
 }
