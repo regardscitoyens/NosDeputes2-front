@@ -8,6 +8,7 @@ import { notNull, parseIntOrNull } from '../../../services/utils'
 
 type Data = {
   section: LocalSection
+  subSections: LocalSubSection[]
   seances: LocalSeance[]
   textesLoi: LocalTexteLoi[]
 }
@@ -17,6 +18,11 @@ type LocalSection = {
   section_id: number
   titre_complet: string
   id_dossier_an: string | null
+}
+type LocalSubSection = {
+  id: number
+  titre: string | null
+  titre_complet: string
 }
 type LocalSeance = {
   id: number
@@ -79,6 +85,42 @@ async function getFinalSectionId(givenSectionId: number): Promise<number> {
     }
   }
   return givenSectionId
+}
+
+async function getSubSections(
+  givenSectionId: number,
+): Promise<LocalSubSection[]> {
+  return await db
+    .selectFrom('section')
+    .where('section_id', '=', givenSectionId)
+    .orderBy('min_date')
+    .orderBy('timestamp')
+    .select(['id', 'titre', 'titre_complet'])
+    .execute()
+}
+
+async function getFirstSeance(
+  subSection: LocalSubSection,
+): Promise<number | null> {
+  // TODO pas du tout efficace puisqu'on le refait pour chaque sous section. C'était comme ça dans le PHP. A voir si on pourrait le faire en une seule query
+  return (
+    (
+      await db
+        .selectFrom('seance')
+        .innerJoin('intervention', 'seance.id', 'intervention.seance_id')
+        .innerJoin('section', 'section.id', 'intervention.section_id')
+        .where('section.section_id', '=', subSection.id)
+        .orWhere('section.id', '=', subSection.id)
+        .groupBy('seance.id')
+        // ces order by sont erronés (c'était dans le PHP) je crois car ils sont effectués après le GROUP BY
+        // ça ne devrait pas affecter les résultat si une section n'est toujours présente que dans une séance, est-ce le cas ? peut-être pas car sinon il y aurait directement une FK de section vers séance...
+        .orderBy('section.min_date')
+        .orderBy('section.timestamp')
+        .limit(1)
+        .select('seance.id')
+        .executeTakeFirst()
+    )?.id ?? null
+  )
 }
 
 function filterSeancesRowNotNull(
@@ -227,12 +269,15 @@ export const getServerSideProps: GetServerSideProps<{
   //   .where('taggable_id', 'in', interventionsIds)
   //   .where('taggable_model', '=', 'Intervention')
 
+  const subSections = await getSubSections(finalSectionId)
+
   return {
     props: {
       data: {
         section,
         seances,
         textesLoi,
+        subSections,
       },
     },
   }
@@ -241,7 +286,7 @@ export const getServerSideProps: GetServerSideProps<{
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { section, seances, textesLoi } = data
+  const { section, seances, textesLoi, subSections } = data
   return (
     <div>
       <h1 className="text-2xl">{section.titre_complet}</h1>
@@ -269,7 +314,38 @@ export default function Page({
         })}
       </ul>
       <h2>Les principaux orateurs sur ce dossier</h2>
-      <h2>Organisation du dossier</h2>
+      <div className="bg-slate-200 p-8">
+        <h2 className="text-xl">Organisation du dossier</h2>
+        <ul className="list-disc">
+          {subSections.map(({ id, titre, titre_complet }) => {
+            return (
+              <li key={id}>
+                {/* 
+                
+                  TODO faire lien vers la séance... 
+                
+                  echo link_to($subtitre, '@interventions_seance?seance='.$subsection->getFirstSeance().'#table_'.$subsection->id); ?></li>
+
+                  public function getFirstSeance() {
+                      return Doctrine_Query::create()
+                        ->from('Seance s, Section st, Intervention i')
+                        ->select('s.id')
+                        ->where('i.seance_id = s.id')
+                        ->andwhere('i.section_id = st.id')
+                        ->andWhere('(st.section_id = ? OR i.section_id = ? )', array($this->id, $this->id))
+                        ->groupBy('s.id')
+                        ->orderBy('st.min_date ASC, st.timestamp ASC')
+                        ->limit(1)
+                        ->execute(array(), Doctrine_Core::HYDRATE_SINGLE_SCALAR);
+                    }
+
+                */}
+                <MyLink href={`/???`}>{titre}</MyLink>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </div>
   )
 }

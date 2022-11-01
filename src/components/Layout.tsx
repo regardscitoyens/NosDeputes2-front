@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import { ReactNode } from 'react'
 import { CURRENT_LEGISLATURE } from '../services/hardcodedData'
 import { MyLink } from './MyLink'
@@ -10,7 +9,7 @@ type Props = {
 
 function BasicLink({ to, label }: { to: string; label?: string }) {
   return (
-    <MyLink href={to} className="block bg-slate-300 py-2 px-4 underline">
+    <MyLink href={to} className="block px-4">
       {label ?? to}
     </MyLink>
   )
