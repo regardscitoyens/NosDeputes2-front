@@ -1,5 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import PHPUnserialize from 'php-unserialize'
+import { ReactNode } from 'react'
 import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
@@ -271,6 +272,8 @@ export const getServerSideProps: GetServerSideProps<{
 
   const subSections = await getSubSections(finalSectionId)
 
+  subSections.map(getFirstSeance)
+
   return {
     props: {
       data: {
@@ -283,6 +286,21 @@ export const getServerSideProps: GetServerSideProps<{
   }
 }
 
+function BasicBlock({
+  title,
+  children,
+}: {
+  children?: ReactNode
+  title: string
+}) {
+  return (
+    <div className="my-4 bg-slate-200 px-8">
+      <h2 className="text-xl  font-semibold ">{title}</h2>
+      {children}
+    </div>
+  )
+}
+
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -292,8 +310,7 @@ export default function Page({
       <h1 className="text-2xl">{section.titre_complet}</h1>
 
       <Todo>Tout le dossier...</Todo>
-      <div className="bg-slate-200 p-8">
-        <h2 className="text-xl">Documents législatifs</h2>
+      <BasicBlock title="Documents législatifs">
         <ul className="list-disc">
           {textesLoi.map(({ id, titre, numero, type, type_details }) => {
             return (
@@ -306,46 +323,36 @@ export default function Page({
             )
           })}
         </ul>
-      </div>
-      <h2>Les débats consacrés à ce dossier</h2>
-      <ul className="list-disc">
-        {seances.map(seance => {
-          return <li key={seance.id}>{seance.date.toISOString()}</li>
-        })}
-      </ul>
-      <h2>Les principaux orateurs sur ce dossier</h2>
-      <div className="bg-slate-200 p-8">
-        <h2 className="text-xl">Organisation du dossier</h2>
+      </BasicBlock>
+      <BasicBlock title="Les débats consacrés à ce dossier">
+        <ul className="list-disc">
+          {seances.map(seance => {
+            return <li key={seance.id}>{seance.date.toISOString()}</li>
+          })}
+        </ul>
+      </BasicBlock>
+      <BasicBlock title="Les principaux orateurs sur ce dossier"></BasicBlock>
+      <BasicBlock title="Organisation du dossier">
         <ul className="list-disc">
           {subSections.map(({ id, titre, titre_complet }) => {
             return (
               <li key={id}>
-                {/* 
-                
-                  TODO faire lien vers la séance... 
-                
-                  echo link_to($subtitre, '@interventions_seance?seance='.$subsection->getFirstSeance().'#table_'.$subsection->id); ?></li>
-
-                  public function getFirstSeance() {
-                      return Doctrine_Query::create()
-                        ->from('Seance s, Section st, Intervention i')
-                        ->select('s.id')
-                        ->where('i.seance_id = s.id')
-                        ->andwhere('i.section_id = st.id')
-                        ->andWhere('(st.section_id = ? OR i.section_id = ? )', array($this->id, $this->id))
-                        ->groupBy('s.id')
-                        ->orderBy('st.min_date ASC, st.timestamp ASC')
-                        ->limit(1)
-                        ->execute(array(), Doctrine_Core::HYDRATE_SINGLE_SCALAR);
-                    }
-
-                */}
                 <MyLink href={`/???`}>{titre}</MyLink>
               </li>
             )
           })}
         </ul>
-      </div>
+      </BasicBlock>
     </div>
   )
 }
+
+/* 
+                
+                  TODO faire lien vers la séance... 
+                
+                  echo link_to($subtitre, '@interventions_seance?seance='.$subsection->getFirstSeance().'#table_'.$subsection->id); ?></li>
+
+                 
+
+                */
