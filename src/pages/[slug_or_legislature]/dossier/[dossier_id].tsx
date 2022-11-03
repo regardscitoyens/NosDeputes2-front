@@ -9,7 +9,7 @@ import { notNull, parseIntOrNull } from '../../../services/utils'
 
 type Data = {
   section: LocalSection
-  subSections: LocalSubSection[]
+  subSections: LocalSubSectionWithSeance[]
   seances: LocalSeance[]
   textesLoi: LocalTexteLoi[]
 }
@@ -24,6 +24,9 @@ type LocalSubSection = {
   id: number
   titre: string | null
   titre_complet: string
+}
+type LocalSubSectionWithSeance = LocalSubSection & {
+  seance_id: number | null
 }
 type LocalSeance = {
   id: number
@@ -272,7 +275,15 @@ export const getServerSideProps: GetServerSideProps<{
 
   const subSections = await getSubSections(finalSectionId)
 
-  subSections.map(getFirstSeance)
+  const finalSubSections = await Promise.all(
+    subSections.map(async _ => {
+      const seance_id = await getFirstSeance(_)
+      return {
+        ..._,
+        seance_id,
+      }
+    }),
+  )
 
   return {
     props: {
@@ -280,7 +291,7 @@ export const getServerSideProps: GetServerSideProps<{
         section,
         seances,
         textesLoi,
-        subSections,
+        subSections: finalSubSections,
       },
     },
   }
@@ -334,10 +345,14 @@ export default function Page({
       <BasicBlock title="Les principaux orateurs sur ce dossier"></BasicBlock>
       <BasicBlock title="Organisation du dossier">
         <ul className="list-disc">
-          {subSections.map(({ id, titre, titre_complet }) => {
+          {subSections.map(({ id, titre, seance_id }) => {
             return (
               <li key={id}>
-                <MyLink href={`/???`}>{titre}</MyLink>
+                <MyLink
+                  href={`/${CURRENT_LEGISLATURE}/seance/${seance_id}#table_${id}`}
+                >
+                  {titre}
+                </MyLink>
               </li>
             )
           })}
@@ -346,13 +361,3 @@ export default function Page({
     </div>
   )
 }
-
-/* 
-                
-                  TODO faire lien vers la séance... 
-                
-                  echo link_to($subtitre, '@interventions_seance?seance='.$subsection->getFirstSeance().'#table_'.$subsection->id); ?></li>
-
-                 
-
-                */
