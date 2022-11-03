@@ -12,6 +12,10 @@ type Data = {
   subSections: LocalSubSectionWithSeance[]
   seances: LocalSeance[]
   textesLoi: LocalTexteLoi[]
+  // Parfois on trouve des ids de loi mais pas le texteloi correspondant
+  // Exemple https://www.nosdeputes.fr/16/dossier/134
+  // il y a "Texte N° 17" / "Texte N° 146" / "Texte N° 180"
+  othersLoiWithoutTexte: number[]
 }
 
 type LocalSection = {
@@ -247,8 +251,13 @@ export const getServerSideProps: GetServerSideProps<{
     .map(parseIntOrNull)
     .filter(notNull)
 
+  console.log('@@@ texte loi numeros', texteLoisNumeros)
+
   const textesLoi = await getTexteLois(section, texteLoisNumeros)
 
+  const othersLoiWithoutTexte = texteLoisNumeros.filter(
+    n => !textesLoi.some(_ => _.numero === n),
+  )
   // Il y avait aussi un truc avec "titre_loi"  dans le code,
   // mais la table est vide sur au moins deux législatures, donc je n'ai pas repris
 
@@ -294,7 +303,9 @@ export const getServerSideProps: GetServerSideProps<{
       data: {
         section,
         seances,
+        // TODO sur cet exemple https://www.nosdeputes.fr/16/dossier/134 ils ont des textes que je n'ai pas ?
         textesLoi,
+        othersLoiWithoutTexte,
         subSections: finalSubSections,
       },
     },
@@ -319,7 +330,8 @@ function BasicBlock({
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { section, seances, textesLoi, subSections } = data
+  const { section, seances, textesLoi, othersLoiWithoutTexte, subSections } =
+    data
   return (
     <div>
       <h1 className="text-2xl">{section.titre_complet}</h1>
@@ -334,6 +346,13 @@ export default function Page({
                 <MyLink href={`/${CURRENT_LEGISLATURE}/document/${id}`}>
                   {type} {type_details} {titre}
                 </MyLink>
+              </li>
+            )
+          })}
+          {othersLoiWithoutTexte.map(numero => {
+            return (
+              <li key={numero}>
+                <span className="mr-2 text-slate-500 ">n°{numero}</span>
               </li>
             )
           })}
