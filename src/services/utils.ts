@@ -8,12 +8,12 @@ export function getAge(date_naissance: string) {
 }
 
 export function formatDate(dateIsoString: string) {
-  const d = new Date(dateIsoString)
-  const dd = d.getUTCDay().toString().padStart(2, '0')
-  const mm = (d.getUTCMonth() + 1).toString().padStart(2, '0')
-  const yyyy = d.getUTCFullYear()
-  const res = `${dd}/${mm}/${yyyy}`
-  return res
+  const str = new Date(dateIsoString)
+    .toLocaleString('fr-FR', {
+      timeZone: 'Europe/Paris',
+    })
+    .split(' ')[0]
+  return str
 }
 
 export function uniqBy<A, B>(arr: A[], fn: (a: A) => B): A[] {

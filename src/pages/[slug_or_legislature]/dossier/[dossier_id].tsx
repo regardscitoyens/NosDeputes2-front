@@ -5,7 +5,7 @@ import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
 import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
-import { notNull, parseIntOrNull } from '../../../services/utils'
+import { formatDate, notNull, parseIntOrNull } from '../../../services/utils'
 
 type Data = {
   section: LocalSection
@@ -28,9 +28,15 @@ type LocalSubSection = {
 type LocalSubSectionWithSeance = LocalSubSection & {
   seance_id: number | null
 }
-type LocalSeance = {
+type LocalSeanceWithRawDate = {
   id: number
   date: Date
+  moment: string
+  type: 'hemicycle' | 'commission'
+}
+type LocalSeance = {
+  id: number
+  date: string
   moment: string
   type: 'hemicycle' | 'commission'
 }
@@ -129,7 +135,7 @@ async function getFirstSeance(
 
 function filterSeancesRowNotNull(
   seances: (
-    | LocalSeance
+    | LocalSeanceWithRawDate
     | {
         id: number | null
         date: Date | null
@@ -137,8 +143,8 @@ function filterSeancesRowNotNull(
         type: 'hemicycle' | 'commission' | null
       }
   )[],
-): LocalSeance[] {
-  return seances.reduce<LocalSeance[]>((acc, seance) => {
+): LocalSeanceWithRawDate[] {
+  return seances.reduce<LocalSeanceWithRawDate[]>((acc, seance) => {
     const { id, date, moment, type } = seance
     if (id !== null && date !== null && moment !== null && type !== null) {
       return [...acc, { id, date, moment, type }]
@@ -195,22 +201,20 @@ export const getServerSideProps: GetServerSideProps<{
     .executeTakeFirst()
 
   const seances: LocalSeance[] = filterSeancesRowNotNull(
-    // TODO cette query ne marche pas, il y a pas de full join en mysql ? voir comment faire
-    // au pire, splitter en deux queries
-    true
-      ? []
-      : await db
-          .selectFrom('seance')
-          .fullJoin('intervention', 'intervention.seance_id', 'seance.id')
-          .fullJoin('section', 'section.id', 'intervention.section_id')
-          // sections qui sont filles de la section donnée
-          .where('section.section_id', '=', finalSectionId)
-          // interventions qui ciblent la section donnée
-          .orWhere('intervention.section_id', '=', finalSectionId)
-          .groupBy('seance.id')
-          .select(['seance.id', 'seance.date', 'seance.type', 'seance.moment'])
-          .execute(),
-  )
+    // Cette query était plutôt une sorte de full join dans le php
+    // je suis pas 100% sûr que ce soit correct de le faire en inner join
+    await db
+      .selectFrom('seance')
+      .innerJoin('intervention', 'intervention.seance_id', 'seance.id')
+      .innerJoin('section', 'section.id', 'intervention.section_id')
+      // sections qui sont filles de la section donnée
+      .where('section.section_id', '=', finalSectionId)
+      // interventions qui ciblent la section donnée
+      .orWhere('intervention.section_id', '=', finalSectionId)
+      .groupBy('seance.id')
+      .select(['seance.id', 'seance.date', 'seance.type', 'seance.moment'])
+      .execute(),
+  ).map(_ => ({ ..._, date: _.date.toISOString() }))
 
   if (seances.length === 1 && seances[0].type === 'commission') {
     // TODO redirect vers /16/seance/SEANCE_ID#table_SECTION_ID ???
@@ -338,7 +342,12 @@ export default function Page({
       <BasicBlock title="Les débats consacrés à ce dossier">
         <ul className="list-disc">
           {seances.map(seance => {
-            return <li key={seance.id}>{seance.date.toISOString()}</li>
+            return (
+              <li key={seance.id}>
+                Séance en {seance.type} du {formatDate(seance.date)} à{' '}
+                {seance.moment}
+              </li>
+            )
           })}
         </ul>
       </BasicBlock>
