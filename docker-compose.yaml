@@ -11,7 +11,7 @@ services:
     environment:
       MARIADB_USER: user
       MARIADB_PASSWORD: password
-      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
       MARIADB_DATABASE: nosdeputes
 
 volumes:
