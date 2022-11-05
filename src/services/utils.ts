@@ -40,6 +40,14 @@ export function readFromEnv(name: string): string {
   return value
 }
 
+export function readIntFromEnv(name: string): number {
+  const res = parseIntOrNull(readFromEnv(name))
+  if (res === null) {
+    throw new Error(`env variable ${name} is not a integer`)
+  }
+  return res
+}
+
 // partition an array into multiple chunks based on a predicate
 export function chunkBy<A, B>(arr: A[], fn: (a: A) => B): A[][] {
   return Object.values(groupBy(arr, fn))

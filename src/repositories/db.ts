@@ -1,6 +1,6 @@
 import { Generated, Kysely, MysqlDialect } from 'kysely'
 import * as mysql from 'mysql2'
-import { readFromEnv } from '../services/utils'
+import { readFromEnv, readIntFromEnv } from '../services/utils'
 
 export type DbConnectionPool = Kysely<NosDeputesDatabase>
 
@@ -9,6 +9,7 @@ export const db: DbConnectionPool = new Kysely<NosDeputesDatabase>({
   dialect: new MysqlDialect({
     pool: mysql.createPool({
       host: readFromEnv('DB_HOST'),
+      port: readIntFromEnv('DB_PORT'),
       user: readFromEnv('DB_USER'),
       password: readFromEnv('DB_PWD'),
       database: readFromEnv('DB_NAME'),
