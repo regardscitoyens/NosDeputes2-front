@@ -1,0 +1,18 @@
+version: '3'
+
+# this is for development only
+services:
+  db:
+    image: mariadb:10.9.3
+    ports:
+      - 3306:3306
+    volumes:
+      - nosdeputes_data:/var/lib/mysql
+    environment:
+      MARIADB_USER: user
+      MARIADB_PASSWORD: password
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+      MARIADB_DATABASE: nosdeputes
+
+volumes:
+  nosdeputes_data:
