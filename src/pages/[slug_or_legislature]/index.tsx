@@ -95,7 +95,12 @@ export default function Page({
         </sup> circonscription {addPrefixToDepartement(depute.nom_circo)}
       </h1>
       <div className="col-span-2">
-        <Todo>photo</Todo>
+        <img
+          src={`/deputes/photos/16/${depute.id_an}.jpg`}
+          alt={`Photo ${depute.sexe === 'F' ? `de la députée` : `du député`} ${
+            depute.nom
+          }`}
+        />
       </div>
       <div className="col-span-10">
         <Todo>graph de présence et participation</Todo>

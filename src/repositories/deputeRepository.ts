@@ -20,6 +20,8 @@ export type DeputeCompleteInfo = {
   profession: string | null
   debut_mandat: string
   fin_mandat: string | null
+  id_an: number
+  sexe: 'H' | 'F'
 }
 
 export async function queryDeputeForDeputePage(
@@ -36,6 +38,8 @@ export async function queryDeputeForDeputePage(
       'profession',
       'debut_mandat',
       'fin_mandat',
+      'id_an',
+      'sexe',
     ])
     .where('slug', '=', slug)
     .executeTakeFirst()
