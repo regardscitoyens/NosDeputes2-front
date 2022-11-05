@@ -81,7 +81,7 @@ N'hésitez pas à me signaler si vous commencez à bosser sur un truc, pour qu'o
   - implem la page /16/marc-ferracci/dossier/317
   - implem les divers blocs sur la page de chaque député
   - implem le graphique et les stats sur la page de chaque député
-  - implem les photos des députés
+  - [implem les photos des députés](https://github.com/regardscitoyens/NosDeputes2-front/issues/4)
   - implem la page /synthese
   - implem la page /16/question/QE/2497
   - implem la page deputes/tags
