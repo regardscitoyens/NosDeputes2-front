@@ -49,9 +49,22 @@ Pour l'instant le code est assez fouilli, c'est en chantier. Au début j'ai voul
 
 # Installation / faire tourner en local
 
-Il faut Yarn et Node. J'ai spécifié les versions exactes requises dans le package.json. Si vous avez yvm et nvm pour gérer les versions de Yarn/Node, vous ne devriez pas avoir de soucis. Si non, vous pouvez essayer de tricher en local, de changer la version de Node/Yarn dans le package.json (sans commiter), ça tournera probablement quand même.
+Il faut Yarn et NodeJS.
 
-Il faut installer mariadb. Et importer dessus un dump récent de la base de nosdeputes.fr https://data.regardscitoyens.org/nosdeputes.fr/ Vous pouvez aussi essayer d'utiliser le script `import-latest-dump`, c'est un script que je me suis fait pour télécharger le dernier dump, et l'importer sur mon mariadb local pour avoir régulièrement les dernières données. C'est bourrin, j'ai dû utiliser des commandes avec sudo et je fais des DROP DATABASE. Lisez le script avant de le lancer.
+## Mariadb sans docker
+
+Il faut installer mariadb localement et importer dessus un dump récent de la base de nosdeputes.fr https://data.regardscitoyens.org/nosdeputes.fr/ Vous pouvez aussi essayer d'utiliser le script `import-latest-dump`, c'est un script que je me suis fait pour télécharger le dernier dump, et l'importer sur mon mariadb local pour avoir régulièrement les dernières données. C'est bourrin, j'ai dû utiliser des commandes avec sudo et je fais des DROP DATABASE. Lisez le script avant de le lancer.
+
+## Mariadb avec docker
+
+Vous pouvez utiliser le `docker-compose.yaml` fourni pour lancer mariadb et importer les données :
+
+    # lance mariadb
+    docker-compose up
+    # télécharge et restaure le dernier dump
+    curl https://data.regardscitoyens.org/nosdeputes.fr/nosdeputes.fr_donnees.sql.gz | gunzip | docker-compose exec -T db sh -c 'exec mariadb -uroot -Dnosdeputes'
+
+## Lancer le frontend
 
 Enfin il faut créér un fichier .env.local en se basant sur le .env.local.sample
 
