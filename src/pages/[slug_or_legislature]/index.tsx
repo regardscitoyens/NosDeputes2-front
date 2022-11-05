@@ -1,4 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import PHPUnserialize from 'php-unserialize'
+
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
@@ -17,6 +19,42 @@ type Data = {
   depute: SimpleDepute & DeputeCompleteInfo
 }
 
+// build list of depute urls
+function parseDeputeUrls(basicDeputeInfo: DeputeCompleteInfo) {
+  const urls = []
+  if (basicDeputeInfo.url_an) {
+    urls.push({
+      label: 'Fiche Assemblée nationale',
+      url: basicDeputeInfo.url_an,
+    })
+  }
+  urls.push({
+    label: 'Page wikipedia',
+    url: `https://fr.wikipedia.org/wiki/${encodeURIComponent(
+      basicDeputeInfo.nom,
+    )}`,
+  })
+  if (basicDeputeInfo.sites_web) {
+    const sites = PHPUnserialize.unserialize(basicDeputeInfo.sites_web) as {
+      [k: string]: string
+    }
+    urls.push(
+      ...Object.values(sites).map(url => {
+        const label = url.match(/facebook/)
+          ? 'Page facebook'
+          : url.match(/twitter/)
+          ? `Compte twitter : ${url.replace(/^.*\/(.*)$/, '@$1')}`
+          : `Site web : ${url}`
+        return {
+          label,
+          url,
+        }
+      }),
+    )
+  }
+  return urls
+}
+
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
@@ -33,6 +71,9 @@ export const getServerSideProps: GetServerSideProps<{
       notFound: true,
     }
   }
+
+  // add depute urls
+  basicDeputeInfo.urls = parseDeputeUrls(basicDeputeInfo)
   const data = {
     depute: {
       ...basicDeputeInfo,
@@ -42,6 +83,25 @@ export const getServerSideProps: GetServerSideProps<{
   return {
     props: { data },
   }
+}
+
+function LinksBlock({ depute }: Data) {
+  return (
+    (depute.urls && (
+      <ul className="list-none">
+        {depute.urls.map(({ label, url }) => {
+          return (
+            <li key={url}>
+              <a href={url} target="_blank" rel="noreferrer noopener">
+                {label}
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    )) ||
+    null
+  )
 }
 
 function InformationsBlock({ depute }: Data) {
@@ -69,7 +129,7 @@ function InformationsBlock({ depute }: Data) {
             <GroupeBadge groupe={depute.latestGroup} />
           </li>
         </ul>
-        <Todo inline>liens twitter wikipedia etc.</Todo>
+        <LinksBlock depute={depute} />
       </div>
     </div>
   )
