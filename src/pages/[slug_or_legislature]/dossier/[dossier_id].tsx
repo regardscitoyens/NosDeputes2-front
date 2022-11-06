@@ -385,8 +385,12 @@ export default function Page({
               {seances.map(seance => {
                 return (
                   <li key={seance.id}>
-                    Séance en {seance.type} du {formatDate(seance.date)} à{' '}
-                    {seance.moment}
+                    <MyLink
+                      href={`/${CURRENT_LEGISLATURE}/seance/${seance.id}#table_${section.id}`}
+                    >
+                      Séance en {seance.type} du {formatDate(seance.date)} à{' '}
+                      {seance.moment}
+                    </MyLink>
                   </li>
                 )
               })}
