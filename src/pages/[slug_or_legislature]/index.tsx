@@ -3,6 +3,7 @@ import PHPUnserialize from 'php-unserialize'
 
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
+import { MyLink } from '../../components/MyLink'
 import {
   fetchDeputesList,
   SimpleDepute,
@@ -19,15 +20,18 @@ type Data = {
   depute: SimpleDepute & DeputeCompleteInfo
 }
 
+type DeputeUrls = { label: string; url: string }[]
+
 // build list of depute urls
-function parseDeputeUrls(basicDeputeInfo: DeputeCompleteInfo) {
-  const urls = []
+function parseDeputeUrls(basicDeputeInfo: DeputeCompleteInfo): DeputeUrls {
+  const urls = [] as DeputeUrls
   if (basicDeputeInfo.url_an) {
     urls.push({
       label: 'Fiche Assemblée nationale',
       url: basicDeputeInfo.url_an,
     })
   }
+  // todo: use real wikipedia url
   urls.push({
     label: 'Page wikipedia',
     url: `https://fr.wikipedia.org/wiki/${encodeURIComponent(
@@ -73,10 +77,14 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   // add depute urls
-  basicDeputeInfo.urls = parseDeputeUrls(basicDeputeInfo)
+  const basicDeputeInfoWithUrls = {
+    ...basicDeputeInfo,
+    urls: parseDeputeUrls(basicDeputeInfo),
+  }
+
   const data = {
     depute: {
-      ...basicDeputeInfo,
+      ...basicDeputeInfoWithUrls,
       ...deputeWithLatestGroup,
     },
   }
@@ -92,9 +100,9 @@ function LinksBlock({ depute }: Data) {
         {depute.urls.map(({ label, url }) => {
           return (
             <li key={url}>
-              <a href={url} target="_blank" rel="noreferrer noopener">
+              <MyLink targetBlank href={url}>
                 {label}
-              </a>
+              </MyLink>
             </li>
           )
         })}
