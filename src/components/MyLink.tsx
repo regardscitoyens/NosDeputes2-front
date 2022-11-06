@@ -14,6 +14,12 @@ export function MyLink({
   targetBlank?: boolean
   style?: CSSProperties | undefined
 }) {
+  const targetAttributes = targetBlank
+    ? {
+        target: '_blank',
+        rel: 'noreferrer noopener',
+      }
+    : {}
   return (
     <Link {...{ href }}>
       <a
@@ -21,7 +27,7 @@ export function MyLink({
           className ?? ''
         }`}
         {...{ style }}
-        target={targetBlank ? '_blank' : undefined}
+        {...targetAttributes}
       >
         {children}
       </a>
