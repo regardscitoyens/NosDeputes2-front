@@ -1,0 +1,44 @@
+name: Fetch deputes photos
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 0' # every sunday at 3h
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y unzip wget git
+          wget https://github.com/ericchiang/pup/releases/download/v0.4.0/pup_v0.4.0_linux_amd64.zip
+          unzip pup_v0.4.0_linux_amd64.zip -d /usr/local/bin
+
+      - name: Fetch photos
+        run: |
+          wget https://www2.assemblee-nationale.fr/deputes/liste/photo -O -\
+            | pup 'ul#grid li attr{data-urlimage}' \
+            | sed 's/\(\/static\/tribun\/\([0-9]*\)\/photos\/\(.*\)\)/\1 \2 \3/' \
+            | xargs -n3 bash -c 'mkdir -p public/deputes/photos/$1; wget https://www2.assemblee-nationale.fr$0 -c -O ./public/deputes/photos/$1/$2'
+
+      - name: Check changes
+        id: changes
+        shell: bash
+        run: |
+          echo "::set-output name=data_status::$(git status -s ./public/deputes/photos)"
+          echo "::set-output name=now::$(date +"%Y%m%d_%H%M")"
+
+      - name: Commit changes if any
+        uses: EndBug/add-and-commit@v8
+        if: ${{ steps.changes.outputs.data_status }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          add: 'public/deputes/photos'
+          author_name: 'github-actions[bot]'
+          author_email: 'github-actions[bot]@users.noreply.github.com'
+          message: 'fix(data): update photos ${{ steps.changes.outputs.now }}'
