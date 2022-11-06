@@ -232,8 +232,6 @@ export const getServerSideProps: GetServerSideProps<{
     }
   }
 
-  // TODO continue by copying queries from executeShow() in apps/frontend/modules/section/actions/actions.class.php
-
   const texteLoisNumeros: number[] = (
     await db
       .selectFrom('tagging')
@@ -250,8 +248,6 @@ export const getServerSideProps: GetServerSideProps<{
     .filter(notNull)
     .map(parseIntOrNull)
     .filter(notNull)
-
-  console.log('@@@ texte loi numeros', texteLoisNumeros)
 
   const textesLoi = await getTexteLois(section, texteLoisNumeros)
 
@@ -303,7 +299,6 @@ export const getServerSideProps: GetServerSideProps<{
       data: {
         section,
         seances,
-        // TODO sur cet exemple https://www.nosdeputes.fr/16/dossier/134 ils ont des textes que je n'ai pas ?
         textesLoi,
         othersLoiWithoutTexte,
         subSections: finalSubSections,
