@@ -25,6 +25,12 @@ export type DeputeCompleteInfo = {
   sites_web: string | null
   urls?: { label: string; url: string }[]
   url_an: string | null
+  collaborateurs: string | null
+  collaborateurs_parsed?: { name: string }[]
+  mails: string | null
+  mails_parsed?: string[]
+  adresses: string | null
+  adresses_parsed?: string[]
 }
 
 export async function queryDeputeForDeputePage(
@@ -45,6 +51,9 @@ export async function queryDeputeForDeputePage(
       'sexe',
       'sites_web',
       'url_an',
+      'collaborateurs',
+      'mails',
+      'adresses',
     ])
     .where('slug', '=', slug)
     .executeTakeFirst()
