@@ -13,8 +13,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update
-          apt-get install -y unzip wget git
+          sudo apt-get update
+          sudo apt-get install -y unzip wget git
           wget https://github.com/ericchiang/pup/releases/download/v0.4.0/pup_v0.4.0_linux_amd64.zip
           unzip pup_v0.4.0_linux_amd64.zip -d /usr/local/bin
 
