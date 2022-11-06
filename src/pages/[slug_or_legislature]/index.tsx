@@ -22,6 +22,43 @@ type Data = {
 
 type DeputeUrls = { label: string; url: string }[]
 
+function parseMails(basicDeputeInfo: DeputeCompleteInfo): string[] {
+  if (basicDeputeInfo.mails) {
+    return Object.values(
+      PHPUnserialize.unserialize(basicDeputeInfo.mails),
+    ) as string[]
+  }
+  return []
+}
+
+type DeputeCollaborateur = {
+  name: string
+}
+
+function parseCollaborateurs(
+  basicDeputeInfo: DeputeCompleteInfo,
+): DeputeCollaborateur[] {
+  if (basicDeputeInfo.collaborateurs) {
+    const collaborateurs = Object.values(
+      PHPUnserialize.unserialize(basicDeputeInfo.collaborateurs),
+    ) as string[]
+    // todo: resolve collaborateur link
+    return collaborateurs.map(name => ({
+      name,
+    }))
+  }
+  return []
+}
+
+function parseAdresses(basicDeputeInfo: DeputeCompleteInfo): string[] {
+  if (basicDeputeInfo.adresses) {
+    return Object.values(
+      PHPUnserialize.unserialize(basicDeputeInfo.adresses),
+    ) as string[]
+  }
+  return []
+}
+
 // build list of depute urls
 function parseDeputeUrls(basicDeputeInfo: DeputeCompleteInfo): DeputeUrls {
   const urls = [] as DeputeUrls
@@ -76,15 +113,18 @@ export const getServerSideProps: GetServerSideProps<{
     }
   }
 
-  // add depute urls
-  const basicDeputeInfoWithUrls = {
+  // add depute urls and contacts
+  const basicDeputeInfoWithParsedInfos = {
     ...basicDeputeInfo,
     urls: parseDeputeUrls(basicDeputeInfo),
+    collaborateurs_parsed: parseCollaborateurs(basicDeputeInfo),
+    mails_parsed: parseMails(basicDeputeInfo),
+    adresses_parsed: parseAdresses(basicDeputeInfo),
   }
 
   const data = {
     depute: {
-      ...basicDeputeInfoWithUrls,
+      ...basicDeputeInfoWithParsedInfos,
       ...deputeWithLatestGroup,
     },
   }
@@ -143,6 +183,50 @@ function InformationsBlock({ depute }: Data) {
   )
 }
 
+function ContactBlock({ depute }: Data) {
+  console.log('depute', depute)
+  return (
+    <div className="bg-slate-200  px-8 py-4 shadow-md">
+      <h2 className="font-bold">Contact</h2>
+      <div className="py-4">
+        {(depute.mails_parsed && depute.mails_parsed.length && (
+          <ul className="list-none">
+            <b>Par email :</b>
+            <br />
+            {depute.mails_parsed.map(mail => (
+              <MyLink key={mail} targetBlank href={`mailto:${mail}`}>
+                {mail}
+              </MyLink>
+            ))}
+          </ul>
+        )) ||
+          null}
+        {(depute.adresses_parsed && depute.adresses_parsed.length && (
+          <ul className="list-none">
+            <b>Par courrier :</b>
+            <br />
+            {depute.adresses_parsed.map(adresse => (
+              <li key={adresse}>{adresse}</li>
+            ))}
+          </ul>
+        )) ||
+          null}
+        {(depute.collaborateurs_parsed &&
+          depute.collaborateurs_parsed.length && (
+            <ul className="list-none">
+              <b>Collaborateurs :</b>
+              <br />
+              {depute.collaborateurs_parsed.map(collaborateur => (
+                <li key={collaborateur.name}>{collaborateur.name}</li>
+              ))}
+            </ul>
+          )) ||
+          null}
+      </div>
+    </div>
+  )
+}
+
 function getOrdinalSuffixFeminine(n: number) {
   return n === 1 ? 'ère' : `ème`
 }
@@ -180,7 +264,7 @@ export default function Page({
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-8">
           <InformationsBlock {...{ depute }} />
-          <Todo>Adresses email, adresses postale, collaborateurs</Todo>
+          <ContactBlock {...{ depute }} />
           <Todo>
             Responsabilités (commissions, missions, groupes extraparlementaires
             etc.)
