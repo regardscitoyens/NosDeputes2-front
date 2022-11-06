@@ -356,72 +356,77 @@ export default function Page({
   } = data
   return (
     <div>
-      <h1 className="text-2xl">{section.titre_complet}</h1>
-
-      <Todo>Tout le dossier...</Todo>
-      <BasicBlock title="Documents législatifs">
-        <ul className="list-disc">
-          {textesLoi.map(({ id, titre, numero, type, type_details }) => {
-            return (
-              <li key={id}>
-                <span className="mr-2 text-slate-500 ">n°{numero}</span>
-                <MyLink href={`/${CURRENT_LEGISLATURE}/document/${id}`}>
-                  {type} {type_details} {titre}
-                </MyLink>
-              </li>
-            )
-          })}
-          {othersLoiWithoutTexte.map(numero => {
-            return (
-              <li key={numero}>
-                <span className="mr-2 text-slate-500 ">n°{numero}</span>
-              </li>
-            )
-          })}
-        </ul>
-      </BasicBlock>
-      <BasicBlock title="Les débats consacrés à ce dossier">
-        <ul className="list-disc">
-          {seances.map(seance => {
-            return (
-              <li key={seance.id}>
-                Séance en {seance.type} du {formatDate(seance.date)} à{' '}
-                {seance.moment}
-              </li>
-            )
-          })}
-        </ul>
-      </BasicBlock>
-      <BasicBlock title="Les principaux orateurs sur ce dossier">
-        <ul className="list-disc">
-          {speakingDeputes.map(depute => {
-            return (
-              <li key={depute.id}>
-                <MyLink
-                  href={`/${CURRENT_LEGISLATURE}/${depute.slug}/dossier/${section.id}`}
-                >
-                  {depute.nom}
-                </MyLink>
-              </li>
-            )
-          })}
-        </ul>
-      </BasicBlock>
-      <BasicBlock title="Organisation du dossier">
-        <ul className="list-disc">
-          {subSections.map(({ id, titre, seance_id }) => {
-            return (
-              <li key={id}>
-                <MyLink
-                  href={`/${CURRENT_LEGISLATURE}/seance/${seance_id}#table_${id}`}
-                >
-                  {titre}
-                </MyLink>
-              </li>
-            )
-          })}
-        </ul>
-      </BasicBlock>
+      <h1 className="text-center text-2xl">{section.titre_complet}</h1>
+      <div className="flex flex-row">
+        <div className="w-1/2 px-4">
+          <BasicBlock title="Documents législatifs">
+            <ul className="list-disc">
+              {textesLoi.map(({ id, titre, numero, type, type_details }) => {
+                return (
+                  <li key={id}>
+                    <span className="mr-2 text-slate-500 ">n°{numero}</span>
+                    <MyLink href={`/${CURRENT_LEGISLATURE}/document/${id}`}>
+                      {type} {type_details} {titre}
+                    </MyLink>
+                  </li>
+                )
+              })}
+              {othersLoiWithoutTexte.map(numero => {
+                return (
+                  <li key={numero}>
+                    <span className="mr-2 text-slate-500 ">n°{numero}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </BasicBlock>
+          <BasicBlock title="Les débats consacrés à ce dossier">
+            <ul className="list-disc">
+              {seances.map(seance => {
+                return (
+                  <li key={seance.id}>
+                    Séance en {seance.type} du {formatDate(seance.date)} à{' '}
+                    {seance.moment}
+                  </li>
+                )
+              })}
+            </ul>
+          </BasicBlock>
+          <BasicBlock title="Les principaux orateurs sur ce dossier">
+            <ul className="list-disc">
+              {speakingDeputes.map(depute => {
+                return (
+                  <li key={depute.id}>
+                    <MyLink
+                      href={`/${CURRENT_LEGISLATURE}/${depute.slug}/dossier/${section.id}`}
+                    >
+                      {depute.nom}
+                    </MyLink>
+                  </li>
+                )
+              })}
+            </ul>
+          </BasicBlock>
+        </div>
+        <div className="w-1/2 px-4">
+          <Todo>le nuage de mots</Todo>
+          <BasicBlock title="Organisation du dossier">
+            <ul className="list-disc">
+              {subSections.map(({ id, titre, seance_id }) => {
+                return (
+                  <li key={id}>
+                    <MyLink
+                      href={`/${CURRENT_LEGISLATURE}/seance/${seance_id}#table_${id}`}
+                    >
+                      {titre}
+                    </MyLink>
+                  </li>
+                )
+              })}
+            </ul>
+          </BasicBlock>
+        </div>
+      </div>
     </div>
   )
 }
