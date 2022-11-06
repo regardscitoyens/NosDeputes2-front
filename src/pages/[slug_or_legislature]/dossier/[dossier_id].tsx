@@ -4,6 +4,10 @@ import { ReactNode } from 'react'
 import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
+import {
+  fetchDeputesList,
+  SimpleDepute,
+} from '../../../services/deputesAndGroupesService'
 import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
 import { formatDate, notNull, parseIntOrNull } from '../../../services/utils'
 
@@ -16,6 +20,7 @@ type Data = {
   // Exemple https://www.nosdeputes.fr/16/dossier/134
   // il y a "Texte N° 17" / "Texte N° 146" / "Texte N° 180"
   othersLoiWithoutTexte: number[]
+  speakingDeputes: SimpleDepute[]
 }
 
 type LocalSection = {
@@ -258,11 +263,10 @@ export const getServerSideProps: GetServerSideProps<{
   // mais la table est vide sur au moins deux législatures, donc je n'ai pas repris
 
   const isParentSection = section.id === section.section_id
-  // TODO check that : on fait un leftjoin, du coup on récupère TOUTES les interventions qui ont au moins 20 mots non ?
   const interventionsIds = (
     await db
       .selectFrom('intervention')
-      .leftJoin('section', 'section.id', 'intervention.seance_id')
+      .innerJoin('section', 'section.id', 'intervention.section_id')
       // si c'est une section mère, on s'intéressent à ses sections filles
       .if(isParentSection, db =>
         db.where('section.section_id', '=', section.id),
@@ -270,8 +274,24 @@ export const getServerSideProps: GetServerSideProps<{
       .if(!isParentSection, db => db.where('section.id', '=', section.id))
       .where('intervention.nb_mots', '>', 20)
       .select('intervention.id')
+      .distinct()
       .execute()
   ).map(_ => _.id)
+
+  const speakingDeputesIds = (
+    await db
+      .selectFrom('intervention')
+      .where('id', 'in', interventionsIds)
+      .select('parlementaire_id')
+      .distinct()
+      .execute()
+  ).map(_ => _.parlementaire_id)
+
+  // not efficient at all, we fetch them all
+  // TODO improve that
+  const speakingDeputes = (await fetchDeputesList()).filter(_ =>
+    speakingDeputesIds.includes(_.id),
+  )
 
   // TODO ensuite il y a avait une query qui démarre comme ça sur les tags, pour afficher le nuage de mots
   // mais dans le php c'est dans un component partagé, ce sera un peu compliqué
@@ -302,6 +322,7 @@ export const getServerSideProps: GetServerSideProps<{
         textesLoi,
         othersLoiWithoutTexte,
         subSections: finalSubSections,
+        speakingDeputes,
       },
     },
   }
@@ -325,8 +346,14 @@ function BasicBlock({
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { section, seances, textesLoi, othersLoiWithoutTexte, subSections } =
-    data
+  const {
+    section,
+    seances,
+    textesLoi,
+    othersLoiWithoutTexte,
+    subSections,
+    speakingDeputes,
+  } = data
   return (
     <div>
       <h1 className="text-2xl">{section.titre_complet}</h1>
@@ -365,7 +392,21 @@ export default function Page({
           })}
         </ul>
       </BasicBlock>
-      <BasicBlock title="Les principaux orateurs sur ce dossier"></BasicBlock>
+      <BasicBlock title="Les principaux orateurs sur ce dossier">
+        <ul className="list-disc">
+          {speakingDeputes.map(depute => {
+            return (
+              <li key={depute.id}>
+                <MyLink
+                  href={`/${CURRENT_LEGISLATURE}/${depute.slug}/dossier/${section.id}`}
+                >
+                  {depute.nom}
+                </MyLink>
+              </li>
+            )
+          })}
+        </ul>
+      </BasicBlock>
       <BasicBlock title="Organisation du dossier">
         <ul className="list-disc">
           {subSections.map(({ id, titre, seance_id }) => {
