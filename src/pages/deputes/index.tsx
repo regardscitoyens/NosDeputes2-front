@@ -4,30 +4,60 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { Todo } from '../../components/Todo'
+import { db } from '../../repositories/db'
 import {
-  SimpleDepute,
-  fetchDeputesList,
+  addLatestGroupToDeputes,
+  WithLatestGroup,
 } from '../../services/deputesAndGroupesService'
 
 import { CURRENT_LEGISLATURE, sortGroupes } from '../../services/hardcodedData'
 import { buildGroupesData, GroupeData } from '../../services/rearrangeData'
 
 type Data = {
-  deputes: SimpleDepute[]
+  deputes: LocalDepute[]
   groupesData: GroupeData[]
 }
+
+type LocalDepute = WithLatestGroup<{
+  id: number
+  slug: string
+  nom: string
+  nom_circo: string
+  nom_de_famille: string
+  mandatOngoing: boolean
+}>
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
-  const deputes = await fetchDeputesList()
+  const deputes = (
+    await db
+      .selectFrom('parlementaire')
+      .select([
+        'id',
+        'slug',
+        'nom',
+        'nom_de_famille',
+        'nom_circo',
+        'fin_mandat',
+      ])
+      .execute()
+  ).map(row => {
+    const { fin_mandat, ...rest } = row
+    return {
+      ...rest,
+      mandatOngoing: fin_mandat === null,
+    }
+  })
+  const deputesWithGroup = await addLatestGroupToDeputes(deputes)
+  const groupesData = sortGroupes(
+    buildGroupesData(deputesWithGroup.filter(_ => _.mandatOngoing)),
+  )
   return {
     props: {
       data: {
-        deputes,
-        groupesData: sortGroupes(
-          buildGroupesData(deputes.filter(_ => _.mandatOngoing)),
-        ),
+        deputes: deputesWithGroup,
+        groupesData,
       },
     },
   }

@@ -1,10 +1,20 @@
-import Link from 'next/link'
-import { SimpleDepute } from '../services/deputesAndGroupesService'
+import { FonctionInGroupe } from '../repositories/deputesAndGroupesRepository'
 import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
 
 type Props = {
-  depute: SimpleDepute
+  depute: {
+    id: number
+    nom: string
+    nom_de_famille: string
+    nom_circo: string
+    slug: string
+    mandatOngoing: boolean
+    latestGroup: {
+      acronym: string
+      fonction: FonctionInGroupe
+    }
+  }
   withCirco?: boolean
 }
 
