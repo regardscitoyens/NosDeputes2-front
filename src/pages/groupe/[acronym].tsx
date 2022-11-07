@@ -3,7 +3,7 @@ import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
 import { db } from '../../repositories/db'
-import { FonctionInGroupe } from '../../repositories/deputesAndGroupesRepository'
+import { FonctionInGroupe } from '../../services/queryDeputesWithAllGroupes'
 import {
   fetchDeputesOfGroupe,
   SimpleDepute,

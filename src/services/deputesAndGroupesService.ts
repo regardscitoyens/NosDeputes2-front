@@ -1,13 +1,11 @@
 import { sql } from 'kysely'
-import groupBy from 'lodash/groupBy'
 import { db } from '../repositories/db'
 import {
   DeputesWithAllGroups,
   FonctionInGroupe,
-  getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
   normalizeFonctionInGroup,
-} from '../repositories/deputesAndGroupesRepository'
-import { GroupeData } from './rearrangeData'
+  queryDeputesWithAllGroupes,
+} from './queryDeputesWithAllGroupes'
 
 export type SimpleDepute = {
   id: number
@@ -140,11 +138,6 @@ function buildSimpleDepute(depute: DeputesWithAllGroups): SimpleDepute {
   }
 }
 
-export async function fetchDeputesList(): Promise<SimpleDepute[]> {
-  const deputes = await queryAllDeputesAndGroupesFromCurrentLegislature()
-  return deputes.map(buildSimpleDepute)
-}
-
 function withoutMinorPassageInNonInscrit(
   depute: DeputesWithAllGroups,
 ): DeputesWithAllGroups {
@@ -170,7 +163,7 @@ export async function fetchDeputesOfGroupe(acronym: string): Promise<{
   current: SimpleDepute[]
   former: SimpleDepute[]
 }> {
-  const deputes = (await queryAllDeputesAndGroupesFromCurrentLegislature()).map(
+  const deputes = (await queryDeputesWithAllGroupes()).map(
     withoutMinorPassageInNonInscrit,
   )
   const current = deputes
@@ -182,23 +175,4 @@ export async function fetchDeputesOfGroupe(acronym: string): Promise<{
     .map(buildSimpleDepute)
     .filter(_ => _.latestGroup.acronym != acronym || !_.mandatOngoing)
   return { current, former }
-}
-
-export async function fetchGroupList(): Promise<GroupeData[]> {
-  const deputes = await fetchDeputesList()
-  const deputesGrouped = Object.values(
-    groupBy(deputes, _ => _.latestGroup.acronym),
-  )
-  const groupsWithDeputes = deputesGrouped.map(deputes => {
-    const { fonction, ...group } = deputes[0].latestGroup
-    return {
-      ...group,
-      deputesCount: deputes.length,
-    }
-  })
-  const totalDeputes = deputes.length
-  return groupsWithDeputes.map(_ => ({
-    ..._,
-    deputesShareOfTotal: _.deputesCount / totalDeputes,
-  }))
 }
