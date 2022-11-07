@@ -1,6 +1,5 @@
 import { sql } from 'kysely'
 import { db } from './db'
-import { MinimalDeputeInfo } from './deputeRepository'
 
 export type DeputesWithAllOrganisms = {
   id: number
@@ -109,7 +108,13 @@ export async function queryOrganismeBasicData(
   return res ?? null
 }
 
-export type DeputeInOrganisme = MinimalDeputeInfo & {
+export type DeputeInOrganisme = {
+  id: number
+  slug: string
+  nom: string
+  nom_de_famille: string
+  nom_circo: string
+  mandatOngoing: boolean
   fonction: FonctionInOrganisme
   currentMember: boolean
 }

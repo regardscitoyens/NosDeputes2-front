@@ -1,12 +1,10 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { DeputeItem } from '../../components/DeputeItem'
-import { Todo } from '../../components/Todo'
 import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { DeputeItem } from '../../components/DeputeItem'
 import {
   DeputeInOrganisme,
   FonctionInOrganisme,
-  fonctionsWithFeminineVersion,
   OrganismeBasicData,
   queryDeputesForOrganisme,
   queryOrganismeBasicData,
