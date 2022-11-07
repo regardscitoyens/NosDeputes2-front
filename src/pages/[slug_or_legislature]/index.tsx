@@ -23,12 +23,9 @@ type Data = {
 type DeputeUrls = { label: string; url: string }[]
 
 function parseMails(basicDeputeInfo: DeputeCompleteInfo): string[] {
-  if (basicDeputeInfo.mails) {
-    return Object.values(
-      PHPUnserialize.unserialize(basicDeputeInfo.mails),
-    ) as string[]
-  }
-  return []
+  return Object.values(
+    PHPUnserialize.unserialize(basicDeputeInfo.mails),
+  ) as string[]
 }
 
 type DeputeCollaborateur = {
@@ -38,25 +35,19 @@ type DeputeCollaborateur = {
 function parseCollaborateurs(
   basicDeputeInfo: DeputeCompleteInfo,
 ): DeputeCollaborateur[] {
-  if (basicDeputeInfo.collaborateurs) {
-    const collaborateurs = Object.values(
-      PHPUnserialize.unserialize(basicDeputeInfo.collaborateurs),
-    ) as string[]
-    // todo: resolve collaborateur link
-    return collaborateurs.map(name => ({
-      name,
-    }))
-  }
-  return []
+  const collaborateurs = Object.values(
+    PHPUnserialize.unserialize(basicDeputeInfo.collaborateurs),
+  ) as string[]
+  // todo: resolve collaborateur link
+  return collaborateurs.map(name => ({
+    name,
+  }))
 }
 
 function parseAdresses(basicDeputeInfo: DeputeCompleteInfo): string[] {
-  if (basicDeputeInfo.adresses) {
-    return Object.values(
-      PHPUnserialize.unserialize(basicDeputeInfo.adresses),
-    ) as string[]
-  }
-  return []
+  return Object.values(
+    PHPUnserialize.unserialize(basicDeputeInfo.adresses),
+  ) as string[]
 }
 
 // build list of depute urls
