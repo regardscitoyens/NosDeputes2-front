@@ -25,11 +25,11 @@ export type DeputeCompleteInfo = {
   sites_web: string | null
   urls?: { label: string; url: string }[]
   url_an: string | null
-  collaborateurs: string | null
+  collaborateurs: string
   collaborateurs_parsed?: { name: string }[]
-  mails: string | null
+  mails: string
   mails_parsed?: string[]
-  adresses: string | null
+  adresses: string
   adresses_parsed?: string[]
 }
 
