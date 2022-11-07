@@ -18,7 +18,7 @@ export const db: DbConnectionPool = new Kysely<NosDeputesDatabase>({
   log: ['query'],
 })
 
-interface NosDeputesDatabase {
+export interface NosDeputesDatabase {
   parlementaire: ParlementaireTable
   organisme: OrganismeTable
   parlementaire_organisme: ParlementaireOrganismeTable

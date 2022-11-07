@@ -109,7 +109,7 @@ export async function getAllDeputesAndGroupesFromCurrentLegislature(): Promise<
   return deputesWithAllGroups
 }
 
-function normalizeFonctionInGroup(f: string): FonctionInGroupe {
+export function normalizeFonctionInGroup(f: string): FonctionInGroupe {
   switch (f) {
     case 'présidente':
     case 'président':
