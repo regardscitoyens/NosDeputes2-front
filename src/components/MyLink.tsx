@@ -1,4 +1,4 @@
-import Link, { LinkProps } from 'next/link'
+import Link from 'next/link'
 import { CSSProperties, ReactNode } from 'react'
 
 export function MyLink({
@@ -19,18 +19,16 @@ export function MyLink({
         target: '_blank',
         rel: 'noreferrer noopener',
       }
-    : {}
+    : null
   return (
-    <Link {...{ href }}>
-      <a
-        className={`text-blue-800 underline-offset-4 hover:underline ${
-          className ?? ''
-        }`}
-        {...{ style }}
-        {...targetAttributes}
-      >
-        {children}
-      </a>
+    <Link
+      {...{ href }}
+      className={`text-blue-800 underline-offset-4 hover:underline ${
+        className ?? ''
+      }`}
+      {...{ style, targetAttributes }}
+    >
+      {children}
     </Link>
   )
 }
