@@ -4,10 +4,6 @@ import { ReactNode } from 'react'
 import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
 import { db } from '../../../repositories/db'
-import {
-  fetchDeputesList,
-  SimpleDepute,
-} from '../../../services/deputesAndGroupesService'
 import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
 import { formatDate, notNull, parseIntOrNull } from '../../../services/utils'
 

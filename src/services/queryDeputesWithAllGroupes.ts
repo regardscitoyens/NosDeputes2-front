@@ -1,6 +1,6 @@
 import sortBy from 'lodash/sortBy'
-import { chunkBy } from '../services/utils'
-import { db } from './db'
+import { chunkBy } from './utils'
+import { db } from '../repositories/db'
 
 export type DeputesWithAllGroups = {
   id: number
@@ -24,7 +24,7 @@ export type FonctionInGroupe = 'president' | 'membre' | 'apparente'
 
 // Big shared query to get deputes, groups, etc.
 // Includes all past groupes of each depute
-export async function getAllDeputesAndGroupesFromCurrentLegislature(): Promise<
+export async function queryDeputesWithAllGroupes(): Promise<
   DeputesWithAllGroups[]
 > {
   // this query produces duplicates because a parlementaire has had multiple groupes over time

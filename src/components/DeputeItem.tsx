@@ -1,4 +1,4 @@
-import { FonctionInGroupe } from '../repositories/deputesAndGroupesRepository'
+import { FonctionInGroupe } from '../services/queryDeputesWithAllGroupes'
 import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
 

@@ -1,8 +1,9 @@
+import groupBy from 'lodash/groupBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import Link from 'next/link'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { MyLink } from '../../components/MyLink'
-import { fetchGroupList } from '../../services/deputesAndGroupesService'
+import { db } from '../../repositories/db'
+import { addLatestGroupToDeputes } from '../../services/deputesAndGroupesService'
 import {
   getColorForGroupeAcronym,
   sortGroupes,
@@ -10,16 +11,48 @@ import {
 import { GroupeData } from '../../services/rearrangeData'
 
 type Data = {
-  groupes: GroupeData[]
+  groupes: LocalGroupe[]
+}
+type LocalGroupe = {
+  id: number
+  nom: string
+  acronym: string
+  deputesCount: number
+  deputesShareOfTotal: number
 }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
+  const currentDeputesIds = await db
+    .selectFrom('parlementaire')
+    .where('fin_mandat', 'is', null)
+    .select('id')
+    .execute()
+
+  const deputesIdsWithLatestGroup = await addLatestGroupToDeputes(
+    currentDeputesIds,
+  )
+
+  const deputesGrouped = Object.values(
+    groupBy(deputesIdsWithLatestGroup, _ => _.latestGroup.id),
+  )
+  const groupsWithDeputesCount = deputesGrouped.map(deputes => {
+    const { fonction, ...restOfGroup } = deputes[0].latestGroup
+    return {
+      ...restOfGroup,
+      deputesCount: deputes.length,
+    }
+  })
+  const totalDeputes = currentDeputesIds.length
+  const groups = groupsWithDeputesCount.map(_ => ({
+    ..._,
+    deputesShareOfTotal: _.deputesCount / totalDeputes,
+  }))
   return {
     props: {
       data: {
-        groupes: sortGroupes(await fetchGroupList()),
+        groupes: sortGroupes(groups),
       },
     },
   }
