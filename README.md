@@ -88,7 +88,7 @@ N'hésitez pas à me signaler si vous commencez à bosser sur un truc, pour qu'o
 
   - ~~implem la page /16/scrutins~~
   - ~~implem la page /16/scrutin/388~~
-  - implem la page /16/dossier/498 (WIP
+  - ~~implem la page /16/dossier/498~~
   - implem la page /16/seance/283
   - implem la page /16/document/219
   - implem la page /16/marc-ferracci/dossier/317
