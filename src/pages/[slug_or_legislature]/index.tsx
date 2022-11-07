@@ -1,4 +1,5 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import Image from 'next/image'
 import PHPUnserialize from 'php-unserialize'
 
 import { GroupeBadge } from '../../components/GroupeBadge'
@@ -10,7 +11,10 @@ import {
 } from '../../services/addLatestGroup'
 
 import { db } from '../../services/db'
-import { addPrefixToDepartement } from '../../services/hardcodedData'
+import {
+  addPrefixToDepartement,
+  CURRENT_LEGISLATURE,
+} from '../../services/hardcodedData'
 import { formatDate, getAge } from '../../services/utils'
 
 type Data = { depute: LocalDepute }
@@ -269,11 +273,13 @@ export default function Page({
       </h1>
       <div className="col-span-2">
         {/* todo try to switch to next/image */}
-        <img
-          src={`/deputes/photos/16/${depute.id_an}.jpg`}
+        <Image
+          src={`/deputes/photos/${CURRENT_LEGISLATURE}/${depute.id_an}.jpg`}
           alt={`Photo ${depute.sexe === 'F' ? `de la députée` : `du député`} ${
             depute.nom
           }`}
+          width={150}
+          height={192}
         />
       </div>
       <div className="col-span-10">
