@@ -1,5 +1,5 @@
 import { sql } from 'kysely'
-import { db } from '../repositories/db'
+import { db } from './db'
 import {
   FonctionInOrganisme,
   fonctionsInOrganismeWithFeminineVersion,

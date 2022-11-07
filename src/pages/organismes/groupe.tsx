@@ -2,7 +2,7 @@ import groupBy from 'lodash/groupBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { MyLink } from '../../components/MyLink'
-import { db } from '../../repositories/db'
+import { db } from '../../services/db'
 import { addLatestGroupToDeputes } from '../../services/addLatestGroup'
 import {
   getColorForGroupeAcronym,

@@ -4,7 +4,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { Todo } from '../../components/Todo'
-import { db } from '../../repositories/db'
+import { db } from '../../services/db'
 import {
   addLatestGroupToDeputes,
   WithLatestGroup,

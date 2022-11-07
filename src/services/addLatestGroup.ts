@@ -1,9 +1,6 @@
 import { sql } from 'kysely'
-import { db } from '../repositories/db'
-import {
-  FonctionInGroupe,
-  normalizeFonctionInGroup,
-} from './queryDeputesWithAllGroupes'
+import { db } from './db'
+import { FonctionInGroupe, normalizeFonctionInGroup } from './hardcodedData'
 
 export type LatestGroupForDepute = {
   id: number

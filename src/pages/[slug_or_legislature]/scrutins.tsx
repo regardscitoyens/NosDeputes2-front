@@ -4,7 +4,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
-import { db } from '../../repositories/db'
+import { db } from '../../services/db'
 import { CURRENT_LEGISLATURE } from '../../services/hardcodedData'
 import { formatDate } from '../../services/utils'
 

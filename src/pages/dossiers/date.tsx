@@ -5,7 +5,7 @@ import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { MyLink } from '../../components/MyLink'
-import { db } from '../../repositories/db'
+import { db } from '../../services/db'
 import { CURRENT_LEGISLATURE } from '../../services/hardcodedData'
 
 type Data = {

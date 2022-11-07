@@ -3,7 +3,7 @@ import PHPUnserialize from 'php-unserialize'
 import { ReactNode } from 'react'
 import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
-import { db } from '../../../repositories/db'
+import { db } from '../../../services/db'
 import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
 import { formatDate, notNull, parseIntOrNull } from '../../../services/utils'
 
