@@ -20,7 +20,7 @@ type Data = {
   // Exemple https://www.nosdeputes.fr/16/dossier/134
   // il y a "Texte N° 17" / "Texte N° 146" / "Texte N° 180"
   othersLoiWithoutTexte: number[]
-  speakingDeputes: SimpleDepute[]
+  speakingDeputes: LocalDepute[]
 }
 
 type LocalSection = {
@@ -63,7 +63,11 @@ type LocalTexteLoi = {
   titre: string
   signataires: string
 }
-
+type LocalDepute = {
+  id: number
+  nom: string
+  slug: string
+}
 // why all this ??
 // linkDossiers is something like this
 // (when transformed to js)
@@ -285,13 +289,15 @@ export const getServerSideProps: GetServerSideProps<{
       .select('parlementaire_id')
       .distinct()
       .execute()
-  ).map(_ => _.parlementaire_id)
-
-  // not efficient at all, we fetch them all
-  // TODO improve that
-  const speakingDeputes = (await fetchDeputesList()).filter(_ =>
-    speakingDeputesIds.includes(_.id),
   )
+    .map(_ => _.parlementaire_id)
+    .filter(notNull)
+
+  const speakingDeputes = await db
+    .selectFrom('parlementaire')
+    .where('parlementaire.id', 'in', speakingDeputesIds)
+    .select(['id', 'nom', 'slug'])
+    .execute()
 
   // TODO ensuite il y a avait une query qui démarre comme ça sur les tags, pour afficher le nuage de mots
   // mais dans le php c'est dans un component partagé, ce sera un peu compliqué
