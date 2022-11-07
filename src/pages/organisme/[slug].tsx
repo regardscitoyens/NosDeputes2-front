@@ -5,7 +5,7 @@ import { DeputeItem } from '../../components/DeputeItem'
 import { db } from '../../repositories/db'
 import { FonctionInGroupe } from '../../services/queryDeputesWithAllGroupes'
 import { queryDeputesForOrganisme } from '../../services/queryDeputesForOrganisme'
-import { addLatestGroupToDeputes } from '../../services/deputesAndGroupesService'
+import { addLatestGroupToDeputes } from '../../services/addLatestGroup'
 import { FonctionInOrganisme } from '../../services/hardcodedData'
 
 type Data = {

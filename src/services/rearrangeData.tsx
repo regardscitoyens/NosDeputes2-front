@@ -1,5 +1,5 @@
 import groupBy from 'lodash/groupBy'
-import { WithLatestGroup } from './deputesAndGroupesService'
+import { WithLatestGroup } from './addLatestGroup'
 
 export type GroupeData = {
   id: number

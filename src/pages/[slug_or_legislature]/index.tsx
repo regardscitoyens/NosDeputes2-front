@@ -7,7 +7,7 @@ import { Todo } from '../../components/Todo'
 import {
   addLatestGroupToDepute,
   WithLatestGroup,
-} from '../../services/deputesAndGroupesService'
+} from '../../services/addLatestGroup'
 
 import { db } from '../../repositories/db'
 import { addPrefixToDepartement } from '../../services/hardcodedData'
