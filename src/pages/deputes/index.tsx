@@ -8,7 +8,7 @@ import { db } from '../../repositories/db'
 import {
   addLatestGroupToDeputes,
   WithLatestGroup,
-} from '../../services/deputesAndGroupesService'
+} from '../../services/addLatestGroup'
 
 import { CURRENT_LEGISLATURE, sortGroupes } from '../../services/hardcodedData'
 import { buildGroupesData, GroupeData } from '../../services/rearrangeData'

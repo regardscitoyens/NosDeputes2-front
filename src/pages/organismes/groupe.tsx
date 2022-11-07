@@ -3,7 +3,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { MyLink } from '../../components/MyLink'
 import { db } from '../../repositories/db'
-import { addLatestGroupToDeputes } from '../../services/deputesAndGroupesService'
+import { addLatestGroupToDeputes } from '../../services/addLatestGroup'
 import {
   getColorForGroupeAcronym,
   sortGroupes,
