@@ -2,65 +2,60 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
-import {
-  DeputeInOrganisme,
-  FonctionInOrganisme,
-  OrganismeBasicData,
-  queryDeputesForOrganisme,
-  queryOrganismeBasicData,
-} from '../../repositories/deputesAndOrganismesRepository'
-import {
-  fetchDeputesList,
-  SimpleDepute,
-} from '../../services/deputesAndGroupesService'
-
-type DeputeInOrganismeWithGroupe = DeputeInOrganisme & {
-  latestGroup: SimpleDepute['latestGroup']
-}
+import { db } from '../../repositories/db'
+import { FonctionInGroupe } from '../../repositories/deputesAndGroupesRepository'
+import { queryDeputesForOrganisme } from '../../services/queryDeputesForOrganisme'
+import { addLatestGroupToDeputes } from '../../services/deputesAndGroupesService'
+import { FonctionInOrganisme } from '../../services/hardcodedData'
 
 type Data = {
-  organisme: OrganismeBasicData & {
-    deputes: DeputeInOrganismeWithGroupe[]
+  organisme: LocalOrganisme
+}
+
+type LocalOrganisme = {
+  id: number
+  nom: string
+  deputes: LocalDepute[]
+}
+type LocalDepute = {
+  id: number
+  slug: string
+  nom: string
+  nom_de_famille: string
+  nom_circo: string
+  mandatOngoing: boolean
+  latestGroup: {
+    acronym: string
+    fonction: FonctionInGroupe
   }
+  fonction: FonctionInOrganisme
+  currentMember: boolean
 }
 
 export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
   const slug = context.query.slug as string
-  const organisme = await queryOrganismeBasicData(slug)
+  const organisme = await db
+    .selectFrom('organisme')
+    .where('slug', '=', slug)
+    .select('id')
+    .select('nom')
+    .executeTakeFirst()
   if (!organisme) {
     return {
       notFound: true,
     }
   }
   const deputes = await queryDeputesForOrganisme(slug)
-  // On réutilise cette query, qui contient les latestGroup
-  // Pas du tout efficace
-  // TODO revoir ça, faire des query plus intelligentes. Et paralleliser les query au moins
-  const allDeputesWithLatestGroup = await fetchDeputesList()
-
-  function addLatestGroup(deputes: DeputeInOrganisme[]) {
-    return deputes.map(depute => {
-      const latestGroup = allDeputesWithLatestGroup.find(
-        _ => _.id === depute.id,
-      )?.latestGroup
-      if (!latestGroup) {
-        throw new Error(`Didnt find the group of depute ${depute.id}`)
-      }
-      return {
-        ...depute,
-        latestGroup,
-      }
-    })
-  }
+  const deputesWithLatestGroup = await addLatestGroupToDeputes(deputes)
 
   return {
     props: {
       data: {
         organisme: {
           ...organisme,
-          deputes: addLatestGroup(deputes),
+          deputes: deputesWithLatestGroup,
         },
       },
     },
@@ -72,7 +67,7 @@ function GroupOfDeputes({
   deputes,
 }: {
   title: string
-  deputes: DeputeInOrganismeWithGroupe[]
+  deputes: LocalDepute[]
 }) {
   if (deputes.length === 0) return null
   return (
@@ -125,11 +120,11 @@ export default function Page({
   const currentDeputes = deputes.filter(_ => _.currentMember)
 
   const groupedByFonction = groupBy(currentDeputes, _ => _.fonction) as {
-    [fonction in FonctionInOrganisme]: DeputeInOrganismeWithGroupe[]
+    [fonction in FonctionInOrganisme]: LocalDepute[]
   }
   const entries = Object.entries(groupedByFonction) as [
     FonctionInOrganisme,
-    DeputeInOrganismeWithGroupe[],
+    LocalDepute[],
   ][]
 
   const groupedByFonctionAndOrdered = sortBy(entries, _ =>
