@@ -2,41 +2,45 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import PHPUnserialize from 'php-unserialize'
 
 import { GroupeBadge } from '../../components/GroupeBadge'
-import { Todo } from '../../components/Todo'
 import { MyLink } from '../../components/MyLink'
+import { Todo } from '../../components/Todo'
 import {
-  fetchDeputesList,
-  SimpleDepute,
+  addLatestGroupToDepute,
+  WithLatestGroup,
 } from '../../services/deputesAndGroupesService'
 
+import { db } from '../../repositories/db'
 import { addPrefixToDepartement } from '../../services/hardcodedData'
 import { formatDate, getAge } from '../../services/utils'
-import {
-  DeputeCompleteInfo,
-  queryDeputeForDeputePage,
-} from '../../repositories/deputeRepository'
 
-type Data = {
-  depute: SimpleDepute & DeputeCompleteInfo
-}
-
+type Data = { depute: LocalDepute }
+type LocalDepute = WithLatestGroup<{
+  id: number
+  slug: string
+  nom: string
+  nom_circo: string
+  num_circo: number
+  date_naissance: string
+  profession: string | null
+  debut_mandat: string
+  fin_mandat: string | null
+  id_an: number
+  sexe: 'H' | 'F'
+  urls: { label: string; url: string }[]
+  collaborateurs: { name: string }[]
+  mails: string[]
+  adresses: string[]
+}>
+type DeputeCollaborateur = { name: string }
 type DeputeUrls = { label: string; url: string }[]
 
-function parseMails(basicDeputeInfo: DeputeCompleteInfo): string[] {
-  return Object.values(
-    PHPUnserialize.unserialize(basicDeputeInfo.mails),
-  ) as string[]
+function parseMails(mails: string): string[] {
+  return Object.values(PHPUnserialize.unserialize(mails)) as string[]
 }
 
-type DeputeCollaborateur = {
-  name: string
-}
-
-function parseCollaborateurs(
-  basicDeputeInfo: DeputeCompleteInfo,
-): DeputeCollaborateur[] {
+function parseCollaborateurs(collaborateursStr: string): DeputeCollaborateur[] {
   const collaborateurs = Object.values(
-    PHPUnserialize.unserialize(basicDeputeInfo.collaborateurs),
+    PHPUnserialize.unserialize(collaborateursStr),
   ) as string[]
   // todo: resolve collaborateur link
   return collaborateurs.map(name => ({
@@ -44,30 +48,28 @@ function parseCollaborateurs(
   }))
 }
 
-function parseAdresses(basicDeputeInfo: DeputeCompleteInfo): string[] {
-  return Object.values(
-    PHPUnserialize.unserialize(basicDeputeInfo.adresses),
-  ) as string[]
+function parseAdresses(adresses: string): string[] {
+  return Object.values(PHPUnserialize.unserialize(adresses)) as string[]
 }
 
-// build list of depute urls
-function parseDeputeUrls(basicDeputeInfo: DeputeCompleteInfo): DeputeUrls {
+function parseDeputeUrls(depute: {
+  url_an: string
+  sites_web: string | null
+  nom: string
+}): DeputeUrls {
   const urls = [] as DeputeUrls
-  if (basicDeputeInfo.url_an) {
-    urls.push({
-      label: 'Fiche Assemblée nationale',
-      url: basicDeputeInfo.url_an,
-    })
-  }
+  const { url_an, sites_web, nom } = depute
+  urls.push({
+    label: 'Fiche Assemblée nationale',
+    url: url_an,
+  })
   // todo: use real wikipedia url
   urls.push({
     label: 'Page wikipedia',
-    url: `https://fr.wikipedia.org/wiki/${encodeURIComponent(
-      basicDeputeInfo.nom,
-    )}`,
+    url: `https://fr.wikipedia.org/wiki/${encodeURIComponent(nom)}`,
   })
-  if (basicDeputeInfo.sites_web) {
-    const sites = PHPUnserialize.unserialize(basicDeputeInfo.sites_web) as {
+  if (sites_web) {
+    const sites = PHPUnserialize.unserialize(sites_web) as {
       [k: string]: string
     }
     urls.push(
@@ -92,35 +94,65 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async context => {
   const slug = context.query.slug_or_legislature as string
 
-  const basicDeputeInfo = await queryDeputeForDeputePage(slug)
-  // we query everything, not ideal but acceptable for now
-  // TODO rework that
-  const deputeWithLatestGroup = (await fetchDeputesList()).find(
-    _ => _.slug === slug,
-  )
-  if (!basicDeputeInfo || !deputeWithLatestGroup) {
+  const baseDepute = await db
+    .selectFrom('parlementaire')
+    .select([
+      'id',
+      'slug',
+      'nom',
+      'nom_circo',
+      'num_circo',
+      'date_naissance',
+      'profession',
+      'debut_mandat',
+      'fin_mandat',
+      'id_an',
+      'sexe',
+      'sites_web',
+      'url_an',
+      'collaborateurs',
+      'mails',
+      'adresses',
+    ])
+    .where('slug', '=', slug)
+    .executeTakeFirst()
+  if (!baseDepute) {
     return {
       notFound: true,
     }
   }
+  // we query everything, not ideal but acceptable for now
+  // TODO rework that
+  const deputeWithLatestGroup = await addLatestGroupToDepute(baseDepute)
 
-  // add depute urls and contacts
-  const basicDeputeInfoWithParsedInfos = {
-    ...basicDeputeInfo,
-    urls: parseDeputeUrls(basicDeputeInfo),
-    collaborateurs_parsed: parseCollaborateurs(basicDeputeInfo),
-    mails_parsed: parseMails(basicDeputeInfo),
-    adresses_parsed: parseAdresses(basicDeputeInfo),
+  const {
+    url_an,
+    sites_web,
+    nom,
+    collaborateurs,
+    mails,
+    adresses,
+    ...restOfDepute
+  } = deputeWithLatestGroup
+
+  const finalDepute: LocalDepute = {
+    ...restOfDepute,
+    nom,
+    urls: parseDeputeUrls({ url_an, sites_web, nom }),
+    collaborateurs: parseCollaborateurs(collaborateurs),
+    mails: parseMails(mails),
+    adresses: parseAdresses(adresses),
+    date_naissance: deputeWithLatestGroup.date_naissance.toISOString(),
+    debut_mandat: deputeWithLatestGroup.debut_mandat.toISOString(),
+    fin_mandat: deputeWithLatestGroup.fin_mandat?.toISOString() ?? null,
   }
 
-  const data = {
-    depute: {
-      ...basicDeputeInfoWithParsedInfos,
-      ...deputeWithLatestGroup,
-    },
-  }
   return {
-    props: { data },
+    props: {
+      data: {
+        depute: finalDepute,
+      },
+    },
   }
 }
 
@@ -175,16 +207,15 @@ function InformationsBlock({ depute }: Data) {
 }
 
 function ContactBlock({ depute }: Data) {
-  console.log('depute', depute)
   return (
     <div className="bg-slate-200  px-8 py-4 shadow-md">
       <h2 className="font-bold">Contact</h2>
       <div className="py-4">
-        {(depute.mails_parsed && depute.mails_parsed.length && (
+        {(depute.mails.length && (
           <ul className="list-none">
             <b>Par email :</b>
             <br />
-            {depute.mails_parsed.map(mail => (
+            {depute.mails.map(mail => (
               <MyLink key={mail} targetBlank href={`mailto:${mail}`}>
                 {mail}
               </MyLink>
@@ -192,26 +223,25 @@ function ContactBlock({ depute }: Data) {
           </ul>
         )) ||
           null}
-        {(depute.adresses_parsed && depute.adresses_parsed.length && (
+        {(depute.adresses.length && (
           <ul className="list-none">
             <b>Par courrier :</b>
             <br />
-            {depute.adresses_parsed.map(adresse => (
+            {depute.adresses.map(adresse => (
               <li key={adresse}>{adresse}</li>
             ))}
           </ul>
         )) ||
           null}
-        {(depute.collaborateurs_parsed &&
-          depute.collaborateurs_parsed.length && (
-            <ul className="list-none">
-              <b>Collaborateurs :</b>
-              <br />
-              {depute.collaborateurs_parsed.map(collaborateur => (
-                <li key={collaborateur.name}>{collaborateur.name}</li>
-              ))}
-            </ul>
-          )) ||
+        {(depute.collaborateurs.length && (
+          <ul className="list-none">
+            <b>Collaborateurs :</b>
+            <br />
+            {depute.collaborateurs.map(collaborateur => (
+              <li key={collaborateur.name}>{collaborateur.name}</li>
+            ))}
+          </ul>
+        )) ||
           null}
       </div>
     </div>
@@ -238,6 +268,7 @@ export default function Page({
         </sup> circonscription {addPrefixToDepartement(depute.nom_circo)}
       </h1>
       <div className="col-span-2">
+        {/* todo try to switch to next/image */}
         <img
           src={`/deputes/photos/16/${depute.id_an}.jpg`}
           alt={`Photo ${depute.sexe === 'F' ? `de la députée` : `du député`} ${
