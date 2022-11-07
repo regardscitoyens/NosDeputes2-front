@@ -178,3 +178,30 @@ export function addPrefixToDepartement(nomDepartement: string) {
   const prefix = prefixes[nomDepartement] ?? 'de'
   return `${prefix} ${nomDepartement}`
 }
+
+export type FonctionInOrganisme =
+  keyof typeof fonctionsInOrganismeWithFeminineVersion
+
+export const fonctionsInOrganismeWithFeminineVersion = {
+  'président délégué': 'présidente délégué',
+  'président de droit': 'présidente de droit',
+  président: 'présidente',
+  'co-président': 'co-présidente',
+  'vice-président': 'vice-présidente',
+  'deuxième vice-président': 'deuxième vice-présidente',
+  questeur: 'questeure',
+  secrétaire: null,
+  'rapporteur général': 'rapporteure générale',
+  rapporteur: 'rapporteure',
+  'co-rapporteur': 'co-rapporteure',
+  'chargé de mission': 'chargée de mission',
+  'membre du bureau': null,
+  'membre avec voix délibérative': null,
+  'membre avec voix consultative': null,
+  'membre de droit': null,
+  'membre titulaire': null,
+  'membre nommé': 'membre nommée',
+  membre: null,
+  'membre suppléant': 'membre suppléante',
+  apparenté: 'apparentée',
+} as const
