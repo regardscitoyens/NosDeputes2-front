@@ -2,19 +2,19 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
+import { db } from '../../repositories/db'
+import { FonctionInGroupe } from '../../repositories/deputesAndGroupesRepository'
 import {
   fetchDeputesOfGroupe,
   SimpleDepute,
 } from '../../services/deputesAndGroupesService'
 import { getColorForGroupeAcronym } from '../../services/hardcodedData'
-import { FonctionInGroupe } from '../../repositories/deputesAndGroupesRepository'
-import {
-  BasicGroupInfo,
-  queryGroupInfo,
-} from '../../repositories/groupeRepository'
 
 type Data = {
-  groupeInfo: BasicGroupInfo
+  groupeInfo: {
+    nom: string
+    acronym: string
+  }
   deputes: {
     current: SimpleDepute[]
     former: SimpleDepute[]
@@ -25,8 +25,23 @@ export const getServerSideProps: GetServerSideProps<{
   data: Data
 }> = async context => {
   const acronym = context.query.acronym as string
+  const groupeInfo = await db
+    .selectFrom('organisme')
+    .innerJoin(
+      'parlementaire_organisme',
+      'parlementaire_organisme.organisme_id',
+      'organisme.id',
+    )
+    .select(['nom', 'parlementaire_groupe_acronyme as acronym'])
+    .where('parlementaire_groupe_acronyme', '=', acronym)
+    .where('type', '=', 'groupe')
+    .executeTakeFirst()
+  if (!groupeInfo) {
+    return {
+      notFound: true,
+    }
+  }
   const deputes = await fetchDeputesOfGroupe(acronym)
-  const groupeInfo = await queryGroupInfo(acronym)
   return {
     props: {
       data: {
