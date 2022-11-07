@@ -1,17 +1,20 @@
-import { GroupeData } from '../services/rearrangeData'
 import {
-  getColorForGroupeAcronym,
-  groupesDisplayOrder,
-  sortGroupes,
+  getColorForGroupeAcronym
 } from '../services/hardcodedData'
-import Link from 'next/link'
 import { MyLink } from './MyLink'
 
 type Props = {
-  groupesData: GroupeData[]
+  groupesData: LocalGroupData[]
 }
 
-function Graphe({ groupesData }: { groupesData: GroupeData[] }) {
+type LocalGroupData = {
+  id: number
+  nom: string
+  acronym: string
+  deputesShareOfTotal: number
+}
+
+function Graphe({ groupesData }: { groupesData: LocalGroupData[] }) {
   return (
     <div className="flex h-10 flex-row shadow-lg">
       {groupesData.map(g => {
@@ -33,7 +36,7 @@ function Graphe({ groupesData }: { groupesData: GroupeData[] }) {
   )
 }
 
-function Legend({ groupesData }: { groupesData: GroupeData[] }) {
+function Legend({ groupesData }: { groupesData: LocalGroupData[] }) {
   return (
     <ul className="flex list-none flex-wrap items-baseline space-y-4 space-x-4">
       {groupesData.map(g => (

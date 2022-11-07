@@ -1,11 +1,10 @@
-import { SelectQueryBuilder, sql } from 'kysely'
+import { sql } from 'kysely'
 import groupBy from 'lodash/groupBy'
-import mapValues from 'lodash/mapValues'
-import { db, NosDeputesDatabase } from '../repositories/db'
+import { db } from '../repositories/db'
 import {
   DeputesWithAllGroups,
-  getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
   FonctionInGroupe,
+  getAllDeputesAndGroupesFromCurrentLegislature as queryAllDeputesAndGroupesFromCurrentLegislature,
   normalizeFonctionInGroup,
 } from '../repositories/deputesAndGroupesRepository'
 import { GroupeData } from './rearrangeData'
@@ -26,15 +25,45 @@ export type SimpleDepute = {
   }
 }
 
-export type CurrentGroupForDepute = {
+export type LatestGroupForDepute = {
+  id: number
+  nom: string
   acronym: string
   fonction: FonctionInGroupe
 }
 
-// TODO test this fonction and use it where needed
-export async function fetchCurrentGroupsForDeputeIds(
+export type WithLatestGroup<D> = D & {
+  latestGroup: LatestGroupForDepute
+}
+
+export async function addLatestGroupToDeputes<D extends { id: number }>(
+  deputes: D[],
+): Promise<WithLatestGroup<D>[]> {
+  const latestGroupsMap = await fetchLatestGroupsForDeputeIds(
+    deputes.map(_ => _.id),
+  )
+
+  return deputes.map(depute => {
+    if (!latestGroupsMap[depute.id]) {
+      throw new Error(`Couldn't find latest group for depute ${depute.id}`)
+    }
+    const latestGroup = latestGroupsMap[depute.id]
+    return {
+      ...depute,
+      latestGroup,
+    }
+  })
+}
+
+export async function addLatestGroupToDepute<D extends { id: number }>(
+  depute: D,
+): Promise<WithLatestGroup<D>> {
+  return (await addLatestGroupToDeputes([depute]))[0]
+}
+
+export async function fetchLatestGroupsForDeputeIds(
   deputeIds: number[],
-): Promise<{ [id: number]: CurrentGroupForDepute }> {
+): Promise<{ [id: number]: LatestGroupForDepute }> {
   // base join between the 3 tables
   const baseQuery = db
     .selectFrom('parlementaire')
@@ -79,16 +108,20 @@ export async function fetchCurrentGroupsForDeputeIds(
     .select('parlementaire_organisme.parlementaire_id')
     .select('parlementaire_organisme.parlementaire_groupe_acronyme as acronym')
     .select('parlementaire_organisme.fonction')
+    .select('organisme.id as group_id')
+    .select('organisme.nom as nom')
     .execute()
 
   const result = Object.fromEntries(
     rows.map(_ => {
-      const { parlementaire_id, acronym, fonction } = _
-      const currentGroup = {
+      const { parlementaire_id, acronym, fonction, group_id, nom } = _
+      const group = {
         acronym,
+        id: group_id,
+        nom,
         fonction: normalizeFonctionInGroup(fonction),
       }
-      return [parlementaire_id, currentGroup]
+      return [parlementaire_id, group]
     }),
   )
   return result
