@@ -205,3 +205,20 @@ export const fonctionsInOrganismeWithFeminineVersion = {
   'membre suppléant': 'membre suppléante',
   apparenté: 'apparentée',
 } as const
+
+export function normalizeFonctionInGroup(f: string): FonctionInGroupe {
+  switch (f) {
+    case 'présidente':
+    case 'président':
+      return 'president'
+    case 'apparentée':
+    case 'apparenté':
+      return 'apparente'
+    case 'membre':
+      return 'membre'
+    default:
+      console.log('Warning: unknown fonction in groupe', f)
+      return 'membre'
+  }
+}
+export type FonctionInGroupe = 'president' | 'membre' | 'apparente'

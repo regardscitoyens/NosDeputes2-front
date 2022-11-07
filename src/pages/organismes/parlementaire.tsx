@@ -5,7 +5,7 @@ import { Todo } from '../../components/Todo'
 import {
   OrganismeWithCounts,
   queryOrganismsList,
-} from '../../repositories/deputesAndOrganismesRepository'
+} from '../../services/queryOrganismsList'
 import { isCommissionPermanente } from '../../services/hardcodedData'
 
 type Data = { organismes: OrganismeWithCounts[] }

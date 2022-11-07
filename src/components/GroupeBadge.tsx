@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getColorForGroupeAcronym } from '../services/hardcodedData'
-import { FonctionInGroupe } from '../services/queryDeputesWithAllGroupes'
+import { FonctionInGroupe } from '../services/hardcodedData'
 import { MyLink } from './MyLink'
 
 export function GroupeBadgeWithFonction({

@@ -1,6 +1,7 @@
 import sortBy from 'lodash/sortBy'
 import { chunkBy } from './utils'
-import { db } from '../repositories/db'
+import { db } from './db'
+import { FonctionInGroupe, normalizeFonctionInGroup } from './hardcodedData'
 
 export type DeputesWithAllGroups = {
   id: number
@@ -20,7 +21,6 @@ export type DeputesWithAllGroups = {
     fin_fonction: Date | null
   }[]
 }
-export type FonctionInGroupe = 'president' | 'membre' | 'apparente'
 
 // Big shared query to get deputes, groups, etc.
 // Includes all past groupes of each depute
@@ -107,20 +107,4 @@ export async function queryDeputesWithAllGroupes(): Promise<
     }
   })
   return deputesWithAllGroups
-}
-
-export function normalizeFonctionInGroup(f: string): FonctionInGroupe {
-  switch (f) {
-    case 'présidente':
-    case 'président':
-      return 'president'
-    case 'apparentée':
-    case 'apparenté':
-      return 'apparente'
-    case 'membre':
-      return 'membre'
-    default:
-      console.log('Warning: unknown fonction in groupe', f)
-      return 'membre'
-  }
 }

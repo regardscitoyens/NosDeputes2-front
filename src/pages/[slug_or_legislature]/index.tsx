@@ -9,7 +9,7 @@ import {
   WithLatestGroup,
 } from '../../services/addLatestGroup'
 
-import { db } from '../../repositories/db'
+import { db } from '../../services/db'
 import { addPrefixToDepartement } from '../../services/hardcodedData'
 import { formatDate, getAge } from '../../services/utils'
 
