@@ -2,13 +2,10 @@ import groupBy from 'lodash/groupBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { MyLink } from '../../components/MyLink'
-import { db } from '../../services/db'
-import { addLatestGroupToDeputes } from '../../services/addLatestGroup'
-import {
-  getColorForGroupeAcronym,
-  sortGroupes,
-} from '../../services/hardcodedData'
-import { GroupeData } from '../../services/rearrangeData'
+import { db } from '../../lib/db'
+import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
+import { getColorForGroupeAcronym, sortGroupes } from '../../lib/hardcodedData'
+import { GroupeData } from '../../lib/rearrangeData'
 
 type Data = {
   groupes: LocalGroupe[]

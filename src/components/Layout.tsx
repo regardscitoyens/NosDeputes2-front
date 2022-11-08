@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { ReactNode } from 'react'
-import { CURRENT_LEGISLATURE } from '../services/hardcodedData'
+import { CURRENT_LEGISLATURE } from '../lib/hardcodedData'
 import { MyLink } from './MyLink'
 
 type Props = {

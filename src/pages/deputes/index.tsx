@@ -4,14 +4,14 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { Todo } from '../../components/Todo'
-import { db } from '../../services/db'
+import { db } from '../../lib/db'
 import {
   addLatestGroupToDeputes,
   WithLatestGroup,
-} from '../../services/addLatestGroup'
+} from '../../lib/addLatestGroup'
 
-import { CURRENT_LEGISLATURE, sortGroupes } from '../../services/hardcodedData'
-import { buildGroupesData, GroupeData } from '../../services/rearrangeData'
+import { CURRENT_LEGISLATURE, sortGroupes } from '../../lib/hardcodedData'
+import { buildGroupesData, GroupeData } from '../../lib/rearrangeData'
 
 type Data = {
   deputes: LocalDepute[]

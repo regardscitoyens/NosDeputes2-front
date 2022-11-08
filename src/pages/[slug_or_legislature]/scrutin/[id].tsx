@@ -2,9 +2,9 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { MyLink } from '../../../components/MyLink'
 import { Todo } from '../../../components/Todo'
-import { db } from '../../../services/db'
-import { CURRENT_LEGISLATURE } from '../../../services/hardcodedData'
-import { formatDate, parseIntOrNull } from '../../../services/utils'
+import { db } from '../../../lib/db'
+import { CURRENT_LEGISLATURE } from '../../../lib/hardcodedData'
+import { formatDate, parseIntOrNull } from '../../../lib/utils'
 import groupBy from 'lodash/groupBy'
 
 type Data = {

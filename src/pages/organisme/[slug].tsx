@@ -2,11 +2,11 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { DeputeItem } from '../../components/DeputeItem'
-import { db } from '../../services/db'
-import { FonctionInGroupe } from '../../services/hardcodedData'
-import { queryDeputesForOrganisme } from '../../services/queryDeputesForOrganisme'
-import { addLatestGroupToDeputes } from '../../services/addLatestGroup'
-import { FonctionInOrganisme } from '../../services/hardcodedData'
+import { db } from '../../lib/db'
+import { FonctionInGroupe } from '../../lib/hardcodedData'
+import { queryDeputesForOrganisme } from '../../lib/queryDeputesForOrganisme'
+import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
+import { FonctionInOrganisme } from '../../lib/hardcodedData'
 
 type Data = {
   organisme: LocalOrganisme

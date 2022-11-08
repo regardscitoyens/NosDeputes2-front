@@ -1,4 +1,4 @@
-import { FonctionInGroupe } from '../services/hardcodedData'
+import { FonctionInGroupe } from '../lib/hardcodedData'
 import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
 

@@ -1,6 +1,4 @@
-import {
-  getColorForGroupeAcronym
-} from '../services/hardcodedData'
+import { getColorForGroupeAcronym } from '../lib/hardcodedData'
 import { MyLink } from './MyLink'
 
 type Props = {

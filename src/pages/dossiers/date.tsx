@@ -5,8 +5,8 @@ import sortBy from 'lodash/sortBy'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { MyLink } from '../../components/MyLink'
-import { db } from '../../services/db'
-import { CURRENT_LEGISLATURE } from '../../services/hardcodedData'
+import { db } from '../../lib/db'
+import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
 
 type Data = {
   sectionsGroupedByMonth: (readonly [string, LocalSection[]])[]

@@ -8,14 +8,14 @@ import { Todo } from '../../components/Todo'
 import {
   addLatestGroupToDepute,
   WithLatestGroup,
-} from '../../services/addLatestGroup'
+} from '../../lib/addLatestGroup'
 
-import { db } from '../../services/db'
+import { db } from '../../lib/db'
 import {
   addPrefixToDepartement,
   CURRENT_LEGISLATURE,
-} from '../../services/hardcodedData'
-import { formatDate, getAge } from '../../services/utils'
+} from '../../lib/hardcodedData'
+import { formatDate, getAge } from '../../lib/utils'
 
 type Data = { depute: LocalDepute }
 type LocalDepute = WithLatestGroup<{
