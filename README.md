@@ -43,9 +43,9 @@ J'avance donc je fais des choix. Si l'un de vous a quelque chose de vraiment dif
 
 Le point d'entrée pour comprendre le code c'est chacune des pages, dans le dossier pages/
 
-Vous devriez trouver grosso modo pour chaque page un `getServerSideProps()` pour requêter/assembler les données et un component React `Page()` pour faire le rendu
+Vous devriez trouver grosso modo pour chaque page un `getServerSideProps()` pour requêter/assembler les données et un component React `Page()` pour faire le rendu.
 
-Pour l'instant le code est assez fouilli, c'est en chantier. Au début j'ai voulu partager du code, faire des repositories et des services, mais au final je tends plutôt faire les requêtes SQL directement dans getServerSideProps et à ne mutualiser que s'il y a vraiment duplication.
+Les pages sont en train d'être migrées vers une nouvelle structure modulaire (cf le dossier `/src/pageModules`). C'est fait maison mais assez intuitif je pense.
 
 # Installation / faire tourner en local
 
@@ -78,29 +78,27 @@ Quand tout est prêt :
 
 # Contribuer
 
-Vous êtes le bienvenu, vous pouvez prendre un des items dans la TODO liste et faire une PR
+Vous êtes le bienvenu, vous pouvez prendre un des items dans la TODO liste ou les issues et faire une PR
 
-N'hésitez pas à me signaler si vous commencez à bosser sur un truc, pour qu'on ne fasse pas deux fois la même chose
+N'hésitez pas à faire signe si vous commencez à bosser sur un truc, pour qu'on ne fasse pas deux fois la même chose
 
 # TODO liste
 
 - faisable dès maintenant (pas d'ordre précis)
 
-  - ~~implem la page /16/scrutins~~
-  - ~~implem la page /16/scrutin/388~~
-  - ~~implem la page /16/dossier/498~~
+  - refacto/reorganiser le code (EN COURS)
+  - POC le build static avec getStaticPaths/getStaticProps
+  - faire un deploy quelque part. en mode static et/ou sur un vrai serveur avec une db.
   - implem la page /16/seance/283
   - implem la page /16/document/219
   - implem la page /16/marc-ferracci/dossier/317
   - implem les divers blocs sur la page de chaque député
   - implem le graphique et les stats sur la page de chaque député
-  - ~~[implem les photos des députés](https://github.com/regardscitoyens/NosDeputes2-front/issues/4)~~
   - implem la page /synthese
   - implem la page /16/question/QE/2497
   - implem la page deputes/tags
   - implem la homepage
   - implem les pages /circonscription et /circonscription/departement/Ardennes
-  - refacto/nettoyer/cleaner le code
 
 - pour plus tard, ne pas attaquer de suite
   - implem la recherche (à voir en terme d'archi ce dont il y a besoin)
