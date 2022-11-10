@@ -90,7 +90,8 @@ N'hésitez pas à faire signe si vous commencez à bosser sur un truc, pour qu'o
   - implem la page /16/document/219
   - implem la page /16/marc-ferracci/dossier/317
   - implem les divers blocs sur la page de chaque député
-  - implem le graphique et les stats sur la page de chaque député
+  - implem la barre d'activité sur la page de chaque député [en cours]
+  - implem le graphique sur la page de chaque député
   - implem la page /synthese
   - implem la page /16/question/QE/2497
   - implem la page deputes/tags

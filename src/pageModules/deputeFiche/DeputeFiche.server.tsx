@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next'
 import PHPUnserialize from 'php-unserialize'
 import { addLatestGroupToDepute } from '../../lib/addLatestGroup'
 import { db } from '../../lib/db'
-import * as PageTypes from './DeputeFiche.types'
+import * as types from './DeputeFiche.types'
 
 function parseMails(mails: string): string[] {
   return Object.values(PHPUnserialize.unserialize(mails)) as string[]
@@ -10,7 +10,7 @@ function parseMails(mails: string): string[] {
 
 function parseCollaborateurs(
   collaborateursStr: string,
-): PageTypes.DeputeCollaborateur[] {
+): types.DeputeCollaborateur[] {
   const collaborateurs = Object.values(
     PHPUnserialize.unserialize(collaborateursStr),
   ) as string[]
@@ -28,8 +28,8 @@ function parseDeputeUrls(depute: {
   url_an: string
   sites_web: string | null
   nom: string
-}): PageTypes.DeputeUrls {
-  const urls = [] as PageTypes.DeputeUrls
+}): types.DeputeUrls {
+  const urls = [] as types.DeputeUrls
   const { url_an, sites_web, nom } = depute
   urls.push({
     label: 'Fiche Assemblée nationale',
@@ -62,7 +62,7 @@ function parseDeputeUrls(depute: {
 }
 
 export const getServerSideProps: GetServerSideProps<{
-  data: PageTypes.Props
+  data: types.Props
 }> = async context => {
   const slug = context.query.slug_or_legislature as string
 
@@ -85,6 +85,7 @@ export const getServerSideProps: GetServerSideProps<{
       'collaborateurs',
       'mails',
       'adresses',
+      'top',
     ])
     .where('slug', '=', slug)
     .executeTakeFirst()
@@ -104,12 +105,14 @@ export const getServerSideProps: GetServerSideProps<{
     collaborateurs,
     mails,
     adresses,
+    top,
     ...restOfDepute
   } = deputeWithLatestGroup
 
-  const finalDepute: PageTypes.Depute = {
+  const finalDepute: types.Depute = {
     ...restOfDepute,
     nom,
+    top: PHPUnserialize.unserialize(top) as types.Metrics,
     urls: parseDeputeUrls({ url_an, sites_web, nom }),
     collaborateurs: parseCollaborateurs(collaborateurs),
     mails: parseMails(mails),

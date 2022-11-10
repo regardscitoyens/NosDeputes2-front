@@ -103,6 +103,34 @@ function ContactBlock({ depute }: types.Props) {
   )
 }
 
+function MetricsBlock({ depute }: types.Props) {
+  const metricsToDisplay: types.MetricName[] = [
+    'semaines_presence',
+    'commission_presences',
+    'commission_interventions',
+    'hemicycle_presences',
+    'hemicycle_interventions',
+    'amendements_proposes',
+    'rapports',
+    'propositions_ecrites',
+    'propositions_signees',
+    'questions_ecrites',
+    'questions_orales',
+  ]
+  return (
+    <div className="flex  list-none flex-wrap bg-slate-200 px-8 py-4 shadow-md">
+      {metricsToDisplay.map(metricName => {
+        const value = depute.top[metricName]?.value ?? '?'
+        return (
+          <div key={metricName} className="m-2 block bg-slate-300">
+            {value} {metricName}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 function getOrdinalSuffixFeminine(n: number) {
   return n === 1 ? 'ère' : `ème`
 }
@@ -134,7 +162,7 @@ export function Page({ depute }: types.Props) {
         <Todo>graph de présence et participation</Todo>
       </div>
       <div className="col-span-full">
-        <Todo>petite barre "Activité" avec diverses stats</Todo>
+        <MetricsBlock {...{ depute }} />
       </div>
 
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
