@@ -1,63 +1,12 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import Link from 'next/link'
-import { DeputeItem } from '../../components/DeputeItem'
-import { MyLink } from '../../components/MyLink'
-import { Todo } from '../../components/Todo'
-import {
-  OrganismeWithCounts,
-  queryOrganismsList,
-} from '../../lib/queryOrganismsList'
-import { isCommissionPermanente } from '../../lib/hardcodedData'
+import { InferGetServerSidePropsType } from 'next'
 
-type Data = { organismes: OrganismeWithCounts[] }
+import * as render from '../../pageModules/groupesEtudesAmitieList/GroupesEtudesAmitieList.render'
+import * as server from '../../pageModules/groupesEtudesAmitieList/GroupesEtudesAmitieList.server'
 
-export const getServerSideProps: GetServerSideProps<{
-  data: Data
-}> = async context => {
-  const organismes = await queryOrganismsList('groupes')
-  return {
-    props: {
-      data: { organismes },
-    },
-  }
-}
+export const getServerSideProps = server.getServerSideProps
 
 export default function Page({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { organismes } = data
-
-  return (
-    <>
-      <h1 className="mb-4 text-center text-2xl">
-        Liste des groupes d'études et d'amitié
-      </h1>
-      <table className="w-full">
-        <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Membres</th>
-          </tr>
-        </thead>
-        <tbody>
-          {organismes.map(organisme => (
-            <tr key={organisme.id} className="odd:bg-slate-200">
-              <td>
-                <MyLink href={`/organisme/${organisme.slug}`}>
-                  {organisme.nom}
-                </MyLink>
-              </td>
-              <td
-                className={
-                  organisme.deputesCount == 0 ? 'italic text-slate-400' : ''
-                }
-              >
-                {organisme.deputesCount}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  )
+  return <render.Page {...data} />
 }
