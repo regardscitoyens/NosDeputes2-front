@@ -41,11 +41,9 @@ J'avance donc je fais des choix. Si l'un de vous a quelque chose de vraiment dif
 
 ## Details techniques
 
-Le point d'entrée pour comprendre le code c'est chacune des pages, dans le dossier pages/
+Les pages ont été codées suivant une structure modulaire (cf le dossier `/src/pageModules`). C'est fait maison mais assez intuitif je pense.
 
-Vous devriez trouver grosso modo pour chaque page un `getServerSideProps()` pour requêter/assembler les données et un component React `Page()` pour faire le rendu.
-
-Les pages sont en train d'être migrées vers une nouvelle structure modulaire (cf le dossier `/src/pageModules`). C'est fait maison mais assez intuitif je pense.
+Le dossier `/pages` ne sert qu'à faire le routing vers les `/pageModules`, ou pour les pages qui resteront vraiment simples (contenu statique).
 
 # Installation / faire tourner en local
 
@@ -86,7 +84,6 @@ N'hésitez pas à faire signe si vous commencez à bosser sur un truc, pour qu'o
 
 - faisable dès maintenant (pas d'ordre précis)
 
-  - refacto/reorganiser le code (EN COURS)
   - POC le build static avec getStaticPaths/getStaticProps
   - faire un deploy quelque part. en mode static et/ou sur un vrai serveur avec une db.
   - implem la page /16/seance/283
