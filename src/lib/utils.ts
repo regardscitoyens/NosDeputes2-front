@@ -58,3 +58,7 @@ export function parseIntOrNull(str: string): number | null {
   if (isNaN(parsed)) return null
   return parsed
 }
+
+export function capitalizeFirst(string: string): string {
+  return string === '' ? '' : string.charAt(0).toUpperCase() + string.slice(1)
+}

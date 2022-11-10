@@ -31,6 +31,8 @@ export interface NosDeputesDatabase {
   parlementaire_scrutin: ParlementaireScrutinTable
   variable_globale: VariableGlobaleTable
   texteloi: TexteLoiTable
+  presence: PresenceTable
+  preuve_presence: PreuvePresenceTable
 }
 
 interface ParlementaireTable {
@@ -86,7 +88,7 @@ interface ParlementaireOrganismeTable {
 
 interface SeanceTable {
   id: Generated<number>
-  nb_commentaires: number
+  nb_commentaires: number | null
   date: Date
   numero_semaine: number
   annee: number
@@ -227,6 +229,26 @@ interface TexteLoiTable {
   organisme_id: number | null
   signataires: string
   contenu: string
+  created_at: Date
+  updated_at: Date
+}
+
+interface PresenceTable {
+  id: Generated<number>
+  parlementaire_id: number
+  parlementaire_groupe_acronyme: string
+  seance_id: number
+  nb_preuves: number
+  date: Date
+  created_at: Date
+  updated_at: Date
+}
+
+interface PreuvePresenceTable {
+  id: Generated<number>
+  presence_id: number
+  type: 'intervention' | 'jo' | 'compte-rendu' | 'scrutin'
+  source: number
   created_at: Date
   updated_at: Date
 }
