@@ -13,7 +13,8 @@
     "lint": "next lint",
     "format": "yarn prettier --write .",
     "checkformat": "yarn prettier --check .",
-    "import-latest-dump": "ts-node ./scripts/import-latest-dump.ts"
+    "import-latest-dump": "ts-node ./scripts/import-latest-dump.ts",
+    "analyze-nosdeputes-visits": "ts-node ./scripts/analyze-nosdeputes-visits.ts"
   },
   "dependencies": {
     "@types/lodash": "^4.14.186",
