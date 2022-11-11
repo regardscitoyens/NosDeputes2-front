@@ -1,4 +1,5 @@
 import { WithLatestGroup } from '../../lib/addLatestGroup'
+import { AmendementsDeputeSummary } from '../../lib/queryDeputeAmendementsSummary'
 
 export type Props = { depute: Depute }
 export type Depute = WithLatestGroup<{
@@ -17,6 +18,7 @@ export type Depute = WithLatestGroup<{
   collaborateurs: { name: string }[]
   mails: string[]
   adresses: string[]
+  amendements: AmendementsDeputeSummary
   top: Metrics
 }>
 export type DeputeCollaborateur = { name: string }

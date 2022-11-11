@@ -222,3 +222,17 @@ export function normalizeFonctionInGroup(f: string): FonctionInGroupe {
   }
 }
 export type FonctionInGroupe = 'president' | 'membre' | 'apparente'
+
+// sorts des amendements
+export const amendementsSorts = [
+  'Adopté',
+  'Indéfini',
+  'Irrecevable',
+  'Non soutenu',
+  'Rejeté',
+  'Retiré',
+  'Retiré avant séance',
+  'Tombe',
+]
+
+export type AmendementsSorts = typeof amendementsSorts[number]

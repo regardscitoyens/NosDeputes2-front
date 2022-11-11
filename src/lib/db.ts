@@ -19,7 +19,9 @@ export const db: DbConnectionPool = new Kysely<NosDeputesDatabase>({
 })
 
 export interface NosDeputesDatabase {
+  amendement: AmendementTable
   parlementaire: ParlementaireTable
+  parlementaire_amendement: ParlementaireAmendementTable
   organisme: OrganismeTable
   parlementaire_organisme: ParlementaireOrganismeTable
   seance: SeanceTable
@@ -227,6 +229,39 @@ interface TexteLoiTable {
   organisme_id: number | null
   signataires: string
   contenu: string
+  created_at: Date
+  updated_at: Date
+}
+
+interface AmendementTable {
+  id: Generated<number>
+  nb_commentaires: number | null
+  source: string | null
+  legislature: number | null
+  texteloi_id: string | null
+  numero: string | null
+  sous_amendement_de: string | null
+  rectif: number | null
+  sujet: string | null
+  sort: string | null
+  date: Date | null
+  auteur_id: number
+  auteur_groupe_acronyme: string | null
+  signataires: string | null
+  texte: string | null
+  expose: string | null
+  content_md5: string | null
+  nb_multiples: number | null
+  created_at: Date
+  updated_at: Date
+}
+
+interface ParlementaireAmendementTable {
+  id: Generated<number>
+  parlementaire_id: number | null
+  parlementaire_groupe_acronyme: string | null
+  amendement_id: string | null
+  numero_signataire: number | null
   created_at: Date
   updated_at: Date
 }
