@@ -20,6 +20,7 @@ export const db: DbConnectionPool = new Kysely<NosDeputesDatabase>({
 
 export interface NosDeputesDatabase {
   parlementaire: ParlementaireTable
+  personnalite: PersonnaliteTable
   organisme: OrganismeTable
   parlementaire_organisme: ParlementaireOrganismeTable
   seance: SeanceTable
@@ -59,6 +60,19 @@ interface ParlementaireTable {
   top: string
   villes: string | null
   url_ancien_cpc: string | null
+  created_at: Date
+  updated_at: Date
+  slug: string
+}
+
+interface PersonnaliteTable {
+  id: Generated<number>
+  nb_commentaires: number | null
+  nom: string
+  nom_de_famille: string | null
+  sexe: string | null
+  date_naissance: Date | null
+  lieu_naissance: string | null
   created_at: Date
   updated_at: Date
   slug: string

@@ -62,3 +62,10 @@ export function parseIntOrNull(str: string): number | null {
 export function capitalizeFirst(string: string): string {
   return string === '' ? '' : string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+export type NonNullableFields<T> = {
+  [P in keyof T]: NonNullable<T[P]>
+}
+
+export type NonNullableField<T, K extends keyof T> = T &
+  NonNullableFields<Pick<T, K>>

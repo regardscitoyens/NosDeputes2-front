@@ -27,6 +27,7 @@ export const getServerSideProps: GetServerSideProps<{
     .where('seance.id', '=', seanceId)
     .select([
       'seance.id',
+      'seance.type',
       'seance.date',
       'seance.moment',
       'seance.session',
@@ -75,12 +76,47 @@ export const getServerSideProps: GetServerSideProps<{
 
   const sections = await querySectionsForSeance(seanceId)
 
+  const interventions = await db
+    .selectFrom('intervention')
+    .leftJoin(
+      'parlementaire',
+      'intervention.parlementaire_id',
+      'parlementaire.id',
+    )
+    .leftJoin('personnalite', 'intervention.personnalite_id', 'personnalite.id')
+    // TODO on récupère déjà les sections juste au dessus pour faire le résumé, éviter d'appeler la table 2 fois ?
+    .leftJoin('section', 'intervention.section_id', 'section.id')
+    .where('seance_id', '=', seanceId)
+    .select([
+      'intervention.id as intervention_id',
+      'intervention.source as intervention_source',
+      'intervention.source as intervention_source',
+      'intervention.nb_commentaires as intervention_nb_commentaires',
+      'intervention.nb_mots as intervention_nb_mots',
+      'intervention.md5 as intervention_md5',
+      'intervention.intervention as intervention_intervention',
+      'intervention.timestamp as intervention_timestamp',
+      'intervention.section_id as intervention_section_id',
+      'intervention.type as intervention_type',
+      'intervention.personnalite_id as intervention_personnalite_id',
+      'intervention.parlementaire_id as intervention_parlementaire_id',
+      'intervention.parlementaire_groupe_acronyme as intervention_parlementaire_groupe_acronyme',
+      'intervention.fonction as intervention_fonction',
+      'parlementaire.nom as parlementaire_nom',
+      'parlementaire.slug as parlementaire_slug',
+      'parlementaire.id_an as parlementaire_id_an',
+      'personnalite.nom as personnalite_nom',
+      'section.titre as section_titre',
+    ])
+    .execute()
+
   const finalData: types.Props = {
     seance: {
       ...seance,
       date: seance.date.toISOString(),
     },
     organisme: organisme ?? null,
+    interventions,
     seanceSummary: seanceSummary(sections),
   }
   return {
