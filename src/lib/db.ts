@@ -1,5 +1,6 @@
 import { Generated, Kysely, MysqlDialect } from 'kysely'
 import * as mysql from 'mysql2'
+import { AmendementsSort } from './hardcodedData'
 import { readFromEnv, readIntFromEnv } from './utils'
 
 export type DbConnectionPool = Kysely<NosDeputesDatabase>
@@ -243,7 +244,7 @@ interface AmendementTable {
   sous_amendement_de: string | null
   rectif: number
   sujet: string
-  sort: string
+  sort: AmendementsSort
   date: Date
   auteur_id: number
   auteur_groupe_acronyme: string | null

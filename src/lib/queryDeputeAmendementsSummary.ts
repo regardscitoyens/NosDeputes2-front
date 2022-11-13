@@ -1,9 +1,9 @@
 import { sql } from 'kysely'
 import { db } from './db'
-import { AmendementsSorts, amendementsSorts } from './hardcodedData'
+import { AmendementsSort, amendementsSorts } from './hardcodedData'
 
 export type AmendementsDeputeSummary = Record<
-  AmendementsSorts | 'Total',
+  AmendementsSort | 'Total',
   {
     proposes: number
     signes: number

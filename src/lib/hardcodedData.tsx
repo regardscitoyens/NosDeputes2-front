@@ -234,5 +234,4 @@ export const amendementsSorts = [
   'Retiré avant séance',
   'Tombe',
 ]
-
-export type AmendementsSorts = typeof amendementsSorts[number]
+export type AmendementsSort = typeof amendementsSorts[number]
