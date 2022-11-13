@@ -215,7 +215,7 @@ function Responsabilites({ depute }: types.Props) {
         const rows = depute.responsabilites.filter(section.filter)
         return (
           (rows.length && (
-            <ul className="list-none">
+            <ul className="list-none" key={section.title}>
               <b>{section.title} :</b>
               <br />
               {rows.map(row => (
