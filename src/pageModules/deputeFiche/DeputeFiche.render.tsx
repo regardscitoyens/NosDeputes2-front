@@ -204,7 +204,7 @@ function Responsabilites({ depute }: types.Props) {
     {
       title: "Groupes d'études et d'amitié",
       filter: (responsabilite: DeputeResponsabilite) =>
-        responsabilite.type === 'groupe',
+        responsabilite.type === 'groupes',
     },
   ]
   return (
@@ -221,7 +221,8 @@ function Responsabilites({ depute }: types.Props) {
               {rows.map(row => (
                 <li key={row.slug}>
                   <MyLink href={`/organisme/${row.slug}`}>
-                    {formatOrganisme(row.nom)}
+                    {formatOrganisme(row.nom)}{' '}
+                    {row.fonction && `(${row.fonction})`}
                   </MyLink>
                 </li>
               ))}
