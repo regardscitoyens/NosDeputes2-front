@@ -236,32 +236,32 @@ interface TexteLoiTable {
 interface AmendementTable {
   id: Generated<number>
   nb_commentaires: number | null
-  source: string | null
-  legislature: number | null
-  texteloi_id: string | null
-  numero: string | null
+  source: string
+  legislature: number
+  texteloi_id: string
+  numero: string
   sous_amendement_de: string | null
-  rectif: number | null
-  sujet: string | null
-  sort: string | null
-  date: Date | null
+  rectif: number
+  sujet: string
+  sort: string
+  date: Date
   auteur_id: number
   auteur_groupe_acronyme: string | null
-  signataires: string | null
-  texte: string | null
+  signataires: string
+  texte: string
   expose: string | null
-  content_md5: string | null
-  nb_multiples: number | null
+  content_md5: string
+  nb_multiples: number
   created_at: Date
   updated_at: Date
 }
 
 interface ParlementaireAmendementTable {
   id: Generated<number>
-  parlementaire_id: number | null
-  parlementaire_groupe_acronyme: string | null
-  amendement_id: string | null
-  numero_signataire: number | null
+  parlementaire_id: number
+  parlementaire_groupe_acronyme: string
+  amendement_id: string
+  numero_signataire: number
   created_at: Date
   updated_at: Date
 }
