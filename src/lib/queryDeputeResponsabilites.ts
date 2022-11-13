@@ -6,7 +6,7 @@ export type DeputeResponsabilite = {
   nom: string
   slug: string
   type: string
-  fonction: string | null
+  fonction: string
 }
 
 export type DeputeResponsabilites = DeputeResponsabilite[]
@@ -14,21 +14,15 @@ export type DeputeResponsabilites = DeputeResponsabilite[]
 export async function queryDeputeResponsabilites(
   id: number,
 ): Promise<DeputeResponsabilites> {
-  const { count } = db.fn
-
   const responsabilites = await db
     .selectFrom('organisme')
-    .leftJoin(
+    .innerJoin(
       'parlementaire_organisme',
       'parlementaire_organisme.organisme_id',
       'organisme.id',
     )
     .where('parlementaire_organisme.parlementaire_id', '=', id)
-    .where(qb =>
-      qb
-        .where(sql`parlementaire_organisme.fin_fonction IS NULL`)
-        .orWhere(sql`parlementaire_organisme.fin_fonction >= NOW()`),
-    )
+    .where(sql`parlementaire_organisme.fin_fonction IS NULL`)
     .groupBy('organisme.id')
     .select('organisme.nom')
     .select('organisme.slug')

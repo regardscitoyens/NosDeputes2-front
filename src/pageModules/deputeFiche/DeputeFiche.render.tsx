@@ -178,11 +178,10 @@ const formatOrganisme = (nom: string): string => {
   )
 }
 
-function Responsabilites({ depute }: types.Props) {
-  const isResponsabiliteParlementaire = (
-    responsabilite: DeputeResponsabilite,
-  ) => responsabilite.type === 'parlementaire'
+const isResponsabiliteParlementaire = (responsabilite: DeputeResponsabilite) =>
+  responsabilite.type === 'parlementaire'
 
+function Responsabilites({ depute }: types.Props) {
   const sections = [
     {
       title: 'Commission permanente',
@@ -209,7 +208,7 @@ function Responsabilites({ depute }: types.Props) {
   ]
   return (
     <div className="bg-slate-200 px-8 py-4 shadow-md">
-      <h2 className="font-bold">Responsabilites</h2>
+      <h2 className="font-bold">Responsabilités</h2>
       <div className="py-4"></div>
       {sections.map(section => {
         const rows = depute.responsabilites.filter(section.filter)
