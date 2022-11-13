@@ -1,4 +1,3 @@
-import { sql } from 'kysely'
 import { db } from './db'
 import { AmendementsSort, amendementsSorts } from './hardcodedData'
 
@@ -21,7 +20,7 @@ export async function queryDeputeAmendementsSummary(
     .where('amendement.sort', '<>', 'Rectifié')
     .groupBy('amendement.sort')
     .select('amendement.sort')
-    .select(count('amendement.id').as('count'))
+    .select(count<number>('amendement.id').as('count'))
     .execute()
 
   const signes = await db
@@ -35,7 +34,7 @@ export async function queryDeputeAmendementsSummary(
     .where('amendement.sort', '<>', 'Rectifié')
     .groupBy('amendement.sort')
     .select('amendement.sort')
-    .select(count('amendement.id').as('count'))
+    .select(count<number>('amendement.id').as('count'))
     .execute()
 
   // create empty object
@@ -50,19 +49,19 @@ export async function queryDeputeAmendementsSummary(
   )
 
   // compute data and total
-  return amendementsSorts.reduce((keys, sort) => {
+  return amendementsSorts.reduce((summary, sort) => {
     const proposesCount =
       proposes.find(amendement => amendement.sort === sort)?.count || 0
     const signesCount =
       signes.find(amendement => amendement.sort === sort)?.count || 0
-    keys[sort] = {
-      proposes: proposesCount as number,
-      signes: signesCount as number,
+    summary[sort] = {
+      proposes: proposesCount,
+      signes: signesCount,
     }
-    keys.Total = {
-      proposes: keys.Total.proposes + (proposesCount as number),
-      signes: keys.Total.signes + (signesCount as number),
+    summary.Total = {
+      proposes: summary.Total.proposes + proposesCount,
+      signes: summary.Total.signes + signesCount,
     }
-    return keys
+    return summary
   }, amendementsSummary)
 }
