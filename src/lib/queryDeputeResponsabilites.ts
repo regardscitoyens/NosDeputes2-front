@@ -1,11 +1,11 @@
 import { sql } from 'kysely'
 import { db } from './db'
-import { OrganismeType } from './queryOrganismsList'
+import type { NosDeputesDatabase } from '././db'
 
 export type DeputeResponsabilite = {
   nom: string
   slug: string
-  type: "parlementaire" | "extra" | "groupe" | "groupes"
+  type: NosDeputesDatabase['organisme']['type']
   fonction: string
 }
 

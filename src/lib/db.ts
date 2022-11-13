@@ -68,7 +68,7 @@ interface ParlementaireTable {
 interface OrganismeTable {
   id: Generated<number>
   nom: string
-  type: string
+  type: 'parlementaire' | 'extra' | 'groupe' | 'groupes'
   created_at: Date
   updated_at: Date
   slug: string
