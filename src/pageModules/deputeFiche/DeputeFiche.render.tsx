@@ -167,29 +167,10 @@ function Amendements({ depute }: types.Props) {
   )
 }
 
-<<<<<<< HEAD
 const isResponsabiliteParlementaire = (responsabilite: DeputeResponsabilite) =>
   responsabilite.type === 'parlementaire'
 
 function Responsabilites({ depute }: types.Props) {
-=======
-const capitalize = (label: string) =>
-  label.charAt(0).toUpperCase() + label.substring(1)
-
-const formatOrganisme = (nom: string): string => {
-  return capitalize(
-    nom
-      .replace(/^(Commission )/gi, '')
-      .replace(/(et|,) d(u |e la |es |e l\'|e l)/gi, ', '),
-  )
-}
-
-function Responsabilites({ depute }: types.Props) {
-  const isResponsabiliteParlementaire = (
-    responsabilite: DeputeResponsabilite,
-  ) => responsabilite.type === 'parlementaire'
-
->>>>>>> e7389ce (feat(députés): add responsabilités)
   const sections = [
     {
       title: 'Commission permanente',
@@ -211,40 +192,24 @@ function Responsabilites({ depute }: types.Props) {
     {
       title: "Groupes d'études et d'amitié",
       filter: (responsabilite: DeputeResponsabilite) =>
-<<<<<<< HEAD
         responsabilite.type === 'groupes',
-=======
-        responsabilite.type === 'groupe',
->>>>>>> e7389ce (feat(députés): add responsabilités)
     },
   ]
   return (
     <div className="bg-slate-200 px-8 py-4 shadow-md">
-<<<<<<< HEAD
-      <h2 className="font-bold">Responsabilités</h2>
-=======
       <h2 className="font-bold">Responsabilites</h2>
->>>>>>> e7389ce (feat(députés): add responsabilités)
       <div className="py-4"></div>
       {sections.map(section => {
         const rows = depute.responsabilites.filter(section.filter)
         return (
           (rows.length && (
-<<<<<<< HEAD
             <ul className="list-none" key={section.title}>
-=======
-            <ul className="list-none">
->>>>>>> e7389ce (feat(députés): add responsabilités)
               <b>{section.title} :</b>
               <br />
               {rows.map(row => (
                 <li key={row.slug}>
                   <MyLink href={`/organisme/${row.slug}`}>
-<<<<<<< HEAD
                     {row.nom} {row.fonction && `(${row.fonction})`}
-=======
-                    {formatOrganisme(row.nom)}
->>>>>>> e7389ce (feat(députés): add responsabilités)
                   </MyLink>
                 </li>
               ))}
