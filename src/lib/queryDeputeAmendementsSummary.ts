@@ -18,7 +18,7 @@ export async function queryDeputeAmendementsSummary(
   const proposes = await db
     .selectFrom('amendement')
     .where('amendement.auteur_id', '=', id)
-    .where('amendement.sort', '<>', 'Réctifié')
+    .where('amendement.sort', '<>', 'Rectifié')
     .groupBy('amendement.sort')
     .select('amendement.sort')
     .select(count('amendement.id').as('count'))
@@ -32,7 +32,7 @@ export async function queryDeputeAmendementsSummary(
       'amendement.id',
     )
     .where('parlementaire_amendement.parlementaire_id', '=', id)
-    .where('amendement.sort', '<>', 'Réctifié')
+    .where('amendement.sort', '<>', 'Rectifié')
     .groupBy('amendement.sort')
     .select('amendement.sort')
     .select(count('amendement.id').as('count'))
