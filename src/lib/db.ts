@@ -1,5 +1,6 @@
 import { Generated, Kysely, MysqlDialect } from 'kysely'
 import * as mysql from 'mysql2'
+import { AmendementsSort } from './hardcodedData'
 import { readFromEnv, readIntFromEnv } from './utils'
 
 export type DbConnectionPool = Kysely<NosDeputesDatabase>
@@ -19,7 +20,9 @@ export const db: DbConnectionPool = new Kysely<NosDeputesDatabase>({
 })
 
 export interface NosDeputesDatabase {
+  amendement: AmendementTable
   parlementaire: ParlementaireTable
+  parlementaire_amendement: ParlementaireAmendementTable
   organisme: OrganismeTable
   parlementaire_organisme: ParlementaireOrganismeTable
   seance: SeanceTable
@@ -227,6 +230,39 @@ interface TexteLoiTable {
   organisme_id: number | null
   signataires: string
   contenu: string
+  created_at: Date
+  updated_at: Date
+}
+
+interface AmendementTable {
+  id: Generated<number>
+  nb_commentaires: number | null
+  source: string
+  legislature: number
+  texteloi_id: string
+  numero: string
+  sous_amendement_de: string | null
+  rectif: number
+  sujet: string
+  sort: AmendementsSort
+  date: Date
+  auteur_id: number
+  auteur_groupe_acronyme: string | null
+  signataires: string
+  texte: string
+  expose: string | null
+  content_md5: string
+  nb_multiples: number
+  created_at: Date
+  updated_at: Date
+}
+
+interface ParlementaireAmendementTable {
+  id: Generated<number>
+  parlementaire_id: number
+  parlementaire_groupe_acronyme: string
+  amendement_id: string
+  numero_signataire: number
   created_at: Date
   updated_at: Date
 }

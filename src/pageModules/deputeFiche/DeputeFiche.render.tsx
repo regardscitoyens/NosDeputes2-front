@@ -131,6 +131,41 @@ function MetricsBlock({ depute }: types.Props) {
   )
 }
 
+function Amendements({ depute }: types.Props) {
+  return (
+    <div className="bg-slate-200 px-8 py-4 shadow-md">
+      <h2 className="font-bold">Ses amendements</h2>
+      <div className="py-4">
+        <table className="table-auto">
+          <thead>
+            <tr>
+              <th>-</th>
+              <th>Proposés</th>
+              <th>Signés</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(depute.amendements).map(key => (
+              <tr key={key}>
+                <td>{key}</td>
+                <td align="center">{depute.amendements[key].proposes}</td>
+                <td align="center">{depute.amendements[key].signes}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <br />
+        <MyLink
+          href={`https://www.assemblee-nationale.fr/dyn/16/amendements?auteur=PA${depute.id_an}`}
+          targetBlank
+        >
+          Consulter tous ses amendements
+        </MyLink>
+      </div>
+    </div>
+  )
+}
+
 function getOrdinalSuffixFeminine(n: number) {
   return n === 1 ? 'ère' : `ème`
 }
@@ -174,9 +209,10 @@ export function Page({ depute }: types.Props) {
             etc.)
           </Todo>
           <Todo>
-            Travaux législatifs : ses derniers dossiers, interventions,
-            amendements (dont stats sur tous ses amendements)
+            Ses interventions : (travaux en commissions, travaux en hémicycle,
+            toutes ses interventions)
           </Todo>
+          <Amendements {...{ depute }} />
         </div>
         <div className="space-y-8">
           <Todo>
