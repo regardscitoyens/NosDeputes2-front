@@ -227,6 +227,7 @@ function getOrdinalSuffixFeminine(n: number) {
 }
 
 export function Page({ depute }: types.Props) {
+  console.log('depute', depute)
   return (
     <div className="grid grid-cols-12 gap-4">
       <h1 className="col-span-full  text-center text-2xl">
@@ -261,6 +262,7 @@ export function Page({ depute }: types.Props) {
           <InformationsBlock {...{ depute }} />
           <ContactBlock {...{ depute }} />
           <Responsabilites {...{ depute }} />
+          <Todo>Ses derniers dossiers</Todo>
           <Todo>
             Ses interventions : (travaux en commissions, travaux en hémicycle,
             toutes ses interventions)
