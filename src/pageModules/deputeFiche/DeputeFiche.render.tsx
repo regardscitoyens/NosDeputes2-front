@@ -167,17 +167,6 @@ function Amendements({ depute }: types.Props) {
   )
 }
 
-const capitalize = (label: string) =>
-  label.charAt(0).toUpperCase() + label.substring(1)
-
-const formatOrganisme = (nom: string): string => {
-  return capitalize(
-    nom
-      .replace(/^(Commission )/gi, '')
-      .replace(/(et|,) d(u |e la |es |e l\'|e l)/gi, ', '),
-  )
-}
-
 const isResponsabiliteParlementaire = (responsabilite: DeputeResponsabilite) =>
   responsabilite.type === 'parlementaire'
 
@@ -220,8 +209,7 @@ function Responsabilites({ depute }: types.Props) {
               {rows.map(row => (
                 <li key={row.slug}>
                   <MyLink href={`/organisme/${row.slug}`}>
-                    {formatOrganisme(row.nom)}{' '}
-                    {row.fonction && `(${row.fonction})`}
+                    {row.nom} {row.fonction && `(${row.fonction})`}
                   </MyLink>
                 </li>
               ))}
