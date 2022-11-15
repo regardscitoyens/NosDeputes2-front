@@ -12,7 +12,8 @@ export function MyLink({
   children: ReactNode
   className?: string
   targetBlank?: boolean
-  style?: CSSProperties | undefined
+  style?: CSSProperties
+  title?: string
 }) {
   const targetAttributes = targetBlank
     ? {

@@ -233,14 +233,21 @@ export function InterventionPersonnaliteComp({
       style={{ display: 'flex' }}
     >
       <div>
-        <Image
-          style={{ marginRight: '15px' }}
-          src={`/assets/unknown_person.jpg`}
-          alt={"Une image qui remplace l'absence de photo"}
-          title={intervention.personnalite_nom}
-          width={55}
-          height={70}
-        />
+        <MyLink
+          href={'https://commons.wikimedia.org/wiki/File:Unknown_person.jpg'}
+          title={
+            'Paulo Selke, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons'
+          }
+        >
+          <Image
+            style={{ marginRight: '15px' }}
+            src={`/assets/unknown_person.jpg`}
+            alt={"Une image qui remplace l'absence de photo"}
+            title={intervention.personnalite_nom}
+            width={55}
+            height={70}
+          />
+        </MyLink>
       </div>
       <div style={{ width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
