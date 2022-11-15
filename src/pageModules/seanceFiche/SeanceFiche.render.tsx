@@ -24,22 +24,27 @@ export function Page({ seance, seanceSummary, interventions }: types.Props) {
   // TODO gestion de l'organisme
   return (
     <div>
-      <h1 className="text-center text-2xl">
+      <h1 id="sommaire" className="text-center text-2xl">
         Séance en hémicycle du {formatDate(seance.date)} à {seance.moment}
       </h1>
       <h2 className="text-xl">Résumé de la {libelleSeance(seance)}</h2>
       <Todo>Graphe de répartition des temps de parole</Todo>
       <Todo>Mots clefs de la {libelleSeance(seance)}</Todo>
       <h3 className="text-xl">Sommaire</h3>
-      <SeanceSummary seanceSummary={seanceSummary} />
-      <h2 className="text-xl">La {libelleSeance(seance)}</h2>
-      {interventions.length > 0 ? (
-        <MyLink targetBlank href={interventions[0].intervention_source}>
-          Source
-        </MyLink>
-      ) : (
-        <></>
-      )}
+      <SeanceSummary
+        seanceSummary={seanceSummary}
+        style={{ marginLeft: '30px' }}
+      />
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <h2 className="text-xl">La {libelleSeance(seance)}</h2>
+        {interventions.length > 0 ? (
+          <MyLink targetBlank href={interventions[0].intervention_source}>
+            Source
+          </MyLink>
+        ) : (
+          <></>
+        )}
+      </div>
       <div>
         <Interventions
           seance={seance}
@@ -79,14 +84,13 @@ export function Interventions({
   }
 
   // Find first interventionId for each sectionId => gives the sections titles
-  const interventionsIdsForSections: { [sectionId: string]: number } =
-    mapValues(
-      groupBy(
-        interventions,
-        intervention => intervention.intervention_section_id,
-      ),
-      interventionsForSection => interventionsForSection[0].intervention_id,
-    )
+  const interventionIdBySectionId: { [sectionId: string]: number } = mapValues(
+    groupBy(
+      interventions,
+      intervention => intervention.intervention_section_id,
+    ),
+    interventionsForSection => interventionsForSection[0].intervention_id,
+  )
   function sectionDepth(sectionId: number): 1 | 2 {
     return seanceSummary.sections.find(
       topSection => topSection.id === sectionId,
@@ -98,23 +102,39 @@ export function Interventions({
     return (
       intervention.intervention_section_id !== null &&
       intervention.intervention_id ===
-        interventionsIdsForSections[
+        interventionIdBySectionId[
           intervention.intervention_section_id.toString()
         ]
     )
   }
 
-  function InterventionComp({ intervention }: { intervention: Intervention }) {
+  function InterventionComp({
+    intervention,
+    currentSectionId,
+  }: {
+    intervention: Intervention
+    currentSectionId: number | null
+  }) {
     if (isInterventionParlementaire(intervention)) {
-      return <InterventionParlementaireComp intervention={intervention} />
+      return (
+        <InterventionParlementaireComp
+          intervention={intervention}
+          currentSectionId={currentSectionId}
+        />
+      )
     } else if (isInterventionPersonnalite(intervention)) {
-      return <InterventionPersonnaliteComp intervention={intervention} />
+      return (
+        <InterventionPersonnaliteComp
+          intervention={intervention}
+          currentSectionId={currentSectionId}
+        />
+      )
     } else if (
       hasSectionTitre(intervention) &&
       isSectionIntervention(intervention)
     ) {
       return (
-        <InterventionSectionComp
+        <SectionTitle
           intervention={intervention}
           depth={sectionDepth(intervention.intervention_section_id)}
         />
@@ -124,26 +144,37 @@ export function Interventions({
     }
   }
 
+  let currentSectionId: number | null = null
   return (
-    <div>
-      {interventions.map(intervention => (
-        <InterventionComp
-          key={intervention.intervention_md5}
-          intervention={intervention}
-        />
-      ))}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      {interventions.map(intervention => {
+        // pas joli de faire un effet de bord comme ça :/
+        if (isSectionIntervention(intervention)) {
+          currentSectionId = intervention.intervention_section_id
+        }
+
+        return (
+          <InterventionComp
+            key={intervention.intervention_md5}
+            intervention={intervention}
+            currentSectionId={currentSectionId}
+          />
+        )
+      })}
     </div>
   )
 }
 
 export function InterventionParlementaireComp({
   intervention,
+  currentSectionId,
 }: {
   intervention: InterventionParlementaire
+  currentSectionId: number | null
 }) {
   return (
     <div
-      id={'inter_' + intervention.intervention_md5}
+      id={`inter_${intervention.intervention_md5}`}
       style={{ display: 'flex' }}
     >
       <MyLink
@@ -158,12 +189,27 @@ export function InterventionParlementaireComp({
           height={70}
         />
       </MyLink>
-      <div>
-        <MyLink href={intervention.parlementaire_slug}>
-          {intervention.parlementaire_nom}
-          {intervention.intervention_fonction &&
-            `, ${intervention.intervention_fonction}`}
-        </MyLink>
+      <div style={{ width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <MyLink href={`/${intervention.parlementaire_slug}`}>
+            {intervention.parlementaire_nom}
+            {intervention.intervention_fonction &&
+              `, ${intervention.intervention_fonction}`}
+          </MyLink>
+          <div>
+            {currentSectionId && (
+              <>
+                <MyLink href={`#table_${currentSectionId}`}>
+                  Début de section
+                </MyLink>
+                -
+              </>
+            )}
+            <MyLink href={`#inter_${intervention.intervention_md5}`}>
+              Permalien
+            </MyLink>
+          </div>
+        </div>
         <div
           dangerouslySetInnerHTML={{
             __html: intervention.intervention_intervention,
@@ -176,22 +222,54 @@ export function InterventionParlementaireComp({
 
 export function InterventionPersonnaliteComp({
   intervention,
+  currentSectionId,
 }: {
   intervention: InterventionPersonnalite
+  currentSectionId: number | null
 }) {
   return (
-    <div id={'inter_' + intervention.intervention_md5}>
-      <h4 className="text-lg">{intervention.personnalite_nom}</h4>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: intervention.intervention_intervention,
-        }}
-      ></div>
+    <div
+      id={`inter_${intervention.intervention_md5}`}
+      style={{ display: 'flex' }}
+    >
+      <div>
+        <Image
+          style={{ marginRight: '15px' }}
+          src={`/assets/unknown_person.jpg`}
+          alt={"Une image qui remplace l'absence de photo"}
+          title={intervention.personnalite_nom}
+          width={55}
+          height={70}
+        />
+      </div>
+      <div style={{ width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>{intervention.personnalite_nom}</span>
+          <div>
+            {currentSectionId && (
+              <>
+                <MyLink href={`#table_${currentSectionId}`}>
+                  Début de section
+                </MyLink>
+                -
+              </>
+            )}
+            <MyLink href={`#inter_${intervention.intervention_md5}`}>
+              Permalien
+            </MyLink>
+          </div>
+        </div>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: intervention.intervention_intervention,
+          }}
+        ></div>
+      </div>
     </div>
   )
 }
 
-export function InterventionSectionComp({
+export function SectionTitle({
   intervention,
   depth,
 }: {
@@ -199,7 +277,11 @@ export function InterventionSectionComp({
   depth: 1 | 2
 }) {
   return (
-    <div id={'inter_' + intervention.intervention_md5}>
+    <div
+      id={`table_${intervention.intervention_section_id}`}
+      style={{ display: 'flex', justifyContent: 'space-between' }}
+    >
+      <div></div> {/* empty element for flex balance */}
       {depth === 1 && (
         <h2 className="text-center text-xl">
           {capitalizeFirst(intervention.section_titre)}
@@ -210,6 +292,12 @@ export function InterventionSectionComp({
           {capitalizeFirst(intervention.section_titre)}
         </h3>
       )}
+      <div>
+        <MyLink href={`#sommaire`}>Retour au sommaire</MyLink>-
+        <MyLink href={`#table_${intervention.intervention_section_id}`}>
+          Permalien
+        </MyLink>
+      </div>
     </div>
   )
 }
@@ -217,8 +305,8 @@ export function InterventionSectionComp({
 export function Didascalie({ intervention }: { intervention: Intervention }) {
   return (
     <div
-      id={'inter_' + intervention.intervention_md5}
-      style={{ fontStyle: 'oblique', marginLeft: '15px' }}
+      id={`inter_${intervention.intervention_md5}`}
+      style={{ fontStyle: 'oblique', marginLeft: '70px' }}
     >
       <div
         dangerouslySetInnerHTML={{
