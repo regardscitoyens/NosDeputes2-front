@@ -2,6 +2,7 @@ import { GetServerSideProps } from 'next'
 import PHPUnserialize from 'php-unserialize'
 import { addLatestGroupToDepute } from '../../lib/addLatestGroup'
 import { queryDeputeAmendementsSummary } from '../../lib/queryDeputeAmendementsSummary'
+import { queryDeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 import { db } from '../../lib/db'
 import * as types from './DeputeFiche.types'
 
@@ -111,6 +112,7 @@ export const getServerSideProps: GetServerSideProps<{
   } = deputeWithLatestGroup
 
   const amendements = await queryDeputeAmendementsSummary(baseDepute.id)
+  const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
 
   const finalDepute: types.Depute = {
     ...restOfDepute,
@@ -124,6 +126,7 @@ export const getServerSideProps: GetServerSideProps<{
     debut_mandat: deputeWithLatestGroup.debut_mandat.toISOString(),
     fin_mandat: deputeWithLatestGroup.fin_mandat?.toISOString() ?? null,
     amendements,
+    responsabilites,
   }
 
   return {

@@ -3,11 +3,12 @@ import Image from 'next/image'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
-
 import {
   addPrefixToDepartement,
   CURRENT_LEGISLATURE,
+  isCommissionPermanente,
 } from '../../lib/hardcodedData'
+import { DeputeResponsabilite } from '../../lib/queryDeputeResponsabilites'
 import { formatDate, getAge } from '../../lib/utils'
 import * as types from './DeputeFiche.types'
 
@@ -166,6 +167,61 @@ function Amendements({ depute }: types.Props) {
   )
 }
 
+const isResponsabiliteParlementaire = (responsabilite: DeputeResponsabilite) =>
+  responsabilite.type === 'parlementaire'
+
+function Responsabilites({ depute }: types.Props) {
+  const sections = [
+    {
+      title: 'Commission permanente',
+      filter: (responsabilite: DeputeResponsabilite) =>
+        isResponsabiliteParlementaire(responsabilite) &&
+        isCommissionPermanente(responsabilite.slug),
+    },
+    {
+      title: 'Missions parlementaires',
+      filter: (responsabilite: DeputeResponsabilite) =>
+        isResponsabiliteParlementaire(responsabilite) &&
+        !isCommissionPermanente(responsabilite.slug),
+    },
+    {
+      title: 'Fonctions judiciaires, internationales ou extra-parlementaires',
+      filter: (responsabilite: DeputeResponsabilite) =>
+        responsabilite.type === 'extra',
+    },
+    {
+      title: "Groupes d'études et d'amitié",
+      filter: (responsabilite: DeputeResponsabilite) =>
+        responsabilite.type === 'groupes',
+    },
+  ]
+  return (
+    <div className="bg-slate-200 px-8 py-4 shadow-md">
+      <h2 className="font-bold">Responsabilités</h2>
+      <div className="py-4"></div>
+      {sections.map(section => {
+        const rows = depute.responsabilites.filter(section.filter)
+        return (
+          (rows.length && (
+            <ul className="list-none" key={section.title}>
+              <b>{section.title} :</b>
+              <br />
+              {rows.map(row => (
+                <li key={row.slug}>
+                  <MyLink href={`/organisme/${row.slug}`}>
+                    {row.nom} {row.fonction && `(${row.fonction})`}
+                  </MyLink>
+                </li>
+              ))}
+            </ul>
+          )) ||
+          null
+        )
+      })}
+    </div>
+  )
+}
+
 function getOrdinalSuffixFeminine(n: number) {
   return n === 1 ? 'ère' : `ème`
 }
@@ -204,10 +260,7 @@ export function Page({ depute }: types.Props) {
         <div className="space-y-8">
           <InformationsBlock {...{ depute }} />
           <ContactBlock {...{ depute }} />
-          <Todo>
-            Responsabilités (commissions, missions, groupes extraparlementaires
-            etc.)
-          </Todo>
+          <Responsabilites {...{ depute }} />
           <Todo>
             Ses interventions : (travaux en commissions, travaux en hémicycle,
             toutes ses interventions)
