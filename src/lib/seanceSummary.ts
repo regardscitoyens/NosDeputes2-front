@@ -1,5 +1,7 @@
 import { SeanceSection } from './querySectionsForSeance'
-import { uniqBy } from 'lodash'
+import keyBy from 'lodash/keyBy'
+import partition from 'lodash/partition'
+import uniqBy from 'lodash/uniqBy'
 
 export type SummarySection = {
   id: number
@@ -12,31 +14,35 @@ export type SeanceSummary = {
   sections: SummarySection[]
 }
 
-export function seanceSummary(sections: SeanceSection[]): SeanceSummary {
-  const topLevelSections: SummarySection[] = []
-  let currentTopLevelSection: SummarySection | null = null
+export function buildSeanceSummary(sections: SeanceSection[]): SeanceSummary {
+  const deduplicated = uniqBy(sections, section => section.id)
+  const [parentSections, childrenSections] = partition(
+    deduplicated,
+    section => section.id === section.parent_id,
+  )
 
-  for (const section of uniqBy(sections, s => s.id)) {
-    if (section.titre !== null) {
-      const isTopLevel = !section.titre_complet.includes('>')
+  const parentSummarySection = parentSections
+    .filter(section => section.titre !== null)
+    .map<SummarySection>(section => ({
+      id: section.id,
+      titre: section.titre,
+      subSections: [],
+    }))
+  const parentSummarySectionsByIds = keyBy(
+    parentSummarySection,
+    section => section.id,
+  )
 
-      if (isTopLevel) {
-        currentTopLevelSection = {
-          id: section.id,
-          titre: section.titre,
-          subSections: [],
-        }
-        topLevelSections.push(currentTopLevelSection)
-      } else if (currentTopLevelSection !== null) {
-        currentTopLevelSection.subSections.push({
-          titre: section.titre,
-          id: section.id,
-        })
-      }
-    }
-  }
+  childrenSections.forEach(children => {
+    parentSummarySectionsByIds[children.parent_id.toString()]?.subSections.push(
+      {
+        id: children.id,
+        titre: children.titre,
+      },
+    )
+  })
 
   return {
-    sections: topLevelSections,
+    sections: parentSummarySection,
   }
 }

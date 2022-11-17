@@ -1,16 +1,14 @@
 import { capitalizeFirst } from '../lib/utils'
 import { SeanceSummary } from '../lib/seanceSummary'
 import { MyLink } from './MyLink'
-import { CSSProperties } from 'react'
 
 type Props = {
   seanceSummary: SeanceSummary
-  style?: CSSProperties
 }
 
-export function SeanceSummary({ seanceSummary, style }: Props) {
+export function SeanceSummary({ seanceSummary }: Props) {
   return (
-    <ul {...{ style }}>
+    <ul className="ml-10">
       {seanceSummary.sections.map(section => (
         <>
           <li key={section.id + '_title'}>
@@ -18,7 +16,7 @@ export function SeanceSummary({ seanceSummary, style }: Props) {
               {capitalizeFirst(section.titre)}
             </MyLink>
           </li>
-          <ul key={section.id + '_subsections'} style={{ marginLeft: '30px' }}>
+          <ul key={section.id + '_subsections'} className="ml-10">
             {section.subSections.map(subsection => (
               <li key={subsection.id}>
                 <MyLink href={`#table_${subsection.id}`}>

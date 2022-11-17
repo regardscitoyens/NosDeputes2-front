@@ -14,7 +14,8 @@ import { SeanceSummary } from '../../components/SeanceSummary'
 import { MyLink } from '../../components/MyLink'
 import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
 import Image from 'next/image'
-import { groupBy, mapValues } from 'lodash'
+import groupBy from 'lodash/groupBy'
+import mapValues from 'lodash/mapValues'
 
 function libelleSeance(seance: types.Props['seance']): string {
   return seance.type === 'commission' ? 'réunion' : 'séance'
@@ -31,11 +32,8 @@ export function Page({ seance, seanceSummary, interventions }: types.Props) {
       <Todo>Graphe de répartition des temps de parole</Todo>
       <Todo>Mots clefs de la {libelleSeance(seance)}</Todo>
       <h3 className="text-xl">Sommaire</h3>
-      <SeanceSummary
-        seanceSummary={seanceSummary}
-        style={{ marginLeft: '30px' }}
-      />
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <SeanceSummary seanceSummary={seanceSummary} />
+      <div className="flex justify-between">
         <h2 className="text-xl">La {libelleSeance(seance)}</h2>
         {interventions.length > 0 ? (
           <MyLink targetBlank href={interventions[0].intervention_source}>
@@ -146,7 +144,7 @@ export function Interventions({
 
   let currentSectionId: number | null = null
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+    <div className="flex flex-col space-y-6">
       {interventions.map(intervention => {
         // pas joli de faire un effet de bord comme ça :/
         if (isSectionIntervention(intervention)) {
@@ -175,12 +173,9 @@ export function InterventionParlementaireComp({
   return (
     <div
       id={`inter_${intervention.intervention_md5}`}
-      style={{ display: 'flex' }}
+      className="flex rounded-lg bg-slate-200 p-2 shadow-lg"
     >
-      <MyLink
-        href={intervention.parlementaire_slug}
-        style={{ flex: 'none', marginRight: '15px' }}
-      >
+      <MyLink className="mr-4 flex-none" href={intervention.parlementaire_slug}>
         <Image
           src={`/deputes/photos/${CURRENT_LEGISLATURE}/${intervention.parlementaire_id_an}.jpg`}
           alt={`Photo de  ${intervention.parlementaire_nom}`}
@@ -189,8 +184,8 @@ export function InterventionParlementaireComp({
           height={70}
         />
       </MyLink>
-      <div style={{ width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div className="w-full">
+        <div className="flex justify-between">
           <MyLink href={`/${intervention.parlementaire_slug}`}>
             {intervention.parlementaire_nom}
             {intervention.intervention_fonction &&
@@ -230,27 +225,25 @@ export function InterventionPersonnaliteComp({
   return (
     <div
       id={`inter_${intervention.intervention_md5}`}
-      style={{ display: 'flex' }}
+      className="flex rounded-lg bg-slate-200 p-2 shadow-lg"
     >
-      <div>
-        <MyLink
-          href={'https://commons.wikimedia.org/wiki/File:Unknown_person.jpg'}
-          title={
-            'Paulo Selke, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons'
-          }
-        >
-          <Image
-            style={{ marginRight: '15px' }}
-            src={`/assets/unknown_person.jpg`}
-            alt={"Une image qui remplace l'absence de photo"}
-            title={intervention.personnalite_nom}
-            width={55}
-            height={70}
-          />
-        </MyLink>
-      </div>
-      <div style={{ width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <MyLink
+        className="mr-4 flex-none"
+        href={'https://commons.wikimedia.org/wiki/File:Unknown_person.jpg'}
+        title={
+          'Paulo Selke, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons'
+        }
+      >
+        <Image
+          src={`/assets/unknown_person.jpg`}
+          alt={"Une image qui remplace l'absence de photo"}
+          title={intervention.personnalite_nom}
+          width={55}
+          height={70}
+        />
+      </MyLink>
+      <div className="w-full">
+        <div className="flex justify-between">
           <span>{intervention.personnalite_nom}</span>
           <div>
             {currentSectionId && (
@@ -286,7 +279,7 @@ export function SectionTitle({
   return (
     <div
       id={`table_${intervention.intervention_section_id}`}
-      style={{ display: 'flex', justifyContent: 'space-between' }}
+      className="flex justify-between"
     >
       <div></div> {/* empty element for flex balance */}
       {depth === 1 && (
@@ -311,10 +304,7 @@ export function SectionTitle({
 
 export function Didascalie({ intervention }: { intervention: Intervention }) {
   return (
-    <div
-      id={`inter_${intervention.intervention_md5}`}
-      style={{ fontStyle: 'oblique', marginLeft: '70px' }}
-    >
+    <div id={`inter_${intervention.intervention_md5}`} className="ml-16 italic">
       <div
         dangerouslySetInnerHTML={{
           __html: intervention.intervention_intervention,

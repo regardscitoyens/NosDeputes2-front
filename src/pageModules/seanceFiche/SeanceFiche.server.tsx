@@ -4,7 +4,7 @@ import { parseIntOrNull } from '../../lib/utils'
 
 import * as types from './SeanceFiche.types'
 import { querySectionsForSeance } from '../../lib/querySectionsForSeance'
-import { seanceSummary } from '../../lib/seanceSummary'
+import { buildSeanceSummary } from '../../lib/seanceSummary'
 
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
@@ -117,7 +117,7 @@ export const getServerSideProps: GetServerSideProps<{
     },
     organisme: organisme ?? null,
     interventions,
-    seanceSummary: seanceSummary(sections),
+    seanceSummary: buildSeanceSummary(sections),
   }
   return {
     props: {

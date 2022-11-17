@@ -1,6 +1,17 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "react/no-unescaped-entities": "off"
+    "react/no-unescaped-entities": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "lodash",
+            "message": "Please use `import function from 'lodash/function'` instead"
+          }
+        ]
+      }
+    ]
   }
 }
