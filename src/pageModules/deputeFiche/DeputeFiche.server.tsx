@@ -7,23 +7,33 @@ import { db } from '../../lib/db'
 import * as types from './DeputeFiche.types'
 
 function parseMails(mails: string): string[] {
-  return Object.values(PHPUnserialize.unserialize(mails)) as string[]
+  const unserialized = PHPUnserialize.unserialize(mails)
+  if (unserialized) {
+    return Object.values(unserialized) as string[]
+  }
+  return []
 }
 
 function parseCollaborateurs(
   collaborateursStr: string,
 ): types.DeputeCollaborateur[] {
-  const collaborateurs = Object.values(
-    PHPUnserialize.unserialize(collaborateursStr),
-  ) as string[]
-  // todo: resolve collaborateur link
-  return collaborateurs.map(name => ({
-    name,
-  }))
+  const unserialized = PHPUnserialize.unserialize(collaborateursStr)
+  if (unserialized) {
+    const collaborateurs = Object.values(unserialized) as string[]
+    // todo: resolve collaborateur link
+    return collaborateurs.map(name => ({
+      name,
+    }))
+  }
+  return []
 }
 
 function parseAdresses(adresses: string): string[] {
-  return Object.values(PHPUnserialize.unserialize(adresses)) as string[]
+  const unserialized = PHPUnserialize.unserialize(adresses)
+  if (unserialized) {
+    return Object.values(PHPUnserialize.unserialize(adresses)) as string[]
+  }
+  return []
 }
 
 function parseDeputeUrls(depute: {
@@ -43,22 +53,25 @@ function parseDeputeUrls(depute: {
     url: `https://fr.wikipedia.org/wiki/${encodeURIComponent(nom)}`,
   })
   if (sites_web) {
-    const sites = PHPUnserialize.unserialize(sites_web) as {
-      [k: string]: string
+    const unserialized = PHPUnserialize.unserialize(sites_web)
+    if (unserialized) {
+      const sites = PHPUnserialize.unserialize(sites_web) as {
+        [k: string]: string
+      }
+      urls.push(
+        ...Object.values(sites).map(url => {
+          const label = url.match(/facebook/)
+            ? 'Page facebook'
+            : url.match(/twitter/)
+            ? `Compte twitter : ${url.replace(/^.*\/(.*)$/, '@$1')}`
+            : `Site web : ${url}`
+          return {
+            label,
+            url,
+          }
+        }),
+      )
     }
-    urls.push(
-      ...Object.values(sites).map(url => {
-        const label = url.match(/facebook/)
-          ? 'Page facebook'
-          : url.match(/twitter/)
-          ? `Compte twitter : ${url.replace(/^.*\/(.*)$/, '@$1')}`
-          : `Site web : ${url}`
-        return {
-          label,
-          url,
-        }
-      }),
-    )
   }
   return urls
 }
