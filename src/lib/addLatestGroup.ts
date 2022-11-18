@@ -10,7 +10,7 @@ export type LatestGroupForDepute = {
 }
 
 export type WithLatestGroup<D> = D & {
-  latestGroup: LatestGroupForDepute
+  latestGroup: LatestGroupForDepute | null
 }
 
 // For a given type of depute D, fetch for each of them their latest group
@@ -24,7 +24,8 @@ export async function addLatestGroupToDeputes<D extends { id: number }>(
 
   return deputes.map(depute => {
     if (!latestGroupsMap[depute.id]) {
-      throw new Error(`Couldn't find latest group for depute ${depute.id}`)
+      console.error(`Error: Couldn't find latest group for depute ${depute.id}`)
+      return { ...depute, latestGroup: null }
     }
     const latestGroup = latestGroupsMap[depute.id]
     return {
