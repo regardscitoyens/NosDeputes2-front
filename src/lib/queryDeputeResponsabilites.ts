@@ -5,7 +5,7 @@ import { OrganismeType } from './queryOrganismsList'
 export type DeputeResponsabilite = {
   nom: string
   slug: string
-  type: "parlementaire" | "extra" | "groupe" | "groupes"
+  type: 'parlementaire' | 'extra' | 'groupe' | 'groupes'
   fonction: string
 }
 
