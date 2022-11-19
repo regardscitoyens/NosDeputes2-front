@@ -209,7 +209,7 @@ interface VariableGlobaleTable {
   updated_at: Date
 }
 
-interface TexteLoiTable {
+export interface TexteLoiTable {
   id: string
   nb_commentaires: number
   legislature: number

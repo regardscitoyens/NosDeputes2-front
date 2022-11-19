@@ -14,7 +14,7 @@ import * as types from './DocumentFiche.types'
 // apps/frontend/modules/documents/templates/showSuccess.php
 
 async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
-  return await db
+  const foo = await db
     .selectFrom('parlementaire')
     .innerJoin(
       'parlementaire_texteloi',
@@ -28,6 +28,8 @@ async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
     .orderBy('parlementaire.nom_de_famille')
     .select(['parlementaire.id', 'parlementaire.nom'])
     .execute()
+  return foo
+  // return null as any
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -39,22 +41,24 @@ export const getServerSideProps: GetServerSideProps<{
   // if ($loi = Doctrine::getTable('Titreloi')->findLightLoi("$id"))
   //    $this->redirect('@loi?loi='.$id);
 
-  const doc = await db
+  const texteLoiRaw = await db
     .selectFrom('texteloi')
     .where('id', '=', id)
-    .select(['id', 'date'])
+    .select(['id', 'date', 'titre', 'type', 'numero', 'type_details'])
     .executeTakeFirst()
 
-  if (!doc) {
+  if (!texteLoiRaw) {
     return {
       notFound: true,
     }
   }
 
+  const texteLoi = { ...texteLoiRaw, date: texteLoiRaw.date.toISOString() }
+
   return {
     props: {
       data: {
-        doc,
+        texteLoi,
         auteurs: await getAuteurs(id),
       },
     },
