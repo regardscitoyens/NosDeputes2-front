@@ -11,8 +11,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "yarn prettier --write .",
-    "checkformat": "yarn prettier --check .",
+    "checktypes": "tsc --noEmit",
+    "format": "prettier --write .",
+    "checkformat": "prettier --check .",
     "import-latest-dump": "ts-node ./scripts/import-latest-dump.ts",
     "analyze-nosdeputes-visits": "ts-node ./scripts/analyze-nosdeputes-visits.ts"
   },

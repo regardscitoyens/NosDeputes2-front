@@ -18,6 +18,6 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn checkformat
       - run: yarn lint
-      - run: yarn build
+      - run: yarn checktypes
       # To be activated if we setup tests
       # - run: yarn test
