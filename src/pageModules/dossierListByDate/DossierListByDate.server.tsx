@@ -19,6 +19,7 @@ export const getServerSideProps: GetServerSideProps<{
     .selectFrom('section')
     .where('id', '=', sql`section_id`)
     .where('min_date', 'is not', null)
+    .where('min_date', '!=', '')
     .orderBy('max_date', 'desc')
     .orderBy('min_date', 'desc')
     .orderBy('timestamp', 'desc')
