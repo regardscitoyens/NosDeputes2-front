@@ -1,0 +1,23 @@
+#  Checks code format/compilation/etc. on every push on every branch
+
+name: Continuous integration
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn checkformat
+      - run: yarn lint
+      - run: yarn build
+      # To be activated if we setup tests
+      # - run: yarn test
