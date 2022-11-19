@@ -2,20 +2,17 @@ import { Todo } from '../../components/Todo'
 import { capitalizeFirst, formatDate } from '../../lib/utils'
 import * as types from './SeanceFiche.types'
 import {
-  hasSectionTitre,
   Intervention,
-  InterventionParlementaire,
-  InterventionPersonnalite,
-  InterventionWithSectionTitre,
+  InterventionSection,
   isInterventionParlementaire,
   isInterventionPersonnalite,
+  isInterventionSection,
 } from './SeanceFiche.types'
 import { SeanceSummary } from '../../components/SeanceSummary'
 import { MyLink } from '../../components/MyLink'
 import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
 import Image from 'next/image'
-import groupBy from 'lodash/groupBy'
-import mapValues from 'lodash/mapValues'
+import { ReactElement } from 'react'
 
 function libelleSeance(seance: types.Props['seance']): string {
   return seance.type === 'commission' ? 'réunion' : 'séance'
@@ -36,7 +33,7 @@ export function Page({ seance, seanceSummary, interventions }: types.Props) {
       <div className="flex justify-between">
         <h2 className="text-xl">La {libelleSeance(seance)}</h2>
         {interventions.length > 0 ? (
-          <MyLink targetBlank href={interventions[0].intervention_source}>
+          <MyLink targetBlank href={interventions[0].source}>
             Source
           </MyLink>
         ) : (
@@ -44,11 +41,7 @@ export function Page({ seance, seanceSummary, interventions }: types.Props) {
         )}
       </div>
       <div>
-        <Interventions
-          seance={seance}
-          interventions={interventions}
-          seanceSummary={seanceSummary}
-        />
+        <Interventions seance={seance} interventions={interventions} />
       </div>
     </div>
   )
@@ -57,8 +50,7 @@ export function Page({ seance, seanceSummary, interventions }: types.Props) {
 export function Interventions({
   seance,
   interventions,
-  seanceSummary,
-}: Pick<types.Props, 'seance' | 'interventions' | 'seanceSummary'>) {
+}: Pick<types.Props, 'seance' | 'interventions'>) {
   // TODO gestion de la source de la seance ? d'où ça vient ?
   const source: string | undefined = undefined
   if ((seance.n_interventions ?? 0) == 0 && source) {
@@ -81,81 +73,13 @@ export function Interventions({
     }
   }
 
-  // Find first interventionId for each sectionId => gives the sections titles
-  const interventionIdBySectionId: { [sectionId: string]: number } = mapValues(
-    groupBy(
-      interventions,
-      intervention => intervention.intervention_section_id,
-    ),
-    interventionsForSection => interventionsForSection[0].intervention_id,
-  )
-  function sectionDepth(sectionId: number): 1 | 2 {
-    return seanceSummary.sections.find(
-      topSection => topSection.id === sectionId,
-    )
-      ? 1
-      : 2
-  }
-  function isSectionIntervention(intervention: Intervention): boolean {
-    return (
-      intervention.intervention_section_id !== null &&
-      intervention.intervention_id ===
-        interventionIdBySectionId[
-          intervention.intervention_section_id.toString()
-        ]
-    )
-  }
-
-  function InterventionComp({
-    intervention,
-    currentSectionId,
-  }: {
-    intervention: Intervention
-    currentSectionId: number | null
-  }) {
-    if (isInterventionParlementaire(intervention)) {
-      return (
-        <InterventionParlementaireComp
-          intervention={intervention}
-          currentSectionId={currentSectionId}
-        />
-      )
-    } else if (isInterventionPersonnalite(intervention)) {
-      return (
-        <InterventionPersonnaliteComp
-          intervention={intervention}
-          currentSectionId={currentSectionId}
-        />
-      )
-    } else if (
-      hasSectionTitre(intervention) &&
-      isSectionIntervention(intervention)
-    ) {
-      return (
-        <SectionTitle
-          intervention={intervention}
-          depth={sectionDepth(intervention.intervention_section_id)}
-        />
-      )
-    } else {
-      return <Didascalie intervention={intervention} />
-    }
-  }
-
-  let currentSectionId: number | null = null
   return (
     <div className="flex flex-col space-y-6">
       {interventions.map(intervention => {
-        // pas joli de faire un effet de bord comme ça :/
-        if (isSectionIntervention(intervention)) {
-          currentSectionId = intervention.intervention_section_id
-        }
-
         return (
           <InterventionComp
-            key={intervention.intervention_md5}
+            key={intervention.md5}
             intervention={intervention}
-            currentSectionId={currentSectionId}
           />
         )
       })}
@@ -163,105 +87,97 @@ export function Interventions({
   )
 }
 
-export function InterventionParlementaireComp({
-  intervention,
-  currentSectionId,
-}: {
-  intervention: InterventionParlementaire
-  currentSectionId: number | null
-}) {
-  return (
-    <div
-      id={`inter_${intervention.intervention_md5}`}
-      className="flex rounded-lg bg-slate-200 p-2 shadow-lg"
-    >
-      <MyLink className="mr-4 flex-none" href={intervention.parlementaire_slug}>
-        <Image
-          src={`/deputes/photos/${CURRENT_LEGISLATURE}/${intervention.parlementaire_id_an}.jpg`}
-          alt={`Photo de  ${intervention.parlementaire_nom}`}
-          title={intervention.parlementaire_nom}
-          width={55}
-          height={70}
-        />
-      </MyLink>
-      <div className="w-full">
-        <div className="flex justify-between">
-          <MyLink href={`/${intervention.parlementaire_slug}`}>
-            {intervention.parlementaire_nom}
-            {intervention.intervention_fonction &&
-              `, ${intervention.intervention_fonction}`}
+function InterventionComp({ intervention }: { intervention: Intervention }) {
+  if (isInterventionParlementaire(intervention)) {
+    return (
+      <InterventionPersonne
+        intervention={intervention}
+        Picture={
+          <MyLink
+            className="mr-4 flex-none"
+            href={intervention.parlementaire.slug}
+          >
+            <Image
+              src={`/deputes/photos/${CURRENT_LEGISLATURE}/${intervention.parlementaire.id_an}.jpg`}
+              alt={`Photo de  ${intervention.parlementaire.nom}`}
+              title={intervention.parlementaire.nom}
+              width={55}
+              height={70}
+            />
           </MyLink>
-          <div>
-            {currentSectionId && (
-              <>
-                <MyLink href={`#table_${currentSectionId}`}>
-                  Début de section
-                </MyLink>
-                -
-              </>
-            )}
-            <MyLink href={`#inter_${intervention.intervention_md5}`}>
-              Permalien
-            </MyLink>
-          </div>
-        </div>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: intervention.intervention_intervention,
-          }}
-        ></div>
-      </div>
-    </div>
-  )
+        }
+        Name={
+          <MyLink href={`/${intervention.parlementaire.slug}`}>
+            {intervention.parlementaire.nom}
+            {intervention.fonction && `, ${intervention.fonction}`}
+          </MyLink>
+        }
+      />
+    )
+  } else if (isInterventionPersonnalite(intervention)) {
+    return (
+      <InterventionPersonne
+        intervention={intervention}
+        Picture={
+          <MyLink
+            className="mr-4 flex-none"
+            href={'https://commons.wikimedia.org/wiki/File:Unknown_person.jpg'}
+            title={
+              'Paulo Selke, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons'
+            }
+          >
+            <Image
+              src={`/assets/unknown_person.jpg`}
+              alt={"Une image qui remplace l'absence de photo"}
+              title={intervention.personnalite.nom}
+              width={55}
+              height={70}
+            />
+          </MyLink>
+        }
+        Name={<span>{intervention.personnalite.nom}</span>}
+      />
+    )
+  } else if (isInterventionSection(intervention)) {
+    return <SectionTitle intervention={intervention} />
+  } else {
+    return <Didascalie intervention={intervention} />
+  }
 }
 
-export function InterventionPersonnaliteComp({
+export function InterventionPersonne({
   intervention,
-  currentSectionId,
+  Picture,
+  Name,
 }: {
-  intervention: InterventionPersonnalite
-  currentSectionId: number | null
+  intervention: Intervention
+  Picture: ReactElement
+  Name: ReactElement
 }) {
   return (
     <div
-      id={`inter_${intervention.intervention_md5}`}
+      id={`inter_${intervention.md5}`}
       className="flex rounded-lg bg-slate-200 p-2 shadow-lg"
     >
-      <MyLink
-        className="mr-4 flex-none"
-        href={'https://commons.wikimedia.org/wiki/File:Unknown_person.jpg'}
-        title={
-          'Paulo Selke, CC BY-SA 4.0 &lt;https://creativecommons.org/licenses/by-sa/4.0&gt;, via Wikimedia Commons'
-        }
-      >
-        <Image
-          src={`/assets/unknown_person.jpg`}
-          alt={"Une image qui remplace l'absence de photo"}
-          title={intervention.personnalite_nom}
-          width={55}
-          height={70}
-        />
-      </MyLink>
+      {Picture}
       <div className="w-full">
         <div className="flex justify-between">
-          <span>{intervention.personnalite_nom}</span>
+          {Name}
           <div>
-            {currentSectionId && (
+            {intervention.parent_section_id && (
               <>
-                <MyLink href={`#table_${currentSectionId}`}>
+                <MyLink href={`#table_${intervention.parent_section_id}`}>
                   Début de section
                 </MyLink>
                 -
               </>
             )}
-            <MyLink href={`#inter_${intervention.intervention_md5}`}>
-              Permalien
-            </MyLink>
+            <MyLink href={`#inter_${intervention.md5}`}>Permalien</MyLink>
           </div>
         </div>
         <div
           dangerouslySetInnerHTML={{
-            __html: intervention.intervention_intervention,
+            __html: intervention.intervention,
           }}
         ></div>
       </div>
@@ -271,32 +187,31 @@ export function InterventionPersonnaliteComp({
 
 export function SectionTitle({
   intervention,
-  depth,
 }: {
-  intervention: InterventionWithSectionTitre
-  depth: 1 | 2
+  intervention: InterventionSection
 }) {
+  const title =
+    intervention.section.depth === 1 ? (
+      <h2 className="text-center text-xl">
+        {capitalizeFirst(intervention.section.titre)}
+      </h2>
+    ) : (
+      <h3 className="text-center text-lg">
+        {capitalizeFirst(intervention.section.titre)}
+      </h3>
+    )
+
   return (
     <div
-      id={`table_${intervention.intervention_section_id}`}
+      id={`table_${intervention.section_id}`}
       className="flex justify-between"
     >
-      <div></div> {/* empty element for flex balance */}
-      {depth === 1 && (
-        <h2 className="text-center text-xl">
-          {capitalizeFirst(intervention.section_titre)}
-        </h2>
-      )}
-      {depth === 2 && (
-        <h3 className="text-center text-lg">
-          {capitalizeFirst(intervention.section_titre)}
-        </h3>
-      )}
+      <div></div>
+      {/* empty element for flex balance */}
+      {title}
       <div>
         <MyLink href={`#sommaire`}>Retour au sommaire</MyLink>-
-        <MyLink href={`#table_${intervention.intervention_section_id}`}>
-          Permalien
-        </MyLink>
+        <MyLink href={`#table_${intervention.section_id}`}>Permalien</MyLink>
       </div>
     </div>
   )
@@ -304,10 +219,10 @@ export function SectionTitle({
 
 export function Didascalie({ intervention }: { intervention: Intervention }) {
   return (
-    <div id={`inter_${intervention.intervention_md5}`} className="ml-16 italic">
+    <div id={`inter_${intervention.md5}`} className="ml-16 italic">
       <div
         dangerouslySetInnerHTML={{
-          __html: intervention.intervention_intervention,
+          __html: intervention.intervention,
         }}
       />
     </div>

@@ -7,6 +7,7 @@ export function MyLink({
   className,
   style,
   targetBlank,
+  title,
 }: {
   href: string
   children: ReactNode
@@ -27,7 +28,7 @@ export function MyLink({
       className={`text-blue-800 underline-offset-4 hover:underline ${
         className ?? ''
       }`}
-      {...{ style, targetAttributes }}
+      {...{ style, targetAttributes, title }}
     >
       {children}
     </Link>

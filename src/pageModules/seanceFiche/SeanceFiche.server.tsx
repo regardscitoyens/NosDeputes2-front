@@ -4,7 +4,34 @@ import { parseIntOrNull } from '../../lib/utils'
 
 import * as types from './SeanceFiche.types'
 import { querySectionsForSeance } from '../../lib/querySectionsForSeance'
-import { buildSeanceSummary } from '../../lib/seanceSummary'
+import { buildSeanceSummary, SeanceSummary } from '../../lib/seanceSummary'
+import {
+  Intervention,
+  InterventionParlementaire,
+  InterventionPersonnalite,
+  InterventionSection,
+} from './SeanceFiche.types'
+
+export type InterventionQueryType = {
+  intervention_id: number
+  intervention_source: string
+  intervention_nb_commentaires: number | null
+  intervention_nb_mots: number
+  intervention_md5: string
+  intervention_intervention: string
+  intervention_timestamp: number
+  intervention_section_id: number | null
+  intervention_type: 'loi' | 'commission' | 'question'
+  intervention_personnalite_id: number | null
+  intervention_parlementaire_id: number | null
+  intervention_parlementaire_groupe_acronyme: string | null
+  intervention_fonction: string | null
+  parlementaire_nom: string | null
+  parlementaire_slug: string | null
+  parlementaire_id_an: number | null
+  personnalite_nom: string | null
+  section_titre: string | null
+}
 
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
@@ -75,6 +102,7 @@ export const getServerSideProps: GetServerSideProps<{
   // Note : pas de gestion du paramètre "ok" qui semble permettre de modifier les données dans la base
 
   const sections = await querySectionsForSeance(seanceId)
+  const seanceSummary = buildSeanceSummary(sections)
 
   const interventions = await db
     .selectFrom('intervention')
@@ -109,6 +137,7 @@ export const getServerSideProps: GetServerSideProps<{
       'section.titre as section_titre',
     ])
     .execute()
+    .then(interventions => createInterventions(interventions, seanceSummary))
 
   const finalData: types.Props = {
     seance: {
@@ -117,11 +146,81 @@ export const getServerSideProps: GetServerSideProps<{
     },
     organisme: organisme ?? null,
     interventions,
-    seanceSummary: buildSeanceSummary(sections),
+    seanceSummary,
   }
   return {
     props: {
       data: finalData,
     },
   }
+}
+
+function createInterventions(
+  interventions: InterventionQueryType[],
+  seanceSummary: SeanceSummary,
+): Intervention[] {
+  const result: (
+    | InterventionParlementaire
+    | InterventionPersonnalite
+    | InterventionSection
+    | Intervention
+  )[] = []
+  let parentSectionId: number | null = null
+  const topLevelSectionIds = new Set(seanceSummary.sections.map(s => s.id))
+
+  for (const intervention of interventions) {
+    const base = {
+      id: intervention.intervention_id,
+      source: intervention.intervention_source,
+      nb_commentaires: intervention.intervention_nb_commentaires,
+      nb_mots: intervention.intervention_nb_mots,
+      md5: intervention.intervention_md5,
+      intervention: intervention.intervention_intervention,
+      timestamp: intervention.intervention_timestamp,
+      section_id: intervention.intervention_section_id,
+      type: intervention.intervention_type,
+      personnalite_id: intervention.intervention_personnalite_id,
+      parlementaire_id: intervention.intervention_parlementaire_id,
+      parlementaire_groupe_acronyme:
+        intervention.intervention_parlementaire_groupe_acronyme,
+      fonction: intervention.intervention_fonction,
+      parent_section_id: parentSectionId,
+    }
+    if (
+      intervention.parlementaire_id_an !== null &&
+      intervention.parlementaire_slug !== null &&
+      intervention.parlementaire_nom !== null
+    ) {
+      const parlementaire: InterventionParlementaire['parlementaire'] = {
+        id_an: intervention.parlementaire_id_an,
+        slug: intervention.parlementaire_slug,
+        nom: intervention.parlementaire_nom,
+      }
+      result.push({ ...base, parlementaire })
+    } else if (intervention.personnalite_nom !== null) {
+      const personnalite: InterventionPersonnalite['personnalite'] = {
+        nom: intervention.personnalite_nom,
+      }
+      result.push({ ...base, personnalite })
+    }
+    // first intervention of each section is the section
+    else if (
+      intervention.section_titre !== null &&
+      intervention.intervention_section_id !== null &&
+      intervention.intervention_section_id !== parentSectionId
+    ) {
+      parentSectionId = intervention.intervention_section_id
+      const section: InterventionSection['section'] = {
+        titre: intervention.section_titre,
+        depth: topLevelSectionIds.has(intervention.intervention_section_id)
+          ? 1
+          : 2,
+      }
+      result.push({ ...base, section })
+    } else {
+      // didascalie
+      result.push(base)
+    }
+  }
+  return result
 }
