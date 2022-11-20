@@ -9,15 +9,18 @@ export type LatestGroupForDepute = {
   fonction: FonctionInGroupe
 }
 
-export type WithLatestGroup<D> = D & {
+export type WithLatestGroupOrNull<D> = D & {
   latestGroup: LatestGroupForDepute | null
+}
+export type WithLatestGroup<D> = D & {
+  latestGroup: LatestGroupForDepute
 }
 
 // For a given type of depute D, fetch for each of them their latest group
 // and add it as a new field
 export async function addLatestGroupToDeputes<D extends { id: number }>(
   deputes: D[],
-): Promise<WithLatestGroup<D>[]> {
+): Promise<WithLatestGroupOrNull<D>[]> {
   const latestGroupsMap = await fetchLatestGroupsForDeputeIds(
     deputes.map(_ => _.id),
   )
@@ -34,9 +37,17 @@ export async function addLatestGroupToDeputes<D extends { id: number }>(
   })
 }
 
+// We often want to filter out the few deputes without a group
+// (only happens in rare cases where the deputes resigned on their first day)
+export function filterLatestGroupNotNull<D>(
+  deputes: WithLatestGroupOrNull<D>[],
+): WithLatestGroup<D>[] {
+  return deputes.filter(_ => _.latestGroup !== null) as WithLatestGroup<D>[]
+}
+
 export async function addLatestGroupToDepute<D extends { id: number }>(
   depute: D,
-): Promise<WithLatestGroup<D>> {
+): Promise<WithLatestGroupOrNull<D>> {
   return (await addLatestGroupToDeputes([depute]))[0]
 }
 

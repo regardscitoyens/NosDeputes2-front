@@ -1,8 +1,8 @@
-import { WithLatestGroup } from '../../lib/addLatestGroup'
-import { GroupeData } from '../../lib/rearrangeData'
+import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
+import { GroupeData } from '../../lib/buildGroupesData'
 
 export type Props = { deputes: Depute[]; groupesData: GroupeData[] }
-export type Depute = WithLatestGroup<{
+export type Depute = WithLatestGroupOrNull<{
   id: number
   slug: string
   nom: string

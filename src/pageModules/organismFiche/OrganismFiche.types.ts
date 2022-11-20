@@ -18,7 +18,7 @@ export type Depute = {
   latestGroup: {
     acronym: string
     fonction: FonctionInGroupe
-  }
+  } | null
   fonction: FonctionInOrganisme
   currentMember: boolean
 }
