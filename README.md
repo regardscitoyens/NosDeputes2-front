@@ -95,6 +95,7 @@ N'hésitez pas à faire signe si vous commencez à bosser sur un truc, pour qu'o
   - implem la page /synthese
   - implem la page /16/question/QE/2497
   - implem la page /16/amendements/272/all et /new
+  - implem la page 16/amendement/273/AC327C
   - implem la page deputes/tags
   - implem la homepage
   - implem les pages /circonscription et /circonscription/departement/Ardennes

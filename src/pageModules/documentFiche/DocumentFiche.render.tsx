@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
 import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
+import { formatDate } from '../../lib/utils'
 import * as types from './DocumentFiche.types'
 
 function buildTitle(document: types.Document) {
@@ -75,23 +76,32 @@ function SimpleBlock({
   title,
   children,
 }: {
-  title: string
+  title?: string
   children: ReactNode
 }) {
   return (
     <div className="bg-slate-200 p-4">
-      <span className="font-bold">{title} :</span>
+      {title && <span className="font-bold">{title} :</span>}
       {children}
     </div>
   )
 }
 
 export function Page(props: types.Props) {
-  const { document, auteurs, nbAmendements, subDocuments } = props
+  const { document, auteurs, nbAmendements, subDocuments, sectionId } = props
   return (
     <div>
-      {buildTitle(document)}
-      <SimpleBlock title="Auteurs">
+      <SimpleBlock>
+        {buildTitle(document)}
+        <p className="my-2 mt-4">Daté du {formatDate(document.date)}</p>
+        {sectionId !== null ? (
+          <p className="my-2">
+            <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${sectionId}`}>
+              Voir le dossier correspondant
+            </MyLink>
+          </p>
+        ) : null}
+        <p className="font-bold">Auteurs</p>
         {
           <ul>
             {auteurs.map(auteur => (
@@ -101,7 +111,6 @@ export function Page(props: types.Props) {
         }
       </SimpleBlock>
 
-      <Todo>Afficher la date</Todo>
       <Todo>Lien vers le "dossier relatif"</Todo>
       <Todo>
         Afficher le rôle de l'auteur (rapporteur de telle ou telle commission,

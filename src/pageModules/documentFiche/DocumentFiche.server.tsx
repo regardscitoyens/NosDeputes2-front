@@ -34,6 +34,41 @@ async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
   return foo
 }
 
+async function getSectionId(document: {
+  id_dossier_an: string
+  numero: number
+}): Promise<number | null> {
+  const section = await db
+    .selectFrom('section')
+    .where('id_dossier_an', '=', document.id_dossier_an)
+    // I think here we want to link to the root section
+    // The PHP doesn't seem to use this restriction and thus sometimes
+    // links to a random subsection
+    .whereRef('section.section_id', '=', 'section.id')
+    .select('id')
+    .executeTakeFirst()
+  if (section) {
+    return section.id
+  }
+  // there are two ways to link the document and the section, not sure why
+  return (
+    (
+      await db
+        .selectFrom('tag')
+        .leftJoin('tagging', 'tag.id', 'tagging.tag_id')
+        .leftJoin('section', 'tagging.taggable_id', 'section.id')
+        .where('tagging.taggable_model', '=', 'Section')
+        .whereRef('section.section_id', '=', 'section.id')
+        .where('tag.is_triple', '=', 1)
+        .where('tag.triple_namespace', '=', 'loi')
+        .where('tag.triple_key', '=', 'numero')
+        .where('tag.triple_value', '=', document.numero.toString())
+        .select('section.id')
+        .executeTakeFirst()
+    )?.id ?? null
+  )
+}
+
 function parseAnnexeField(annexe: string): types.SubDocumentIdentifiers {
   try {
     // example values :
@@ -64,7 +99,16 @@ export const getServerSideProps: GetServerSideProps<{
   const documentRaw = await db
     .selectFrom('texteloi')
     .where('id', '=', id)
-    .select(['id', 'date', 'titre', 'type', 'numero', 'type_details', 'annexe'])
+    .select([
+      'id',
+      'date',
+      'titre',
+      'type',
+      'numero',
+      'type_details',
+      'annexe',
+      'id_dossier_an',
+    ])
     .executeTakeFirst()
 
   if (!documentRaw) {
@@ -100,7 +144,7 @@ export const getServerSideProps: GetServerSideProps<{
     _ => _.identifiers.tomeNumber * 10000 + (_.identifiers.annexeNumber || 0),
   )
 
-  const { annexe, ...restOfDocumentRaw } = documentRaw
+  const { annexe, id_dossier_an, ...restOfDocumentRaw } = documentRaw
 
   const document = {
     ...restOfDocumentRaw,
@@ -115,6 +159,7 @@ export const getServerSideProps: GetServerSideProps<{
         auteurs: await getAuteurs(id),
         nbAmendements,
         subDocuments,
+        sectionId: await getSectionId(documentRaw),
       },
     },
   }
