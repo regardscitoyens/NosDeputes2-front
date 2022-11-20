@@ -61,13 +61,13 @@ export const getServerSideProps: GetServerSideProps<{
 
   const { count } = db.fn
 
-  const texteLoiRaw = await db
+  const documentRaw = await db
     .selectFrom('texteloi')
     .where('id', '=', id)
     .select(['id', 'date', 'titre', 'type', 'numero', 'type_details', 'annexe'])
     .executeTakeFirst()
 
-  if (!texteLoiRaw) {
+  if (!documentRaw) {
     return {
       notFound: true,
     }
@@ -76,7 +76,7 @@ export const getServerSideProps: GetServerSideProps<{
   const nbAmendements = (
     await db
       .selectFrom('amendement')
-      .where('texteloi_id', '=', texteLoiRaw.numero.toString())
+      .where('texteloi_id', '=', documentRaw.numero.toString())
       .select(count<number>('amendement.id').as('nb'))
       .executeTakeFirstOrThrow()
   ).nb
@@ -84,8 +84,8 @@ export const getServerSideProps: GetServerSideProps<{
   // les sous-documents du document racine
   const subDocumentsRaw = await db
     .selectFrom('texteloi')
-    .where('numero', '=', texteLoiRaw.numero)
-    .where('id', '!=', texteLoiRaw.id)
+    .where('numero', '=', documentRaw.numero)
+    .where('id', '!=', documentRaw.id)
     .where('annexe', 'is not', null)
     .select('id')
     // trick because Kysely doesn't understand that it can't be null
@@ -97,21 +97,21 @@ export const getServerSideProps: GetServerSideProps<{
       ...rest,
       identifiers: parseAnnexeField(annexe),
     })),
-    _ => [_.identifiers.tomeNumber, _.identifiers.annexeNumber],
+    _ => _.identifiers.tomeNumber * 10000 + (_.identifiers.annexeNumber || 0),
   )
 
-  const { annexe, ...restOfTextLoiRaw } = texteLoiRaw
+  const { annexe, ...restOfDocumentRaw } = documentRaw
 
-  const texteLoi = {
-    ...restOfTextLoiRaw,
-    date: texteLoiRaw.date.toISOString(),
+  const document = {
+    ...restOfDocumentRaw,
+    date: documentRaw.date.toISOString(),
     subDocumentIdentifiers: annexe !== null ? parseAnnexeField(annexe) : null,
   }
 
   return {
     props: {
       data: {
-        texteLoi,
+        document,
         auteurs: await getAuteurs(id),
         nbAmendements,
         subDocuments,

@@ -1,13 +1,13 @@
 import { TexteLoiTable } from '../../lib/db'
 
 export type Props = {
-  texteLoi: TexteLoi
+  document: Document
   auteurs: Author[]
   nbAmendements: number
   subDocuments: SubDocument[]
 }
 
-export type TexteLoi = {
+export type Document = {
   id: string
   numero: number
   date: string

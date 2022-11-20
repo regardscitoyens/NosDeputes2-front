@@ -4,22 +4,22 @@ import { Todo } from '../../components/Todo'
 import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DocumentFiche.types'
 
-function buildTitle(texteLoi: types.TexteLoi) {
+function buildTitle(document: types.Document) {
   return (
     <>
       <h1 className="text-center text-2xl">
-        {texteLoi.type} n°{texteLoi.numero} {texteLoi.type_details}{' '}
-        {texteLoi.titre}
+        {document.type} n°{document.numero} {document.type_details}{' '}
+        {document.titre}
       </h1>
-      {texteLoi.subDocumentIdentifiers ? (
+      {document.subDocumentIdentifiers ? (
         <>
           <h2 className="text-center text-3xl">
-            Tome {texteLoi.subDocumentIdentifiers.tomeNumber}
+            Tome {document.subDocumentIdentifiers.tomeNumber}
           </h2>
-          {texteLoi.subDocumentIdentifiers.annexeNumber !== null ? (
+          {document.subDocumentIdentifiers.annexeNumber !== null ? (
             <>
               <h3 className="text-center text-4xl">
-                Annexe {texteLoi.subDocumentIdentifiers.annexeNumber}
+                Annexe {document.subDocumentIdentifiers.annexeNumber}
               </h3>
             </>
           ) : null}
@@ -45,10 +45,10 @@ function SimpleBlock({
 }
 
 export function Page(props: types.Props) {
-  const { texteLoi, auteurs, nbAmendements, subDocuments } = props
+  const { document, auteurs, nbAmendements, subDocuments } = props
   return (
     <div>
-      {buildTitle(texteLoi)}
+      {buildTitle(document)}
       <SimpleBlock title="Auteurs">
         {
           <ul>
@@ -76,9 +76,16 @@ export function Page(props: types.Props) {
             {nbAmendements ? (
               <li>
                 <MyLink
-                  href={`/${CURRENT_LEGISLATURE}/amendements/${texteLoi.numero}/all`}
+                  href={`/${CURRENT_LEGISLATURE}/amendements/${document.numero}/all`}
                 >
                   Voir les {nbAmendements} amendement(s) déposé(s) sur ce texte
+                </MyLink>
+              </li>
+            ) : null}
+            {document.subDocumentIdentifiers !== null ? (
+              <li>
+                <MyLink href={`/16/document/${document.numero}`}>
+                  Voir le document racine
                 </MyLink>
               </li>
             ) : null}
