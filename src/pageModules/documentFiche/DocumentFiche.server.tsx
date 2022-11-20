@@ -1,12 +1,13 @@
+import { sql } from 'kysely'
 import { GetServerSideProps } from 'next'
 import { db } from '../../lib/db'
-import { parseIntOrNull } from '../../lib/utils'
-
+import sortBy from 'lodash/sortBy'
 import * as types from './DocumentFiche.types'
 
 // ex :
 // https://www.nosdeputes.fr/16/document/219
 // https://www.nosdeputes.fr/16/document/336
+// https://www.nosdeputes.fr/16/document/272 (a des amendements)
 // https://www.nosdeputes.fr/16/document/16
 // https://www.nosdeputes.fr/16/document/16-ti
 // https://www.nosdeputes.fr/16/document/292-tii
@@ -33,31 +34,24 @@ async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
   return foo
 }
 
-function parseAnnexeField(
-  annexe: string | null,
-): types.SubDocumentDetails | null {
-  if (annexe) {
-    try {
-      // example values :
-      // T01
-      // T02
-      // BT01
-      // BT11
-      // BT03A45
-      // I don't think the leading B means anything
-      const regexp = /^B?T0*(\d+)(?:A0*(\d+))?$/
-      const [, tomeNumberStr, annexeNumberStr] = annexe.match(regexp) || []
-      if (tomeNumberStr) {
-        return {
-          tomeNumber: parseInt(tomeNumberStr, 10),
-          annexeNumber: annexeNumberStr ? parseInt(annexeNumberStr, 10) : null,
-        }
-      }
-    } catch (e) {
-      console.error(`Failed to parse annexe field : "${annexe}"`, e)
+function parseAnnexeField(annexe: string): types.SubDocumentIdentifiers {
+  try {
+    // example values :
+    // T01
+    // T02
+    // BT01
+    // BT11
+    // BT03A45
+    // I don't think the leading B means anything
+    const regexp = /^B?T0*(\d+)(?:A0*(\d+))?$/
+    const [, tomeNumberStr, annexeNumberStr] = annexe.match(regexp) || []
+    return {
+      tomeNumber: parseInt(tomeNumberStr, 10),
+      annexeNumber: annexeNumberStr ? parseInt(annexeNumberStr, 10) : null,
     }
+  } catch (e) {
+    throw new Error(`Failed to parse annexe field : "${annexe}"`)
   }
-  return null
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -65,9 +59,7 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async context => {
   const id = context.query.id as string
 
-  // TODO redirect si truc dans titre loi ?
-  // if ($loi = Doctrine::getTable('Titreloi')->findLightLoi("$id"))
-  //    $this->redirect('@loi?loi='.$id);
+  const { count } = db.fn
 
   const texteLoiRaw = await db
     .selectFrom('texteloi')
@@ -81,12 +73,39 @@ export const getServerSideProps: GetServerSideProps<{
     }
   }
 
+  const nbAmendements = (
+    await db
+      .selectFrom('amendement')
+      .where('texteloi_id', '=', texteLoiRaw.numero.toString())
+      .select(count<number>('amendement.id').as('nb'))
+      .executeTakeFirstOrThrow()
+  ).nb
+
+  // les sous-documents du document racine
+  const subDocumentsRaw = await db
+    .selectFrom('texteloi')
+    .where('numero', '=', texteLoiRaw.numero)
+    .where('id', '!=', texteLoiRaw.id)
+    .where('annexe', 'is not', null)
+    .select('id')
+    // trick because Kysely doesn't understand that it can't be null
+    .select(sql<string>`annexe`.as('annexe'))
+    .execute()
+
+  const subDocuments = sortBy(
+    subDocumentsRaw.map(({ annexe, ...rest }) => ({
+      ...rest,
+      identifiers: parseAnnexeField(annexe),
+    })),
+    _ => [_.identifiers.tomeNumber, _.identifiers.annexeNumber],
+  )
+
   const { annexe, ...restOfTextLoiRaw } = texteLoiRaw
-  const subDocumentDetails = parseAnnexeField(annexe)
+
   const texteLoi = {
     ...restOfTextLoiRaw,
     date: texteLoiRaw.date.toISOString(),
-    subDocumentDetails,
+    subDocumentIdentifiers: annexe !== null ? parseAnnexeField(annexe) : null,
   }
 
   return {
@@ -94,6 +113,8 @@ export const getServerSideProps: GetServerSideProps<{
       data: {
         texteLoi,
         auteurs: await getAuteurs(id),
+        nbAmendements,
+        subDocuments,
       },
     },
   }
