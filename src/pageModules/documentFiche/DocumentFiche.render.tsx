@@ -29,6 +29,48 @@ function buildTitle(document: types.Document) {
   )
 }
 
+function DocumentAssocies({
+  document,
+  nbAmendements,
+  subDocuments,
+}: Pick<types.Props, 'document' | 'nbAmendements' | 'subDocuments'>) {
+  return (
+    <SimpleBlock title="Documents associés">
+      {
+        <ul>
+          {nbAmendements ? (
+            <li>
+              <MyLink
+                href={`/${CURRENT_LEGISLATURE}/amendements/${document.numero}/all`}
+              >
+                Voir les {nbAmendements} amendement(s) déposé(s) sur ce texte
+              </MyLink>
+            </li>
+          ) : null}
+          {document.subDocumentIdentifiers !== null ? (
+            <li>
+              <MyLink href={`/16/document/${document.numero}`}>
+                Voir le document racine
+              </MyLink>
+            </li>
+          ) : null}
+          {subDocuments.map(subDoc => {
+            const { tomeNumber, annexeNumber } = subDoc.identifiers
+            return (
+              <li key={subDoc.id}>
+                <MyLink href={`/16/document/${subDoc.id}`}>
+                  Tome {tomeNumber}
+                  {annexeNumber !== null ? ` Annexe ${annexeNumber}` : null}
+                </MyLink>
+              </li>
+            )
+          })}
+        </ul>
+      }
+    </SimpleBlock>
+  )
+}
+
 function SimpleBlock({
   title,
   children,
@@ -70,49 +112,24 @@ export function Page(props: types.Props) {
         Lien "consulter sur le site de l'assemblee" + lien direct pdf sur le
         site de l'assemblee
       </Todo>
-      <SimpleBlock title="Documents associés">
-        {
-          <ul>
-            {nbAmendements ? (
-              <li>
-                <MyLink
-                  href={`/${CURRENT_LEGISLATURE}/amendements/${document.numero}/all`}
-                >
-                  Voir les {nbAmendements} amendement(s) déposé(s) sur ce texte
-                </MyLink>
-              </li>
-            ) : null}
-            {document.subDocumentIdentifiers !== null ? (
-              <li>
-                <MyLink href={`/16/document/${document.numero}`}>
-                  Voir le document racine
-                </MyLink>
-              </li>
-            ) : null}
-            {subDocuments.map(subDoc => {
-              const { tomeNumber, annexeNumber } = subDoc.identifiers
-              return (
-                <li key={subDoc.id}>
-                  <MyLink href={`/16/document/${subDoc.id}`}>
-                    Tome {tomeNumber}
-                    {annexeNumber !== null ? ` Annexe ${annexeNumber}` : null}
-                  </MyLink>
-                </li>
-              )
-            })}
-          </ul>
-        }
-      </SimpleBlock>
-      <Todo>Documents relatifs</Todo>
-      <Todo>
-        Extrait du document. C'est compliqué, actuellement en base le champ
-        "contenu" contient le contenu binaire d'un fichier (un fichier HTML ou
-        PDF sans doute ?), encodé en base 64. Donc il faut décoder le base64,
-        écrire ça dans un fichier, puis essayer d'extraire le contenu textuel du
-        fichier. Tout ça serait à revoir, pour le faire en amont, quand on
-        remplit la base. L'app Next.js ne devrait pas avoir à manipuler des
-        fichiers
-      </Todo>
+
+      <div className="flex flex-row space-x-4">
+        <div className="w-1/2">
+          <Todo>
+            Extrait du document. C'est compliqué, actuellement en base le champ
+            "contenu" contient le contenu binaire d'un fichier (un fichier HTML
+            ou PDF sans doute ?), encodé en base 64. Donc il faut décoder le
+            base64, écrire ça dans un fichier, puis essayer d'extraire le
+            contenu textuel du fichier. Tout ça serait à revoir, pour le faire
+            en amont, quand on remplit la base. L'app Next.js ne devrait pas
+            avoir à manipuler des fichiers
+          </Todo>
+        </div>
+        <div className="w-1/2 ">
+          <DocumentAssocies {...{ document, subDocuments, nbAmendements }} />
+          <Todo>Documents relatifs</Todo>
+        </div>
+      </div>
     </div>
   )
 }
