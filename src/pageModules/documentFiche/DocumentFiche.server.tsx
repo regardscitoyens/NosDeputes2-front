@@ -1,5 +1,6 @@
 import { GetServerSideProps } from 'next'
 import { db } from '../../lib/db'
+import { parseIntOrNull } from '../../lib/utils'
 
 import * as types from './DocumentFiche.types'
 
@@ -8,7 +9,8 @@ import * as types from './DocumentFiche.types'
 // https://www.nosdeputes.fr/16/document/336
 // https://www.nosdeputes.fr/16/document/16
 // https://www.nosdeputes.fr/16/document/16-ti
-// https://www.nosdeputes.fr/16/document/16-tii
+// https://www.nosdeputes.fr/16/document/292-tii
+// https://www.nosdeputes.fr/16/document/292-tiii-a33
 // ref files php :
 // apps/frontend/modules/documents/actions/actions.class.php
 // apps/frontend/modules/documents/templates/showSuccess.php
@@ -29,7 +31,33 @@ async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
     .select(['parlementaire.id', 'parlementaire.nom'])
     .execute()
   return foo
-  // return null as any
+}
+
+function parseAnnexeField(
+  annexe: string | null,
+): types.SubDocumentDetails | null {
+  if (annexe) {
+    try {
+      // example values :
+      // T01
+      // T02
+      // BT01
+      // BT11
+      // BT03A45
+      // I don't think the leading B means anything
+      const regexp = /^B?T0*(\d+)(?:A0*(\d+))?$/
+      const [, tomeNumberStr, annexeNumberStr] = annexe.match(regexp) || []
+      if (tomeNumberStr) {
+        return {
+          tomeNumber: parseInt(tomeNumberStr, 10),
+          annexeNumber: annexeNumberStr ? parseInt(annexeNumberStr, 10) : null,
+        }
+      }
+    } catch (e) {
+      console.error(`Failed to parse annexe field : "${annexe}"`, e)
+    }
+  }
+  return null
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -44,7 +72,7 @@ export const getServerSideProps: GetServerSideProps<{
   const texteLoiRaw = await db
     .selectFrom('texteloi')
     .where('id', '=', id)
-    .select(['id', 'date', 'titre', 'type', 'numero', 'type_details'])
+    .select(['id', 'date', 'titre', 'type', 'numero', 'type_details', 'annexe'])
     .executeTakeFirst()
 
   if (!texteLoiRaw) {
@@ -53,7 +81,13 @@ export const getServerSideProps: GetServerSideProps<{
     }
   }
 
-  const texteLoi = { ...texteLoiRaw, date: texteLoiRaw.date.toISOString() }
+  const { annexe, ...restOfTextLoiRaw } = texteLoiRaw
+  const subDocumentDetails = parseAnnexeField(annexe)
+  const texteLoi = {
+    ...restOfTextLoiRaw,
+    date: texteLoiRaw.date.toISOString(),
+    subDocumentDetails,
+  }
 
   return {
     props: {

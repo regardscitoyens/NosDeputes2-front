@@ -12,6 +12,12 @@ export type TexteLoi = {
   titre: string
   type: TexteLoiTable['type']
   type_details: string | null
+  subDocumentDetails: SubDocumentDetails | null
+}
+
+export type SubDocumentDetails = {
+  tomeNumber: number
+  annexeNumber: number | null
 }
 
 export type Author = {
