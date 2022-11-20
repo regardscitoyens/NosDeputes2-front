@@ -72,9 +72,11 @@ function ContactBlock({ depute }: types.Props) {
             <b>Par email :</b>
             <br />
             {depute.mails.map(mail => (
-              <MyLink key={mail} targetBlank href={`mailto:${mail}`}>
-                {mail}
-              </MyLink>
+              <li key={mail}>
+                <MyLink targetBlank href={`mailto:${mail}`}>
+                  {mail}
+                </MyLink>
+              </li>
             ))}
           </ul>
         )) ||
