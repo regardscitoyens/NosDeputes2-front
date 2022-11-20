@@ -24,7 +24,6 @@ export async function addLatestGroupToDeputes<D extends { id: number }>(
 
   return deputes.map(depute => {
     if (!latestGroupsMap[depute.id]) {
-      console.error(`Error: Couldn't find latest group for depute ${depute.id}`)
       return { ...depute, latestGroup: null }
     }
     const latestGroup = latestGroupsMap[depute.id]
