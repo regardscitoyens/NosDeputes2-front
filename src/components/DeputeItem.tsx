@@ -13,7 +13,7 @@ type Props = {
     latestGroup: {
       acronym: string
       fonction: FonctionInGroupe
-    }
+    } | null
   }
   withCirco?: boolean
 }

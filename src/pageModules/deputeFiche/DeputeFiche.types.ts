@@ -1,9 +1,9 @@
-import { WithLatestGroup } from '../../lib/addLatestGroup'
+import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 import { AmendementsDeputeSummary } from '../../lib/queryDeputeAmendementsSummary'
 import { DeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 
 export type Props = { depute: Depute }
-export type Depute = WithLatestGroup<{
+export type Depute = WithLatestGroupOrNull<{
   id: number
   slug: string
   nom: string
