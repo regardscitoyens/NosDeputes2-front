@@ -5,7 +5,7 @@ export type Props = {
   auteurs: Author[]
   nbAmendements: number
   subDocuments: SubDocument[]
-  sectionId: number | null
+  section: Section | null
 }
 
 export type Document = {
@@ -32,4 +32,9 @@ export type SubDocumentIdentifiers = {
 export type Author = {
   id: number
   nom: string
+}
+
+export type Section = {
+  id: number
+  titre_complet: string
 }

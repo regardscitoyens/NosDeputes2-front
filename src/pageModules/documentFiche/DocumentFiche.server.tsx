@@ -34,10 +34,11 @@ async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
   return foo
 }
 
-async function getSectionId(document: {
+async function getSection(document: {
   id_dossier_an: string
   numero: number
-}): Promise<number | null> {
+}): Promise<types.Section | null> {
+  // there are two ways to link the document and the section, not sure why
   const section = await db
     .selectFrom('section')
     .where('id_dossier_an', '=', document.id_dossier_an)
@@ -45,27 +46,24 @@ async function getSectionId(document: {
     // The PHP doesn't seem to use this restriction and thus sometimes
     // links to a random subsection
     .whereRef('section.section_id', '=', 'section.id')
-    .select('id')
+    .select(['id', 'titre_complet'])
     .executeTakeFirst()
   if (section) {
-    return section.id
+    return section
   }
-  // there are two ways to link the document and the section, not sure why
   return (
-    (
-      await db
-        .selectFrom('tag')
-        .leftJoin('tagging', 'tag.id', 'tagging.tag_id')
-        .leftJoin('section', 'tagging.taggable_id', 'section.id')
-        .where('tagging.taggable_model', '=', 'Section')
-        .whereRef('section.section_id', '=', 'section.id')
-        .where('tag.is_triple', '=', 1)
-        .where('tag.triple_namespace', '=', 'loi')
-        .where('tag.triple_key', '=', 'numero')
-        .where('tag.triple_value', '=', document.numero.toString())
-        .select('section.id')
-        .executeTakeFirst()
-    )?.id ?? null
+    (await db
+      .selectFrom('tag')
+      .innerJoin('tagging', 'tag.id', 'tagging.tag_id')
+      .innerJoin('section', 'tagging.taggable_id', 'section.id')
+      .where('tagging.taggable_model', '=', 'Section')
+      .whereRef('section.section_id', '=', 'section.id')
+      .where('tag.is_triple', '=', 1)
+      .where('tag.triple_namespace', '=', 'loi')
+      .where('tag.triple_key', '=', 'numero')
+      .where('tag.triple_value', '=', document.numero.toString())
+      .select(['section.id', 'section.titre_complet'])
+      .executeTakeFirst()) ?? null
   )
 }
 
@@ -159,7 +157,7 @@ export const getServerSideProps: GetServerSideProps<{
         auteurs: await getAuteurs(id),
         nbAmendements,
         subDocuments,
-        sectionId: await getSectionId(documentRaw),
+        section: await getSection(documentRaw),
       },
     },
   }

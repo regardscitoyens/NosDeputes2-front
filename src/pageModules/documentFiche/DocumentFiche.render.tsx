@@ -72,6 +72,25 @@ function DocumentAssocies({
   )
 }
 
+function DocumentRelatifs({ section }: Pick<types.Props, 'section'>) {
+  return (
+    <SimpleBlock title="Documents relatifs">
+      {
+        <ul>
+          {section ? (
+            <li>
+              <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${section.id}`}>
+                Dossier : {section.titre_complet}
+              </MyLink>
+            </li>
+          ) : null}
+        </ul>
+      }
+      <Todo>continuer</Todo>
+    </SimpleBlock>
+  )
+}
+
 function SimpleBlock({
   title,
   children,
@@ -88,15 +107,15 @@ function SimpleBlock({
 }
 
 export function Page(props: types.Props) {
-  const { document, auteurs, nbAmendements, subDocuments, sectionId } = props
+  const { document, auteurs, nbAmendements, subDocuments, section } = props
   return (
     <div>
       <SimpleBlock>
         {buildTitle(document)}
         <p className="my-2 mt-4">Daté du {formatDate(document.date)}</p>
-        {sectionId !== null ? (
+        {section !== null ? (
           <p className="my-2">
-            <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${sectionId}`}>
+            <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${section.id}`}>
               Voir le dossier correspondant
             </MyLink>
           </p>
@@ -111,7 +130,6 @@ export function Page(props: types.Props) {
         }
       </SimpleBlock>
 
-      <Todo>Lien vers le "dossier relatif"</Todo>
       <Todo>
         Afficher le rôle de l'auteur (rapporteur de telle ou telle commission,
         etc.)
@@ -136,7 +154,7 @@ export function Page(props: types.Props) {
         </div>
         <div className="w-1/2 ">
           <DocumentAssocies {...{ document, subDocuments, nbAmendements }} />
-          <Todo>Documents relatifs</Todo>
+          <DocumentRelatifs {...{ section }} />
         </div>
       </div>
     </div>
