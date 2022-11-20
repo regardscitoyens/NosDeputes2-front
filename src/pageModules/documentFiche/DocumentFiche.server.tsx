@@ -34,14 +34,14 @@ async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
   return foo
 }
 
-async function getSection(document: {
+async function getSection(doc: {
   id_dossier_an: string
   numero: number
 }): Promise<types.Section | null> {
   // there are two ways to link the document and the section, not sure why
   const section = await db
     .selectFrom('section')
-    .where('id_dossier_an', '=', document.id_dossier_an)
+    .where('id_dossier_an', '=', doc.id_dossier_an)
     // I think here we want to link to the root section
     // The PHP doesn't seem to use this restriction and thus sometimes
     // links to a random subsection
@@ -61,10 +61,27 @@ async function getSection(document: {
       .where('tag.is_triple', '=', 1)
       .where('tag.triple_namespace', '=', 'loi')
       .where('tag.triple_key', '=', 'numero')
-      .where('tag.triple_value', '=', document.numero.toString())
+      .where('tag.triple_value', '=', doc.numero.toString())
       .select(['section.id', 'section.titre_complet'])
       .executeTakeFirst()) ?? null
   )
+}
+
+async function getDocumentsRelatifs(doc: {
+  id: string
+  id_dossier_an: string
+  numero: number
+}): Promise<types.DocumentRelatif[]> {
+  const rows = await db
+    .selectFrom('texteloi')
+    .where('id_dossier_an', '=', doc.id_dossier_an)
+    .where('id', '!=', doc.id)
+    // on ne prend que des document racines
+    .where('annexe', 'is', null)
+    .orderBy('numero')
+    .select(['id', 'type', 'type_details', 'numero'])
+    .execute()
+  return rows
 }
 
 function parseAnnexeField(annexe: string): types.SubDocumentIdentifiers {
@@ -142,6 +159,8 @@ export const getServerSideProps: GetServerSideProps<{
     _ => _.identifiers.tomeNumber * 10000 + (_.identifiers.annexeNumber || 0),
   )
 
+  const documentsRelatifs = await getDocumentsRelatifs(documentRaw)
+
   const { annexe, id_dossier_an, ...restOfDocumentRaw } = documentRaw
 
   const document = {
@@ -157,6 +176,7 @@ export const getServerSideProps: GetServerSideProps<{
         auteurs: await getAuteurs(id),
         nbAmendements,
         subDocuments,
+        documentsRelatifs,
         section: await getSection(documentRaw),
       },
     },

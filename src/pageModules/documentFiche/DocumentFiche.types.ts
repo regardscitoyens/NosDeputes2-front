@@ -5,6 +5,7 @@ export type Props = {
   auteurs: Author[]
   nbAmendements: number
   subDocuments: SubDocument[]
+  documentsRelatifs: DocumentRelatif[]
   section: Section | null
 }
 
@@ -27,6 +28,13 @@ export type SubDocument = {
 export type SubDocumentIdentifiers = {
   tomeNumber: number
   annexeNumber: number | null
+}
+
+export type DocumentRelatif = {
+  id: string
+  numero: number
+  type: TexteLoiTable['type']
+  type_details: string | null
 }
 
 export type Author = {

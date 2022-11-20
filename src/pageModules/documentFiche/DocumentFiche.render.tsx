@@ -72,7 +72,10 @@ function DocumentAssocies({
   )
 }
 
-function DocumentRelatifs({ section }: Pick<types.Props, 'section'>) {
+function DocumentRelatifs({
+  section,
+  documentsRelatifs,
+}: Pick<types.Props, 'section' | 'documentsRelatifs'>) {
   return (
     <SimpleBlock title="Documents relatifs">
       {
@@ -84,6 +87,13 @@ function DocumentRelatifs({ section }: Pick<types.Props, 'section'>) {
               </MyLink>
             </li>
           ) : null}
+          {documentsRelatifs.map(doc => (
+            <li key={doc.id}>
+              <MyLink href={`/16/document/${doc.id}`}>
+                {doc.type} n°{doc.numero} {doc.type_details}
+              </MyLink>
+            </li>
+          ))}
         </ul>
       }
       <Todo>continuer</Todo>
@@ -107,7 +117,14 @@ function SimpleBlock({
 }
 
 export function Page(props: types.Props) {
-  const { document, auteurs, nbAmendements, subDocuments, section } = props
+  const {
+    document,
+    auteurs,
+    nbAmendements,
+    subDocuments,
+    section,
+    documentsRelatifs,
+  } = props
   return (
     <div>
       <SimpleBlock>
@@ -154,7 +171,7 @@ export function Page(props: types.Props) {
         </div>
         <div className="w-1/2 ">
           <DocumentAssocies {...{ document, subDocuments, nbAmendements }} />
-          <DocumentRelatifs {...{ section }} />
+          <DocumentRelatifs {...{ section, documentsRelatifs }} />
         </div>
       </div>
     </div>
