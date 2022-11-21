@@ -2,7 +2,8 @@ import { TexteLoiTable } from '../../lib/db'
 
 export type Props = {
   document: Document
-  auteurs: Author[]
+  auteurs: Depute[]
+  cosignataires: Depute[]
   nbAmendements: number
   subDocuments: SubDocument[]
   documentsRelatifs: DocumentRelatif[]
@@ -39,7 +40,7 @@ export type DocumentRelatif = {
   type_details: string | null
 }
 
-export type Author = {
+export type Depute = {
   id: number
   nom: string
 }

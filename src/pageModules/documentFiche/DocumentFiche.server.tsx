@@ -12,12 +12,16 @@ import * as types from './DocumentFiche.types'
 // https://www.nosdeputes.fr/16/document/16-ti
 // https://www.nosdeputes.fr/16/document/292-tii
 // https://www.nosdeputes.fr/16/document/292-tiii-a33
+// https://www.nosdeputes.fr/16/document/285-t1 (pas d'auteurs ni cosignataires)
 // ref files php :
 // apps/frontend/modules/documents/actions/actions.class.php
 // apps/frontend/modules/documents/templates/showSuccess.php
 
-async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
-  const foo = await db
+async function getAuteursOrCosignataires(
+  texteLoiId: string,
+  kind: 'auteurs' | 'cosignataires',
+): Promise<types.Depute[]> {
+  return await db
     .selectFrom('parlementaire')
     .innerJoin(
       'parlementaire_texteloi',
@@ -25,13 +29,17 @@ async function getAuteurs(texteLoiId: string): Promise<types.Author[]> {
       'parlementaire_texteloi.parlementaire_id',
     )
     .where('parlementaire_texteloi.texteloi_id', '=', texteLoiId)
-    // Why ?
-    .where('parlementaire_texteloi.importance', '<', 4)
+    // weird distinction based on importance
+    // but that's what the PHP does
+    .where(
+      'parlementaire_texteloi.importance',
+      kind === 'auteurs' ? '<' : '>=',
+      4,
+    )
     .orderBy('parlementaire_texteloi.importance')
     .orderBy('parlementaire.nom_de_famille')
     .select(['parlementaire.id', 'parlementaire.nom'])
     .execute()
-  return foo
 }
 
 async function getSection(doc: {
@@ -182,7 +190,8 @@ export const getServerSideProps: GetServerSideProps<{
     props: {
       data: {
         document,
-        auteurs: await getAuteurs(id),
+        auteurs: await getAuteursOrCosignataires(id, 'auteurs'),
+        cosignataires: await getAuteursOrCosignataires(id, 'cosignataires'),
         nbAmendements,
         subDocuments,
         documentsRelatifs,

@@ -119,6 +119,7 @@ export function Page(props: types.Props) {
   const {
     document,
     auteurs,
+    cosignataires,
     nbAmendements,
     subDocuments,
     section,
@@ -146,21 +147,32 @@ export function Page(props: types.Props) {
             Voir le document sur le site de l'assemblée (version PDF)
           </MyLink>
         </p>
-        <p className="font-bold">Auteurs</p>
-        {
-          <ul>
-            {auteurs.map(auteur => (
-              <li key={auteur.id}>{auteur.nom} </li>
-            ))}
-          </ul>
-        }
+        {auteurs.length ? (
+          <>
+            <p className="font-bold">Auteurs</p>
+            <ul>
+              {auteurs.map(depute => (
+                <li key={depute.id}>{depute.nom} </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
+        {cosignataires.length ? (
+          <>
+            <p className="font-bold">Cosignataires</p>
+            <ul>
+              {cosignataires.map(depute => (
+                <li key={depute.id}>{depute.nom} </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
+        <Todo>
+          Normalement il faudrait afficher le rôle de l'auteur (ex: rapporteur
+          de telle ou telle commission, etc.). ça a l'air un peu compliqué,
+          c'est plein de regexp sur des strings, à voir plus tard.
+        </Todo>
       </SimpleBlock>
-
-      <Todo>
-        Afficher le rôle de l'auteur (rapporteur de telle ou telle commission,
-        etc.)
-      </Todo>
-      <Todo>Distinguer les types d'auteurs, cosignataires, etc.</Todo>
 
       <div className="flex flex-row space-x-4">
         <div className="w-1/2">
