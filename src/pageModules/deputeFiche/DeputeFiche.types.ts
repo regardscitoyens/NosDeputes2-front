@@ -1,6 +1,7 @@
 import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 import { AmendementsDeputeSummary } from '../../lib/queryDeputeAmendementsSummary'
 import { DeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
+import { DeputeVotes } from '../../lib/queryDeputeVotes'
 
 export type Props = { depute: Depute }
 export type Depute = WithLatestGroupOrNull<{
@@ -22,6 +23,7 @@ export type Depute = WithLatestGroupOrNull<{
   amendements: AmendementsDeputeSummary
   responsabilites: DeputeResponsabilites
   top: Metrics
+  votes: DeputeVotes
 }>
 export type DeputeCollaborateur = { name: string }
 export type DeputeUrls = { label: string; url: string }[]
