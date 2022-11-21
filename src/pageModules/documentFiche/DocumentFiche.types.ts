@@ -18,6 +18,8 @@ export type Document = {
   type_details: string | null
   // if this texte is itself a subdocument
   subDocumentIdentifiers: SubDocumentIdentifiers | null
+  source: string
+  sourcePdf: string
 }
 
 export type SubDocument = {

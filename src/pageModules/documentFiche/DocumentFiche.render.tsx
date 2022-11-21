@@ -96,7 +96,6 @@ function DocumentRelatifs({
           ))}
         </ul>
       }
-      <Todo>continuer</Todo>
     </SimpleBlock>
   )
 }
@@ -137,6 +136,16 @@ export function Page(props: types.Props) {
             </MyLink>
           </p>
         ) : null}
+        <p className="my-2">
+          <MyLink href={document.source} targetBlank>
+            Voir le document sur le site de l'assemblée (version web)
+          </MyLink>
+        </p>
+        <p className="my-2">
+          <MyLink href={document.sourcePdf} targetBlank>
+            Voir le document sur le site de l'assemblée (version PDF)
+          </MyLink>
+        </p>
         <p className="font-bold">Auteurs</p>
         {
           <ul>
@@ -152,10 +161,6 @@ export function Page(props: types.Props) {
         etc.)
       </Todo>
       <Todo>Distinguer les types d'auteurs, cosignataires, etc.</Todo>
-      <Todo>
-        Lien "consulter sur le site de l'assemblee" + lien direct pdf sur le
-        site de l'assemblee
-      </Todo>
 
       <div className="flex flex-row space-x-4">
         <div className="w-1/2">

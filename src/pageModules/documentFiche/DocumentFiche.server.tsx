@@ -104,6 +104,13 @@ function parseAnnexeField(annexe: string): types.SubDocumentIdentifiers {
   }
 }
 
+function buildSourcePdf(source: string) {
+  // http://www.assemblee-nationale.fr/16/rapports/r0016-tII.asp
+  // becomes
+  // http://www.assemblee-nationale.fr/16/pdf/rapports/r0016-tII.pdf
+  return source.replace(/\.asp$/, '.pdf').replace(/(\/\d+\/)/, '$1pdf/')
+}
+
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
@@ -123,6 +130,7 @@ export const getServerSideProps: GetServerSideProps<{
       'type_details',
       'annexe',
       'id_dossier_an',
+      'source',
     ])
     .executeTakeFirst()
 
@@ -167,6 +175,7 @@ export const getServerSideProps: GetServerSideProps<{
     ...restOfDocumentRaw,
     date: documentRaw.date.toISOString(),
     subDocumentIdentifiers: annexe !== null ? parseAnnexeField(annexe) : null,
+    sourcePdf: buildSourcePdf(documentRaw.source),
   }
 
   return {
