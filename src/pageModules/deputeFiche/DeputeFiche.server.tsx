@@ -3,6 +3,7 @@ import PHPUnserialize from 'php-unserialize'
 import { addLatestGroupToDepute } from '../../lib/addLatestGroup'
 import { queryDeputeAmendementsSummary } from '../../lib/queryDeputeAmendementsSummary'
 import { queryDeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
+import { queryDeputeVotes } from '../../lib/queryDeputeVotes'
 import { db } from '../../lib/db'
 import * as types from './DeputeFiche.types'
 
@@ -126,6 +127,7 @@ export const getServerSideProps: GetServerSideProps<{
 
   const amendements = await queryDeputeAmendementsSummary(baseDepute.id)
   const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
+  const votes = await queryDeputeVotes(baseDepute.id, 5)
 
   const finalDepute: types.Depute = {
     ...restOfDepute,
@@ -140,6 +142,7 @@ export const getServerSideProps: GetServerSideProps<{
     fin_mandat: deputeWithLatestGroup.fin_mandat?.toISOString() ?? null,
     amendements,
     responsabilites,
+    votes,
   }
 
   return {

@@ -169,6 +169,45 @@ function Amendements({ depute }: types.Props) {
   )
 }
 
+function VotePosition({
+  position,
+}: {
+  position: types.Depute['votes'][number]['position']
+}) {
+  const color =
+    position === 'pour'
+      ? 'text-green-700'
+      : position === 'contre'
+      ? 'text-red-700'
+      : 'text-inherit'
+
+  return <span className={`font-bold ${color}`}>{position}</span>
+}
+function Votes({ depute }: types.Props) {
+  const votes = depute.votes || []
+  return (
+    <div className="bg-slate-200 px-8 py-4 shadow-md">
+      <h2 className="font-bold">Votes</h2>
+      <div className="py-4"></div>
+      {(votes.length && (
+        <ul className="list-none">
+          <b>Ses derniers votes:</b>
+          <br />
+          {votes.map(vote => (
+            <li key={vote.scrutin_id}>
+              {formatDate(vote.date)} :{' '}
+              <VotePosition position={vote.position} />{' '}
+              <MyLink href="#">{vote.titre}</MyLink>
+            </li>
+          ))}
+        </ul>
+      )) ||
+        null}
+      <Todo>Liens + lien vers tous ses votes</Todo>
+    </div>
+  )
+}
+
 const isResponsabiliteParlementaire = (responsabilite: DeputeResponsabilite) =>
   responsabilite.type === 'parlementaire'
 
@@ -277,7 +316,7 @@ export function Page({ depute }: types.Props) {
           <Todo>
             Productions parlementaires (ses derniers rapports/props de lois)
           </Todo>
-          <Todo>Votes (ses derniers votes)</Todo>
+          <Votes {...{ depute }} />
           <Todo>
             Questions au gouvernement (ses dernieres questions orales, écrites)
           </Todo>
