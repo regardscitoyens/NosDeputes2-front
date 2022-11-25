@@ -1,11 +1,11 @@
 import { GetServerSideProps } from 'next'
 import {
   addLatestGroupToDeputes,
-  filterLatestGroupNotNull,
+  latestGroupIsNotNull,
 } from '../../lib/addLatestGroup'
+import { buildGroupesData } from '../../lib/buildGroupesData'
 import { db } from '../../lib/db'
 import { sortGroupes } from '../../lib/hardcodedData'
-import { buildGroupesData } from '../../lib/buildGroupesData'
 import * as PageTypes from './DeputeList.types'
 
 export const getServerSideProps: GetServerSideProps<{
@@ -33,7 +33,9 @@ export const getServerSideProps: GetServerSideProps<{
   const deputesWithGroup = await addLatestGroupToDeputes(deputes)
   const groupesData = sortGroupes(
     buildGroupesData(
-      filterLatestGroupNotNull(deputesWithGroup.filter(_ => _.mandatOngoing)),
+      deputesWithGroup
+        .filter(_ => _.mandatOngoing)
+        .filter(latestGroupIsNotNull),
     ),
   )
   return {

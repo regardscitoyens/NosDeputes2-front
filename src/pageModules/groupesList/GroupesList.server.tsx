@@ -2,7 +2,7 @@ import groupBy from 'lodash/groupBy'
 import { GetServerSideProps } from 'next'
 import {
   addLatestGroupToDeputes,
-  filterLatestGroupNotNull,
+  latestGroupIsNotNull,
 } from '../../lib/addLatestGroup'
 import { db } from '../../lib/db'
 import { sortGroupes } from '../../lib/hardcodedData'
@@ -17,9 +17,9 @@ export const getServerSideProps: GetServerSideProps<{
     .select('id')
     .execute()
 
-  const deputesIdsWithLatestGroup = filterLatestGroupNotNull(
-    await addLatestGroupToDeputes(currentDeputesIds),
-  )
+  const deputesIdsWithLatestGroup = (
+    await addLatestGroupToDeputes(currentDeputesIds)
+  ).filter(latestGroupIsNotNull)
 
   const deputesGrouped = Object.values(
     groupBy(deputesIdsWithLatestGroup, _ => _.latestGroup.id),

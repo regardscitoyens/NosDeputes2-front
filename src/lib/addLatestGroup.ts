@@ -39,10 +39,10 @@ export async function addLatestGroupToDeputes<D extends { id: number }>(
 
 // We often want to filter out the few deputes without a group
 // (only happens in rare cases where the deputes resigned on their first day)
-export function filterLatestGroupNotNull<D>(
-  deputes: WithLatestGroupOrNull<D>[],
-): WithLatestGroup<D>[] {
-  return deputes.filter(_ => _.latestGroup !== null) as WithLatestGroup<D>[]
+export function latestGroupIsNotNull<D>(
+  depute: WithLatestGroupOrNull<D>,
+): depute is WithLatestGroup<D> {
+  return depute.latestGroup !== null
 }
 
 export async function addLatestGroupToDepute<D extends { id: number }>(

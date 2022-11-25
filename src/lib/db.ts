@@ -23,6 +23,7 @@ export interface NosDeputesDatabase {
   amendement: AmendementTable
   parlementaire: ParlementaireTable
   parlementaire_amendement: ParlementaireAmendementTable
+  parlementaire_texteloi: ParlementaireTexteLoiTable
   organisme: OrganismeTable
   parlementaire_organisme: ParlementaireOrganismeTable
   seance: SeanceTable
@@ -208,7 +209,7 @@ interface VariableGlobaleTable {
   updated_at: Date
 }
 
-interface TexteLoiTable {
+export interface TexteLoiTable {
   id: string
   nb_commentaires: number
   legislature: number
@@ -263,6 +264,17 @@ interface ParlementaireAmendementTable {
   parlementaire_groupe_acronyme: string
   amendement_id: string
   numero_signataire: number
+  created_at: Date
+  updated_at: Date
+}
+
+interface ParlementaireTexteLoiTable {
+  id: Generated<number>
+  parlementaire_id: number
+  parlementaire_groupe_acronyme: string
+  texteloi_id: string
+  importance: number
+  fonction: string
   created_at: Date
   updated_at: Date
 }
