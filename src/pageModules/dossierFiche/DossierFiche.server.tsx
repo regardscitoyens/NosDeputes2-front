@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next'
 import PHPUnserialize from 'php-unserialize'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import { notNull, parseIntOrNull } from '../../lib/utils'
 
 import * as types from './DossierFiche.types'
@@ -22,7 +22,7 @@ import * as types from './DossierFiche.types'
 // TODO do it as redirect, it's probably better for SEO etc.
 async function getFinalSectionId(givenSectionId: number): Promise<number> {
   const linkdossiersRaw = (
-    await db
+    await dbLegacy
       .selectFrom('variable_globale')
       .where('champ', '=', 'linkdossiers')
       .select('value')
@@ -50,7 +50,7 @@ async function getFinalSectionId(givenSectionId: number): Promise<number> {
 async function getSubSections(
   givenSectionId: number,
 ): Promise<types.LocalSubSection[]> {
-  return await db
+  return await dbLegacy
     .selectFrom('section')
     .where('section_id', '=', givenSectionId)
     .orderBy('min_date')
@@ -65,7 +65,7 @@ async function getFirstSeance(
   // TODO pas du tout efficace puisqu'on le refait pour chaque sous section. C'était comme ça dans le PHP. A voir si on pourrait le faire en une seule query
   return (
     (
-      await db
+      await dbLegacy
         .selectFrom('seance')
         .innerJoin('intervention', 'seance.id', 'intervention.seance_id')
         .innerJoin('section', 'section.id', 'intervention.section_id')
@@ -108,7 +108,7 @@ async function getTexteLois(
   texteLoisNumeros: number[],
 ): Promise<types.LocalTexteLoi[]> {
   if (section.id_dossier_an || texteLoisNumeros.length > 0) {
-    return await db
+    return await dbLegacy
       .selectFrom('texteloi')
       .where(qb =>
         qb
@@ -144,7 +144,7 @@ export const getServerSideProps: GetServerSideProps<{
     }
   }
   const finalSectionId = await getFinalSectionId(id)
-  const section = await db
+  const section = await dbLegacy
     .selectFrom('section')
     .where('id', '=', finalSectionId)
     .select(['titre_complet', 'id_dossier_an', 'id', 'section_id'])
@@ -153,7 +153,7 @@ export const getServerSideProps: GetServerSideProps<{
   const seances: types.LocalSeance[] = filterSeancesRowNotNull(
     // Cette query était plutôt une sorte de full join dans le php
     // je suis pas 100% sûr que ce soit correct de le faire en inner join
-    await db
+    await dbLegacy
       .selectFrom('seance')
       .innerJoin('intervention', 'intervention.seance_id', 'seance.id')
       .innerJoin('section', 'section.id', 'intervention.section_id')
@@ -179,7 +179,7 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   const texteLoisNumeros: number[] = (
-    await db
+    await dbLegacy
       .selectFrom('tagging')
       .innerJoin('tag', 'tag.id', 'tagging.tag_id')
       .where('tagging.taggable_model', '=', 'Section')
@@ -205,7 +205,7 @@ export const getServerSideProps: GetServerSideProps<{
 
   const isParentSection = section.id === section.section_id
   const interventionsIds = (
-    await db
+    await dbLegacy
       .selectFrom('intervention')
       .innerJoin('section', 'section.id', 'intervention.section_id')
       // si c'est une section mère, on s'intéressent à ses sections filles
@@ -220,7 +220,7 @@ export const getServerSideProps: GetServerSideProps<{
   ).map(_ => _.id)
 
   const speakingDeputesIds = (
-    await db
+    await dbLegacy
       .selectFrom('intervention')
       .where('id', 'in', interventionsIds)
       .select('parlementaire_id')
@@ -230,7 +230,7 @@ export const getServerSideProps: GetServerSideProps<{
     .map(_ => _.parlementaire_id)
     .filter(notNull)
 
-  const speakingDeputes = await db
+  const speakingDeputes = await dbLegacy
     .selectFrom('parlementaire')
     .where('parlementaire.id', 'in', speakingDeputesIds)
     .select(['id', 'nom', 'slug'])

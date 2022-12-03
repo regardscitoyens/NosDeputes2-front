@@ -1,5 +1,5 @@
 import { GetServerSideProps } from 'next'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import {
   DeputesWithAllGroups,
   queryDeputesWithAllGroupes,
@@ -62,7 +62,7 @@ export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
   const acronym = context.query.acronym as string
-  const groupeInfo = await db
+  const groupeInfo = await dbLegacy
     .selectFrom('organisme')
     .innerJoin(
       'parlementaire_organisme',

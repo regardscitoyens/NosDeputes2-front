@@ -4,7 +4,7 @@ import { addLatestGroupToDepute } from '../../lib/addLatestGroup'
 import { queryDeputeAmendementsSummary } from '../../lib/queryDeputeAmendementsSummary'
 import { queryDeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 import { queryDeputeVotes } from '../../lib/queryDeputeVotes'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import * as types from './DeputeFiche.types'
 
 function parseMails(mails: string): string[] {
@@ -82,7 +82,7 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async context => {
   const slug = context.query.slug_or_legislature as string
 
-  const baseDepute = await db
+  const baseDepute = await dbLegacy
     .selectFrom('parlementaire')
     .select([
       'id',

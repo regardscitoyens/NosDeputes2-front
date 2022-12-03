@@ -1,4 +1,4 @@
-import { TexteLoiTable } from '../../lib/db'
+import { TexteLoiTable } from '../../lib/dbLegacy'
 
 export type Props = {
   document: Document

@@ -3,7 +3,7 @@ import groupBy from 'lodash/groupBy'
 import reverse from 'lodash/reverse'
 import sortBy from 'lodash/sortBy'
 import { GetServerSideProps } from 'next'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import * as types from './DossierListByDate.types'
 
 function extractMonth(section: types.Section): string {
@@ -15,7 +15,7 @@ function extractMonth(section: types.Section): string {
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
-  const sections: types.Section[] = await db
+  const sections: types.Section[] = await dbLegacy
     .selectFrom('section')
     .where('id', '=', sql`section_id`)
     .where('min_date', 'is not', null)

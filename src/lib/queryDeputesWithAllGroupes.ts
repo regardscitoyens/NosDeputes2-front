@@ -1,6 +1,6 @@
 import sortBy from 'lodash/sortBy'
 import { chunkBy } from './utils'
-import { db } from './db'
+import { dbLegacy } from './dbLegacy'
 import { FonctionInGroupe, normalizeFonctionInGroup } from './hardcodedData'
 
 export type DeputesWithAllGroups = {
@@ -29,7 +29,7 @@ export async function queryDeputesWithAllGroupes(): Promise<
 > {
   // this query produces duplicates because a parlementaire has had multiple groupes over time
   // We will group/reorganize the data in JS to clean it
-  const rows = await db
+  const rows = await dbLegacy
     .selectFrom('parlementaire')
     .innerJoin(
       'parlementaire_organisme',

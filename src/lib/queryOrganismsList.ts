@@ -1,5 +1,5 @@
 import { sql } from 'kysely'
-import { db } from './db'
+import { dbLegacy } from './dbLegacy'
 
 export type OrganismeWithCounts = {
   id: number
@@ -14,8 +14,8 @@ export type OrganismeType = 'extra' | 'parlementaire' | 'groupes'
 export async function queryOrganismsList(
   type: OrganismeType,
 ): Promise<OrganismeWithCounts[]> {
-  const { count } = db.fn
-  const subqueryNbSeances = db
+  const { count } = dbLegacy.fn
+  const subqueryNbSeances = dbLegacy
     .selectFrom('organisme')
     .leftJoin('seance', 'seance.organisme_id', 'organisme.id')
     .where('organisme.type', '=', type)
@@ -23,7 +23,7 @@ export async function queryOrganismsList(
     .select('organisme.id as organisme_id')
     .select(count<number>('seance.id').as('cpt'))
 
-  const subqueryNbDeputes = db
+  const subqueryNbDeputes = dbLegacy
     .selectFrom('organisme')
     .leftJoin(
       'parlementaire_organisme',
@@ -41,7 +41,7 @@ export async function queryOrganismsList(
     .select('organisme.id as organisme_id')
     .select(count<number>('parlementaire.id').as('cpt'))
 
-  const rows = await db
+  const rows = await dbLegacy
     .selectFrom('organisme')
     .leftJoin(
       subqueryNbDeputes.as('organisme_to_parlementaire_count'),

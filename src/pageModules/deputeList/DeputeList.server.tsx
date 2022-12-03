@@ -4,7 +4,7 @@ import {
   latestGroupIsNotNull,
 } from '../../lib/addLatestGroup'
 import { buildGroupesData } from '../../lib/buildGroupesData'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import { sortGroupes } from '../../lib/hardcodedData'
 import * as PageTypes from './DeputeList.types'
 
@@ -12,7 +12,7 @@ export const getServerSideProps: GetServerSideProps<{
   data: PageTypes.Props
 }> = async context => {
   const deputes = (
-    await db
+    await dbLegacy
       .selectFrom('parlementaire')
       .select([
         'id',
