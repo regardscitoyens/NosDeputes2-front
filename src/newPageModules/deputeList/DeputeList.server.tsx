@@ -9,47 +9,50 @@ import { dbLegacy } from '../../lib/dbLegacy'
 import { dbReleve } from '../../lib/dbReleve'
 import { CURRENT_LEGISLATURE, sortGroupes } from '../../lib/hardcodedData'
 import * as PageTypes from './DeputeList.types'
+import sortBy from 'lodash/sortBy'
 
 export const getServerSideProps: GetServerSideProps<{
   data: PageTypes.Props
 }> = async context => {
-  // TODO vérifier s'il y a pas des doubles, est-ce qu'un député peut avoir deux mandats s'il part/revient ?
-  // TODO pourquoi j'ai 600 deputes, vs 599 sur l'ancienne page ?
-  const newdeputes: PageTypes.DeputeSimple[] = (
-    await dbReleve
-      .selectFrom('acteurs')
-      .innerJoin('mandats', 'acteurs.uid', 'mandats.acteur_uid')
-      .innerJoin('organes', join =>
-        join.on('organes.uid', '=', sql`ANY(mandats.organes_uids)`),
-      )
-      // left join to be tolerant if the mapping to NosDeputes misses some data
-      .leftJoin('nosdeputes_deputes', 'nosdeputes_deputes.uid', 'acteurs.uid')
-      .where(sql`organes.data->>'codeType'`, '=', 'ASSEMBLEE')
-      .where(
-        sql`organes.data->>'legislature'`,
-        '=',
-        CURRENT_LEGISLATURE.toString(),
-      )
-      .select('acteurs.uid')
-      .select('nosdeputes_deputes.slug')
-      .select(
-        sql<string>`acteurs.data->'etatCivil'->'ident'->>'prenom'`.as(
-          'firstName',
-        ),
-      )
-      .select(
-        sql<string>`acteurs.data->'etatCivil'->'ident'->>'nom'`.as('lastName'),
-      )
-      .select(
-        sql<string>`mandats.data->'election'->'lieu'->>'departement'`.as(
-          'circoDepartement',
-        ),
-      )
-      .select(
-        sql<boolean>`mandats.data->>'dateFin' IS NULL`.as('mandatOngoing'),
-      )
-      .orderBy('lastName')
-      .execute()
+  const rows = await dbReleve
+    .selectFrom('acteurs')
+    .innerJoin('mandats', 'acteurs.uid', 'mandats.acteur_uid')
+    .innerJoin('organes', join =>
+      join.on('organes.uid', '=', sql`ANY(mandats.organes_uids)`),
+    )
+    // left join to be tolerant if the mapping to NosDeputes misses some data
+    .leftJoin('nosdeputes_deputes', 'nosdeputes_deputes.uid', 'acteurs.uid')
+    .where(sql`organes.data->>'codeType'`, '=', 'ASSEMBLEE')
+    .where(
+      sql`organes.data->>'legislature'`,
+      '=',
+      CURRENT_LEGISLATURE.toString(),
+    )
+    .select('acteurs.uid')
+    .select('nosdeputes_deputes.slug')
+    .select(
+      sql<string>`acteurs.data->'etatCivil'->'ident'->>'prenom'`.as(
+        'firstName',
+      ),
+    )
+    .select(
+      sql<string>`acteurs.data->'etatCivil'->'ident'->>'nom'`.as('lastName'),
+    )
+    .select(
+      sql<string>`mandats.data->'election'->'lieu'->>'departement'`.as(
+        'circoDepartement',
+      ),
+    )
+    .select(sql<boolean>`mandats.data->>'dateFin' IS NULL`.as('mandatOngoing'))
+    // a depute can have several mandats in the same legislature
+    .distinctOn('acteur_uid')
+    .execute()
+
+  const newdeputes: PageTypes.DeputeSimple[] = sortBy(
+    rows,
+    // this sort can't be done in the SQL
+    // incompatible with our DISTINCT clause
+    _ => _.lastName,
   ).map(depute => {
     const { firstName, lastName, ...rest } = depute
     return {
@@ -59,7 +62,7 @@ export const getServerSideProps: GetServerSideProps<{
     }
   })
 
-  const deputes = (
+  const deputeslegacy = (
     await dbLegacy
       .selectFrom('parlementaire')
       .select([
@@ -78,7 +81,7 @@ export const getServerSideProps: GetServerSideProps<{
       mandatOngoing: fin_mandat === null,
     }
   })
-  const deputesWithGroup = await addLatestGroupToDeputes(deputes)
+  const deputesWithGroup = await addLatestGroupToDeputes(deputeslegacy)
   const groupesData = sortGroupes(
     buildGroupesData(
       deputesWithGroup

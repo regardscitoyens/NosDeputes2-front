@@ -35,9 +35,7 @@ export function Page({ deputes, groupesData }: types.Props) {
       <GrapheRepartitionGroupes {...{ groupesData }} />
       {sortBy(Object.entries(deputesByLetter), _ => _[0]).map(
         ([letter, deputes]) => {
-          const deputesCols = prepare3Cols(
-            sortBy(deputes, _ => _.firstLetterLastName),
-          )
+          const deputesCols = prepare3Cols(deputes)
           return (
             <div key={letter}>
               <h2 className="my-4 text-center text-4xl">{letter}</h2>
@@ -45,15 +43,13 @@ export function Page({ deputes, groupesData }: types.Props) {
                 {deputesCols.map((deputes, idx) => {
                   return (
                     <ul key={idx} className="grow-1 w-1/3">
-                      {sortBy(deputes, _ => _.firstLetterLastName).map(
-                        depute => {
-                          return (
-                            <li key={depute.uid}>
-                              <NewDeputeItem {...{ depute }} displayCirco />
-                            </li>
-                          )
-                        },
-                      )}
+                      {deputes.map(depute => {
+                        return (
+                          <li key={depute.uid}>
+                            <NewDeputeItem {...{ depute }} displayCirco />
+                          </li>
+                        )
+                      })}
                     </ul>
                   )
                 })}
