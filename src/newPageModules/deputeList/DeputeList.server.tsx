@@ -13,6 +13,8 @@ import * as PageTypes from './DeputeList.types'
 export const getServerSideProps: GetServerSideProps<{
   data: PageTypes.Props
 }> = async context => {
+  // TODO vérifier s'il y a pas des doubles, est-ce qu'un député peut avoir deux mandats s'il part/revient ?
+  // TODO pourquoi j'ai 600 deputes, vs 599 sur l'ancienne page ?
   const newdeputes = await dbReleve
     .selectFrom('acteurs')
     .innerJoin('mandats', 'acteurs.uid', 'mandats.acteur_uid')
@@ -27,6 +29,17 @@ export const getServerSideProps: GetServerSideProps<{
       CURRENT_LEGISLATURE.toString(),
     )
     .select('acteurs.uid')
+    .select('nosdeputes_deputes.slug')
+    .select(
+      sql<string>`acteurs.data->'etatCivil'->'ident'->>'prenom'`.as('prenom'),
+    )
+    .select(sql<string>`acteurs.data->'etatCivil'->'ident'->>'nom'`.as('nom'))
+    .select(
+      sql<string>`mandats.data->'election'->'lieu'->>'departement'`.as(
+        'circo_departement',
+      ),
+    )
+    .select(sql<boolean>`mandats.data->>'dateFin' IS NULL`.as('mandatOngoing'))
     .execute()
 
   const deputes = (
@@ -59,8 +72,16 @@ export const getServerSideProps: GetServerSideProps<{
   return {
     props: {
       data: {
-        deputes: deputesWithGroup,
-        groupesData,
+        deputes: newdeputes.map((depute, idx) => ({
+          id: idx, // TODO utiliser l'uid
+          slug: depute.slug ?? 'slug', // TODO make slug nullable
+          nom: depute.prenom + ' ' + depute.nom,
+          nom_circo: depute.circo_departement,
+          nom_de_famille: depute.nom,
+          mandatOngoing: depute.mandatOngoing,
+          latestGroup: null,
+        })),
+        groupesData: [],
       },
     },
   }
