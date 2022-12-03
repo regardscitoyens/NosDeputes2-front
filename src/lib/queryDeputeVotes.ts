@@ -1,4 +1,4 @@
-import { db, NosDeputesDatabase } from './db'
+import { dbLegacy, NosDeputesDatabase } from './dbLegacy'
 
 export type DeputeVote = {
   scrutin_id: number
@@ -13,7 +13,7 @@ export async function queryDeputeVotes(
   id: number,
   limit = 10,
 ): Promise<DeputeVotes> {
-  const votes = await db
+  const votes = await dbLegacy
     .selectFrom('parlementaire_scrutin')
     .innerJoin('scrutin', 'scrutin.id', 'parlementaire_scrutin.scrutin_id')
     .where('parlementaire_scrutin.parlementaire_id', '=', id)

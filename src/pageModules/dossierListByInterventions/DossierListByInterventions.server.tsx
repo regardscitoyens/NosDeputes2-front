@@ -1,12 +1,12 @@
 import { sql } from 'kysely'
 import { GetServerSideProps } from 'next'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import * as types from './DossierListByInterventions.types'
 
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
-  const sections = (await db
+  const sections = (await dbLegacy
     .selectFrom('section')
     .where('id', '=', sql`section_id`)
     .orderBy('nb_interventions', 'desc')

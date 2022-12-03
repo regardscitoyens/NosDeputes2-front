@@ -1,6 +1,6 @@
 import groupBy from 'lodash/groupBy'
 import { GetServerSideProps } from 'next'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import { parseIntOrNull } from '../../lib/utils'
 
 import * as types from './ScrutinFiche.types'
@@ -15,7 +15,7 @@ export const getServerSideProps: GetServerSideProps<{
       notFound: true,
     }
   }
-  const scrutinRaw = await db
+  const scrutinRaw = await dbLegacy
     .selectFrom('scrutin')
     .where('id', '=', id)
     .select([
@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps<{
     ])
     .executeTakeFirst()
 
-  const interventionMd5 = await db
+  const interventionMd5 = await dbLegacy
     .selectFrom('tag')
     .leftJoin('tagging', 'tag.id', 'tagging.tag_id')
     .leftJoin('intervention', 'tagging.taggable_id', 'intervention.id')
@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps<{
     .select('intervention.md5')
     .executeTakeFirst()
 
-  const votes: types.Vote[] = await db
+  const votes: types.Vote[] = await dbLegacy
     .selectFrom('parlementaire_scrutin')
     .innerJoin(
       'parlementaire',

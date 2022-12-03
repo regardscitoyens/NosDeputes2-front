@@ -1,5 +1,5 @@
 import { sql } from 'kysely'
-import { db } from './db'
+import { dbLegacy } from './dbLegacy'
 import {
   FonctionInOrganisme,
   fonctionsInOrganismeWithFeminineVersion,
@@ -19,7 +19,7 @@ export type DeputeInOrganisme = {
 export async function queryDeputesForOrganisme(
   slug: string,
 ): Promise<DeputeInOrganisme[]> {
-  const rows = await db
+  const rows = await dbLegacy
     .selectFrom('organisme')
     .innerJoin(
       'parlementaire_organisme',

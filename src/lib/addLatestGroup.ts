@@ -1,5 +1,5 @@
 import { sql } from 'kysely'
-import { db } from './db'
+import { dbLegacy } from './dbLegacy'
 import { FonctionInGroupe, normalizeFonctionInGroup } from './hardcodedData'
 
 export type LatestGroupForDepute = {
@@ -55,7 +55,7 @@ export async function fetchLatestGroupsForDeputeIds(
   deputeIds: number[],
 ): Promise<{ [id: number]: LatestGroupForDepute }> {
   // base join between the 3 tables
-  const baseQuery = db
+  const baseQuery = dbLegacy
     .selectFrom('parlementaire')
     .innerJoin(
       'parlementaire_organisme',

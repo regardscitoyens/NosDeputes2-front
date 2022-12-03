@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next'
 import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import { queryDeputesForOrganisme } from '../../lib/queryDeputesForOrganisme'
 import * as types from './OrganismFiche.types'
 
@@ -8,7 +8,7 @@ export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
   const slug = context.query.slug as string
-  const organisme = await db
+  const organisme = await dbLegacy
     .selectFrom('organisme')
     .where('slug', '=', slug)
     .select('id')

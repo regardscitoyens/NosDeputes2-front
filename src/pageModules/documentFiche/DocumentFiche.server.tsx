@@ -1,6 +1,6 @@
 import { sql } from 'kysely'
 import { GetServerSideProps } from 'next'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import sortBy from 'lodash/sortBy'
 import * as types from './DocumentFiche.types'
 
@@ -21,7 +21,7 @@ async function getAuteursOrCosignataires(
   texteLoiId: string,
   kind: 'auteurs' | 'cosignataires',
 ): Promise<types.Depute[]> {
-  return await db
+  return await dbLegacy
     .selectFrom('parlementaire')
     .innerJoin(
       'parlementaire_texteloi',
@@ -47,7 +47,7 @@ async function getSection(doc: {
   numero: number
 }): Promise<types.Section | null> {
   // there are two ways to link the document and the section, not sure why
-  const section = await db
+  const section = await dbLegacy
     .selectFrom('section')
     .where('id_dossier_an', '=', doc.id_dossier_an)
     // I think here we want to link to the root section
@@ -60,7 +60,7 @@ async function getSection(doc: {
     return section
   }
   return (
-    (await db
+    (await dbLegacy
       .selectFrom('tag')
       .innerJoin('tagging', 'tag.id', 'tagging.tag_id')
       .innerJoin('section', 'tagging.taggable_id', 'section.id')
@@ -80,7 +80,7 @@ async function getDocumentsRelatifs(doc: {
   id_dossier_an: string
   numero: number
 }): Promise<types.DocumentRelatif[]> {
-  const rows = await db
+  const rows = await dbLegacy
     .selectFrom('texteloi')
     .where('id_dossier_an', '=', doc.id_dossier_an)
     .where('id', '!=', doc.id)
@@ -124,9 +124,9 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async context => {
   const id = context.query.id as string
 
-  const { count } = db.fn
+  const { count } = dbLegacy.fn
 
-  const documentRaw = await db
+  const documentRaw = await dbLegacy
     .selectFrom('texteloi')
     .where('id', '=', id)
     .select([
@@ -149,7 +149,7 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   const nbAmendements = (
-    await db
+    await dbLegacy
       .selectFrom('amendement')
       .where('texteloi_id', '=', documentRaw.numero.toString())
       .select(count<number>('amendement.id').as('nb'))
@@ -157,7 +157,7 @@ export const getServerSideProps: GetServerSideProps<{
   ).nb
 
   // les sous-documents du document racine
-  const subDocumentsRaw = await db
+  const subDocumentsRaw = await dbLegacy
     .selectFrom('texteloi')
     .where('numero', '=', documentRaw.numero)
     .where('id', '!=', documentRaw.id)
