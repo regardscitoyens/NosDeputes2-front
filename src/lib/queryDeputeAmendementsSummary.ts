@@ -1,4 +1,4 @@
-import { db } from './db'
+import { dbLegacy } from './dbLegacy'
 import { AmendementsSort, amendementsSorts } from './hardcodedData'
 
 export type AmendementsDeputeSummary = Record<
@@ -12,9 +12,9 @@ export type AmendementsDeputeSummary = Record<
 export async function queryDeputeAmendementsSummary(
   id: number,
 ): Promise<AmendementsDeputeSummary> {
-  const { count } = db.fn
+  const { count } = dbLegacy.fn
 
-  const proposes = await db
+  const proposes = await dbLegacy
     .selectFrom('amendement')
     .where('amendement.auteur_id', '=', id)
     .where('amendement.sort', '<>', 'Rectifié')
@@ -23,7 +23,7 @@ export async function queryDeputeAmendementsSummary(
     .select(count<number>('amendement.id').as('count'))
     .execute()
 
-  const signes = await db
+  const signes = await dbLegacy
     .selectFrom('amendement')
     .leftJoin(
       'parlementaire_amendement',

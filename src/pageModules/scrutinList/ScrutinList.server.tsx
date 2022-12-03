@@ -1,7 +1,7 @@
 import groupBy from 'lodash/groupBy'
 import partition from 'lodash/partition'
 import { GetServerSideProps } from 'next'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import * as types from './ScrutinList.types'
 
 function getLaw(scrutin: types.Scrutin): string | null {
@@ -57,7 +57,7 @@ export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
   const scrutins = (
-    await db
+    await dbLegacy
       .selectFrom('scrutin')
       .orderBy('numero', 'desc')
       .select('id')

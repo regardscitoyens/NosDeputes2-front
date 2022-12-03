@@ -4,14 +4,14 @@ import {
   addLatestGroupToDeputes,
   latestGroupIsNotNull,
 } from '../../lib/addLatestGroup'
-import { db } from '../../lib/db'
+import { dbLegacy } from '../../lib/dbLegacy'
 import { sortGroupes } from '../../lib/hardcodedData'
 import * as types from './GroupesList.types'
 
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
-  const currentDeputesIds = await db
+  const currentDeputesIds = await dbLegacy
     .selectFrom('parlementaire')
     .where('fin_mandat', 'is', null)
     .select('id')

@@ -58,3 +58,11 @@ export function parseIntOrNull(str: string): number | null {
   if (isNaN(parsed)) return null
   return parsed
 }
+// https://stackoverflow.com/questions/11867545/change-text-color-based-on-brightness-of-the-covered-background-area
+export function pickTextColor(bgColor: string): 'text-white' | 'text-black' {
+  const r = parseInt(bgColor.substring(1, 3), 16)
+  const g = parseInt(bgColor.substring(3, 5), 16)
+  const b = parseInt(bgColor.substring(5, 7), 16)
+  const perceivedLuminosity = (r * 299 + g * 587 + b * 114) / 1000
+  return perceivedLuminosity >= 150 ? 'text-black' : 'text-white'
+}

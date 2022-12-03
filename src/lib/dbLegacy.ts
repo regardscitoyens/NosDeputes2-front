@@ -5,15 +5,15 @@ import { readFromEnv, readIntFromEnv } from './utils'
 
 export type DbConnectionPool = Kysely<NosDeputesDatabase>
 
-console.log('Starting DB connection pool')
-export const db: DbConnectionPool = new Kysely<NosDeputesDatabase>({
+console.log('Starting legacy DB connection pool')
+export const dbLegacy: DbConnectionPool = new Kysely<NosDeputesDatabase>({
   dialect: new MysqlDialect({
     pool: mysql.createPool({
-      host: readFromEnv('DB_HOST'),
-      port: readIntFromEnv('DB_PORT'),
-      user: readFromEnv('DB_USER'),
-      password: readFromEnv('DB_PWD'),
-      database: readFromEnv('DB_NAME'),
+      host: readFromEnv('DB_NOSDEPUTES_LEGACY_HOST'),
+      port: readIntFromEnv('DB_NOSDEPUTES_LEGACY_PORT'),
+      user: readFromEnv('DB_NOSDEPUTES_LEGACY_USER'),
+      password: readFromEnv('DB_NOSDEPUTES_LEGACY_PWD'),
+      database: readFromEnv('DB_NOSDEPUTES_LEGACY_NAME'),
     }),
   }),
   log: ['query'],

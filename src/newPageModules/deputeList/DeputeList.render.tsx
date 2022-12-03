@@ -2,8 +2,8 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import { Todo } from '../../components/Todo'
 
-import { DeputeItem } from '../../components/DeputeItem'
-import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
+import { GrapheRepartitionGroupes } from '../../components/NewGrapheRepartitionGroupes'
+import { NewDeputeItem } from '../../components/NewDeputeItem'
 import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DeputeList.types'
 
@@ -19,8 +19,9 @@ function prepare3Cols<A>(array: A[]) {
   ]
 }
 export function Page({ deputes, groupesData }: types.Props) {
+  console.log('@@@@ groupesData', groupesData)
   const deputesEnCoursMandat = deputes.filter(_ => _.mandatOngoing)
-  const deputesByLetter = groupBy(deputes, _ => _.nom_de_famille[0])
+  const deputesByLetter = groupBy(deputes, _ => _.firstLetterLastName[0])
   // TODO fix le tri alphabétique et le groupement par lettre : attention aux accents
   return (
     <div>
@@ -35,9 +36,7 @@ export function Page({ deputes, groupesData }: types.Props) {
       <GrapheRepartitionGroupes {...{ groupesData }} />
       {sortBy(Object.entries(deputesByLetter), _ => _[0]).map(
         ([letter, deputes]) => {
-          const deputesCols = prepare3Cols(
-            sortBy(deputes, _ => _.nom_de_famille),
-          )
+          const deputesCols = prepare3Cols(deputes)
           return (
             <div key={letter}>
               <h2 className="my-4 text-center text-4xl">{letter}</h2>
@@ -45,10 +44,10 @@ export function Page({ deputes, groupesData }: types.Props) {
                 {deputesCols.map((deputes, idx) => {
                   return (
                     <ul key={idx} className="grow-1 w-1/3">
-                      {sortBy(deputes, _ => _.nom_de_famille).map(depute => {
+                      {deputes.map(depute => {
                         return (
-                          <li key={depute.id}>
-                            <DeputeItem {...{ depute }} withCirco />
+                          <li key={depute.uid}>
+                            <NewDeputeItem {...{ depute }} displayCirco />
                           </li>
                         )
                       })}
