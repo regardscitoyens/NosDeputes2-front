@@ -15,32 +15,49 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async context => {
   // TODO vérifier s'il y a pas des doubles, est-ce qu'un député peut avoir deux mandats s'il part/revient ?
   // TODO pourquoi j'ai 600 deputes, vs 599 sur l'ancienne page ?
-  const newdeputes = await dbReleve
-    .selectFrom('acteurs')
-    .innerJoin('mandats', 'acteurs.uid', 'mandats.acteur_uid')
-    .innerJoin('organes', join =>
-      join.on('organes.uid', '=', sql`ANY(mandats.organes_uids)`),
-    )
-    .leftJoin('nosdeputes_deputes', 'nosdeputes_deputes.uid', 'acteurs.uid')
-    .where(sql`organes.data->>'codeType'`, '=', 'ASSEMBLEE')
-    .where(
-      sql`organes.data->>'legislature'`,
-      '=',
-      CURRENT_LEGISLATURE.toString(),
-    )
-    .select('acteurs.uid')
-    .select('nosdeputes_deputes.slug')
-    .select(
-      sql<string>`acteurs.data->'etatCivil'->'ident'->>'prenom'`.as('prenom'),
-    )
-    .select(sql<string>`acteurs.data->'etatCivil'->'ident'->>'nom'`.as('nom'))
-    .select(
-      sql<string>`mandats.data->'election'->'lieu'->>'departement'`.as(
-        'circo_departement',
-      ),
-    )
-    .select(sql<boolean>`mandats.data->>'dateFin' IS NULL`.as('mandatOngoing'))
-    .execute()
+  const newdeputes: PageTypes.DeputeSimple[] = (
+    await dbReleve
+      .selectFrom('acteurs')
+      .innerJoin('mandats', 'acteurs.uid', 'mandats.acteur_uid')
+      .innerJoin('organes', join =>
+        join.on('organes.uid', '=', sql`ANY(mandats.organes_uids)`),
+      )
+      // left join to be tolerant if the mapping to NosDeputes misses some data
+      .leftJoin('nosdeputes_deputes', 'nosdeputes_deputes.uid', 'acteurs.uid')
+      .where(sql`organes.data->>'codeType'`, '=', 'ASSEMBLEE')
+      .where(
+        sql`organes.data->>'legislature'`,
+        '=',
+        CURRENT_LEGISLATURE.toString(),
+      )
+      .select('acteurs.uid')
+      .select('nosdeputes_deputes.slug')
+      .select(
+        sql<string>`acteurs.data->'etatCivil'->'ident'->>'prenom'`.as(
+          'firstName',
+        ),
+      )
+      .select(
+        sql<string>`acteurs.data->'etatCivil'->'ident'->>'nom'`.as('lastName'),
+      )
+      .select(
+        sql<string>`mandats.data->'election'->'lieu'->>'departement'`.as(
+          'circoDepartement',
+        ),
+      )
+      .select(
+        sql<boolean>`mandats.data->>'dateFin' IS NULL`.as('mandatOngoing'),
+      )
+      .orderBy('lastName')
+      .execute()
+  ).map(depute => {
+    const { firstName, lastName, ...rest } = depute
+    return {
+      fullName: `${firstName} ${lastName}`,
+      firstLetterLastName: lastName[0] ?? 'z',
+      ...rest,
+    }
+  })
 
   const deputes = (
     await dbLegacy
@@ -72,13 +89,8 @@ export const getServerSideProps: GetServerSideProps<{
   return {
     props: {
       data: {
-        deputes: newdeputes.map((depute, idx) => ({
-          id: idx, // TODO utiliser l'uid
-          slug: depute.slug ?? 'slug', // TODO make slug nullable
-          nom: depute.prenom + ' ' + depute.nom,
-          nom_circo: depute.circo_departement,
-          nom_de_famille: depute.nom,
-          mandatOngoing: depute.mandatOngoing,
+        deputes: newdeputes.map(depute => ({
+          ...depute,
           latestGroup: null,
         })),
         groupesData: [],
