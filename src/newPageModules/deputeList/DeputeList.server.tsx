@@ -3,7 +3,7 @@ import { GetServerSideProps } from 'next'
 import {
   addLatestGroupToDeputes,
   latestGroupIsNotNull,
-} from '../../lib/addLatestGroup'
+} from '../../lib/newAddLatestGroup'
 import { buildGroupesData } from '../../lib/buildGroupesData'
 import { dbLegacy } from '../../lib/dbLegacy'
 import { dbReleve } from '../../lib/dbReleve'
@@ -81,21 +81,18 @@ export const getServerSideProps: GetServerSideProps<{
       mandatOngoing: fin_mandat === null,
     }
   })
-  const deputesWithGroup = await addLatestGroupToDeputes(deputeslegacy)
-  const groupesData = sortGroupes(
-    buildGroupesData(
-      deputesWithGroup
-        .filter(_ => _.mandatOngoing)
-        .filter(latestGroupIsNotNull),
-    ),
-  )
+  const newDeputesWithGroup = await addLatestGroupToDeputes(newdeputes)
+  // const groupesData = sortGroupes(
+  //   buildGroupesData(
+  //     newDeputesWithGroup
+  //       .filter(_ => _.mandatOngoing)
+  //       .filter(latestGroupIsNotNull),
+  //   ),
+  // )
   return {
     props: {
       data: {
-        deputes: newdeputes.map(depute => ({
-          ...depute,
-          latestGroup: null,
-        })),
+        deputes: newDeputesWithGroup,
         groupesData: [],
       },
     },

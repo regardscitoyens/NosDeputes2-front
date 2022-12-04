@@ -1,5 +1,5 @@
 import { FonctionInGroupe } from '../lib/hardcodedData'
-import { GroupeBadgeWithFonction } from './GroupeBadge'
+import { GroupeBadgeWithFonction } from './NewGroupeBadge'
 import { MyLink } from './MyLink'
 
 type Props = {
@@ -11,6 +11,7 @@ type Props = {
     latestGroup: {
       acronym: string
       fonction: FonctionInGroupe
+      color: string
     } | null
   }
   displayCirco?: boolean
