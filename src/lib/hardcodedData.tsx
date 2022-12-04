@@ -30,9 +30,30 @@ export const groupesDisplayOrder: string[] = [
   'RN',
   'NI',
 ]
+export const groupesDisplayOrderWithNewAcronyms: string[] = [
+  'LFI-NUPES',
+  'GDR-NUPES',
+  'SOC',
+  'ECOLO',
+  'LIOT',
+  'RE',
+  'DEM',
+  'HOR',
+  'LR',
+  'RN',
+  'NI',
+]
 
-export function sortGroupes<A extends { acronym: string }>(groupes: A[]): A[] {
-  return sortBy(groupes, _ => groupesDisplayOrder.indexOf(_.acronym))
+export function sortGroupes<A extends { acronym: string }>(
+  groupes: A[],
+  withNewAcronyms: boolean = false,
+): A[] {
+  return sortBy(groupes, _ =>
+    (withNewAcronyms
+      ? groupesDisplayOrderWithNewAcronyms
+      : groupesDisplayOrder
+    ).indexOf(_.acronym),
+  )
 }
 
 // Colors copied from conf/app.yml in nosdeputes.fr

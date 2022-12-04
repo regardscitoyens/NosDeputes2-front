@@ -2,7 +2,7 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import { Todo } from '../../components/Todo'
 
-import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
+import { GrapheRepartitionGroupes } from '../../components/NewGrapheRepartitionGroupes'
 import { NewDeputeItem } from '../../components/NewDeputeItem'
 import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DeputeList.types'
@@ -19,6 +19,7 @@ function prepare3Cols<A>(array: A[]) {
   ]
 }
 export function Page({ deputes, groupesData }: types.Props) {
+  console.log('@@@@ groupesData', groupesData)
   const deputesEnCoursMandat = deputes.filter(_ => _.mandatOngoing)
   const deputesByLetter = groupBy(deputes, _ => _.firstLetterLastName[0])
   // TODO fix le tri alphabétique et le groupement par lettre : attention aux accents

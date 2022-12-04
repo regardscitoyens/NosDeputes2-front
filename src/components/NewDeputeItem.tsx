@@ -1,6 +1,6 @@
-import { FonctionInGroupe } from '../lib/hardcodedData'
 import { GroupeBadgeWithFonction } from './NewGroupeBadge'
 import { MyLink } from './MyLink'
+import { NewFonctionInGroupe } from '../lib/newAddLatestGroup'
 
 type Props = {
   depute: {
@@ -10,7 +10,7 @@ type Props = {
     mandatOngoing: boolean
     latestGroup: {
       acronym: string
-      fonction: FonctionInGroupe
+      fonction: NewFonctionInGroupe
       color: string
     } | null
   }

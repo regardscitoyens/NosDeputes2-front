@@ -7,11 +7,11 @@ import { CURRENT_LEGISLATURE } from './hardcodedData'
 export type LatestGroupForDepute = {
   nom: string
   acronym: string
-  fonction: FonctionInGroupe
+  fonction: NewFonctionInGroupe
   color: string
 }
 
-type FonctionInGroupe =
+export type NewFonctionInGroupe =
   | 'Président'
   | 'Membre apparenté'
   | 'Membre'
@@ -67,7 +67,7 @@ export async function fetchLatestGroupsForDeputeIds(
   const { rows } = await sql<{
     acteur_uid: string
     organe_uid: string | null
-    fonction: FonctionInGroupe | null
+    fonction: NewFonctionInGroupe | null
     acronym: string | null
     nom: string
     color: string

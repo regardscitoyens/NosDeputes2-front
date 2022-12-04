@@ -1,6 +1,6 @@
 import { InferGetServerSidePropsType } from 'next'
-import * as render from '../../pageModules/deputeList/DeputeList.render'
-import * as server from '../../pageModules/deputeList/DeputeList.server'
+import * as render from '../../newPageModules/deputeList/DeputeList.render'
+import * as server from '../../newPageModules/deputeList/DeputeList.server'
 
 export const getServerSideProps = server.getServerSideProps
 

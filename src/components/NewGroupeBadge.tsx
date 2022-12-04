@@ -1,10 +1,14 @@
-import { FonctionInGroupe } from '../lib/hardcodedData'
+import { NewFonctionInGroupe } from '../lib/newAddLatestGroup'
 import { MyLink } from './MyLink'
 
 export function GroupeBadgeWithFonction({
   groupe,
 }: {
-  groupe: { acronym: string; fonction: FonctionInGroupe; color: string } | null
+  groupe: {
+    acronym: string
+    fonction: NewFonctionInGroupe
+    color: string
+  } | null
 }) {
   if (groupe)
     return (
@@ -33,7 +37,7 @@ function BaseGroupeBadge({
   color,
 }: {
   acronym: string
-  fonction?: FonctionInGroupe
+  fonction?: NewFonctionInGroupe
   color: string
 }) {
   return (
@@ -44,7 +48,7 @@ function BaseGroupeBadge({
       textColorClassOverride={color === '#F8D434' ? 'text-black' : 'text-white'}
     >
       {acronym}
-      {fonction && fonction !== 'membre' ? ` (${fonction})` : null}
+      {fonction && fonction !== 'Membre' ? ` (${fonction})` : null}
     </MyLink>
   )
 }

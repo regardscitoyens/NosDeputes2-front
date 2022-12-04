@@ -1,15 +1,14 @@
 import { sql } from 'kysely'
+import sortBy from 'lodash/sortBy'
 import { GetServerSideProps } from 'next'
+import { dbReleve } from '../../lib/dbReleve'
+import { CURRENT_LEGISLATURE, sortGroupes } from '../../lib/hardcodedData'
 import {
   addLatestGroupToDeputes,
   latestGroupIsNotNull,
 } from '../../lib/newAddLatestGroup'
-import { buildGroupesData } from '../../lib/buildGroupesData'
-import { dbLegacy } from '../../lib/dbLegacy'
-import { dbReleve } from '../../lib/dbReleve'
-import { CURRENT_LEGISLATURE, sortGroupes } from '../../lib/hardcodedData'
+import { buildGroupesData } from '../../lib/newBuildGroupesData'
 import * as PageTypes from './DeputeList.types'
-import sortBy from 'lodash/sortBy'
 
 export const getServerSideProps: GetServerSideProps<{
   data: PageTypes.Props
@@ -62,38 +61,20 @@ export const getServerSideProps: GetServerSideProps<{
     }
   })
 
-  const deputeslegacy = (
-    await dbLegacy
-      .selectFrom('parlementaire')
-      .select([
-        'id',
-        'slug',
-        'nom',
-        'nom_de_famille',
-        'nom_circo',
-        'fin_mandat',
-      ])
-      .execute()
-  ).map(row => {
-    const { fin_mandat, ...rest } = row
-    return {
-      ...rest,
-      mandatOngoing: fin_mandat === null,
-    }
-  })
   const newDeputesWithGroup = await addLatestGroupToDeputes(newdeputes)
-  // const groupesData = sortGroupes(
-  //   buildGroupesData(
-  //     newDeputesWithGroup
-  //       .filter(_ => _.mandatOngoing)
-  //       .filter(latestGroupIsNotNull),
-  //   ),
-  // )
+  const groupesData = sortGroupes(
+    buildGroupesData(
+      newDeputesWithGroup
+        .filter(_ => _.mandatOngoing)
+        .filter(latestGroupIsNotNull),
+    ),
+    true,
+  )
   return {
     props: {
       data: {
         deputes: newDeputesWithGroup,
-        groupesData: [],
+        groupesData,
       },
     },
   }
