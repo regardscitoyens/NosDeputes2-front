@@ -18,11 +18,11 @@ export type WithLatestGroup<D> = D & {
 
 // For a given type of depute D, fetch for each of them their latest group
 // and add it as a new field
-export async function addLatestGroupToDeputes<D extends { id: number }>(
+export async function addLatestGroupToDeputes<D extends { uid: string }>(
   deputes: D[],
 ): Promise<WithLatestGroupOrNull<D>[]> {
   const latestGroupsMap = await fetchLatestGroupsForDeputeIds(
-    deputes.map(_ => _.id),
+    deputes.map(_ => _.uid),
   )
 
   return deputes.map(depute => {
