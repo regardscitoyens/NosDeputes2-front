@@ -8,9 +8,9 @@ export type Depute = WithLatestGroupOrNull<{
   uid: string
   slug: string
   full_name: string
-  circoDepartement: string
-  circoNumber: number
-  dateOfBirth: string
+  circo_departement: string
+  circo_number: number
+  date_of_birth: string
   debut_mandat: string
   fin_mandat: string | null
   urls: { label: string; url: string }[]

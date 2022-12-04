@@ -32,8 +32,8 @@ function LinksBlock({ depute }: types.Props) {
 }
 
 function InformationsBlock({ depute }: types.Props) {
-  const age = getAge(depute.dateOfBirth)
-  const dateNaissanceFormatted = formatDate(depute.dateOfBirth)
+  const age = getAge(depute.date_of_birth)
+  const dateNaissanceFormatted = formatDate(depute.date_of_birth)
   const mandatStartFormatted = formatDate(depute.debut_mandat)
   return (
     <div className="bg-slate-200  px-8 py-4 shadow-md">
@@ -267,6 +267,12 @@ function getOrdinalSuffixFeminine(n: number) {
 }
 
 export function Page({ depute }: types.Props) {
+  console.log(
+    '@@@ depute',
+    depute,
+    depute.circo_departement,
+    addPrefixToDepartement(depute.circo_departement),
+  )
   return (
     <div className="grid grid-cols-12 gap-4">
       <h1 className="col-span-full  text-center text-2xl">
@@ -274,9 +280,9 @@ export function Page({ depute }: types.Props) {
           {depute.full_name}
           <GroupeBadge groupe={depute.latestGroup} />
         </span>
-        député de la {depute.circoNumber}
-        <sup>{getOrdinalSuffixFeminine(depute.circoNumber)}</sup>{' '}
-        circonscription {addPrefixToDepartement(depute.circoDepartement)}
+        député de la {depute.circo_number}
+        <sup>{getOrdinalSuffixFeminine(depute.circo_number)}</sup>{' '}
+        circonscription {addPrefixToDepartement(depute.circo_departement)}
       </h1>
       <div className="col-span-2">
         <Image

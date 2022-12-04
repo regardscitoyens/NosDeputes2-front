@@ -85,7 +85,6 @@ export const getServerSideProps: GetServerSideProps<{
   const slug = context.query.slug as string
   /* 
   champs restants, à faire :
-  nom_circo
   num_circo
   debut_mandat
   fin_mandat
@@ -101,7 +100,9 @@ export const getServerSideProps: GetServerSideProps<{
       await sql<{
         uid: string
         full_name: string
-        dateOfBirth: string // TODO parse la date
+        date_of_birth: string // TODO parse la date
+        circo_departement: string
+        circo_number: number
       }>`
 SELECT
   acteurs.uid AS uid,
@@ -110,7 +111,9 @@ SELECT
   	' ',
   	acteurs.data->'etatCivil'->'ident'->>'nom'
   ) AS full_name,
-  acteurs.data->'etatCivil'->'infoNaissance'->>'dateNais' AS dateOfBirth
+  acteurs.data->'etatCivil'->'infoNaissance'->>'dateNais' AS date_of_birth,
+  mandats.data->'election'->'lieu'->>'departement' AS circo_departement,
+  (mandats.data->'election'->'lieu'->>'numCirco')::int AS circo_number
 FROM acteurs
 INNER JOIN nosdeputes_deputes
   ON nosdeputes_deputes.uid = acteurs.uid
@@ -129,36 +132,7 @@ WHERE
       notFound: true,
     }
   }
-  // const baseDepute = await dbLegacy
-  //   .selectFrom('parlementaire')
-  //   .select([
-  //     'id',
-  //     'slug',
-  //     'nom',
-  //     'nom_circo',
-  //     'num_circo',
-  //     'date_naissance',
-  //     'profession',
-  //     'debut_mandat',
-  //     'fin_mandat',
-  //     'id_an',
-  //     'sexe',
-  //     'sites_web',
-  //     'url_an',
-  //     'collaborateurs',
-  //     'mails',
-  //     'adresses',
-  //     'top',
-  //   ])
-  //   .where('slug', '=', slug)
-  //   .executeTakeFirst()
-  // if (!baseDepute) {
-  //   return {
-  //     notFound: true,
-  //   }
-  // }
-  // we query everything, not ideal but acceptable for now
-  // TODO rework that
+
   const deputeWithLatestGroup = await addLatestGroupToDepute(depute)
 
   // const {
@@ -194,8 +168,6 @@ WHERE
 
   const returnedDepute: types.Depute = {
     slug,
-    circoDepartement: '',
-    circoNumber: 0,
     debut_mandat: '',
     fin_mandat: null,
     urls: [],
