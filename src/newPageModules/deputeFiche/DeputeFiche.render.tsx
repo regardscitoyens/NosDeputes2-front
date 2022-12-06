@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { GroupeBadge } from '../../components/GroupeBadge'
+import { GroupeBadge } from '../../components/NewGroupeBadge'
 import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
 import {
@@ -32,6 +32,7 @@ function LinksBlock({ depute }: types.Props) {
 }
 
 function InformationsBlock({ depute }: types.Props) {
+  console.log(depute)
   const age = getAge(depute.date_of_birth)
   const dateNaissanceFormatted = formatDate(depute.date_of_birth)
   const mandatStartFormatted = formatDate(depute.debut_mandat)
@@ -267,12 +268,7 @@ function getOrdinalSuffixFeminine(n: number) {
 }
 
 export function Page({ depute }: types.Props) {
-  console.log(
-    '@@@ depute',
-    depute,
-    depute.circo_departement,
-    addPrefixToDepartement(depute.circo_departement),
-  )
+  console.log('@@ depute', depute.date_of_birth)
   return (
     <div className="grid grid-cols-12 gap-4">
       <h1 className="col-span-full  text-center text-2xl">
