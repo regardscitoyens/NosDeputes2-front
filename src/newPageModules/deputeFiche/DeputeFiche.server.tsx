@@ -85,14 +85,19 @@ export const getServerSideProps: GetServerSideProps<{
   const slug = context.query.slug as string
   /* 
   champs restants, à faire :
-  num_circo
-  debut_mandat
-  fin_mandat
+  
   sites_web
   collaborateurs
   mails
   adresses
   top
+
+  const amendements = await queryDeputeAmendementsSummary(baseDepute.id)
+  const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
+  const votes = await queryDeputeVotes(baseDepute.id, 5)
+
+  debut_mandat / fin_mandat => c'est compliqué, il peut y avoir plusieurs mandats dans la même législature, il faudrait tous les afficher, et aussi les mandats dans les législatures précédente !
+  
   */
 
   const depute =
@@ -100,7 +105,7 @@ export const getServerSideProps: GetServerSideProps<{
       await sql<{
         uid: string
         full_name: string
-        date_of_birth: string // TODO parse la date
+        date_of_birth: string
         circo_departement: string
         circo_number: number
       }>`
@@ -134,37 +139,6 @@ WHERE
   }
 
   const deputeWithLatestGroup = await addLatestGroupToDepute(depute)
-
-  // const {
-  //   url_an,
-  //   sites_web,
-  //   nom,
-  //   collaborateurs,
-  //   mails,
-  //   adresses,
-  //   top,
-  //   ...restOfDepute
-  // } = deputeWithLatestGroup
-
-  // const amendements = await queryDeputeAmendementsSummary(baseDepute.id)
-  // const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
-  // const votes = await queryDeputeVotes(baseDepute.id, 5)
-
-  // const finalDepute: types.Depute = {
-  //   ...restOfDepute,
-  //   nom,
-  //   top: PHPUnserialize.unserialize(top) as types.Metrics,
-  //   urls: parseDeputeUrls({ url_an, sites_web, nom }),
-  //   collaborateurs: parseCollaborateurs(collaborateurs),
-  //   mails: parseMails(mails),
-  //   adresses: parseAdresses(adresses),
-  //   date_naissance: deputeWithLatestGroup.date_naissance.toISOString(),
-  //   debut_mandat: deputeWithLatestGroup.debut_mandat.toISOString(),
-  //   fin_mandat: deputeWithLatestGroup.fin_mandat?.toISOString() ?? null,
-  //   amendements,
-  //   responsabilites,
-  //   votes,
-  // }
 
   const returnedDepute: types.Depute = {
     slug,

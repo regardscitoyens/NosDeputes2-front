@@ -197,7 +197,8 @@ export function addPrefixToDepartement(nomDepartement: string) {
     Yvelines: 'des',
   }
   const prefix = prefixes[nomDepartement] ?? 'de'
-  return `${prefix} ${nomDepartement}`
+  const space = prefix.endsWith(`'`) ? '' : ' '
+  return `${prefix}${space}${nomDepartement}`
 }
 
 export type FonctionInOrganisme =
