@@ -3,7 +3,7 @@ import { AmendementsDeputeSummary } from '../../lib/queryDeputeAmendementsSummar
 import { DeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 import { DeputeVotes } from '../../lib/queryDeputeVotes'
 
-export type Props = { depute: Depute }
+export type Props = { depute: Depute; currentLegislature: number }
 export type Depute = WithLatestGroupOrNull<{
   uid: string
   slug: string
@@ -11,8 +11,8 @@ export type Depute = WithLatestGroupOrNull<{
   circo_departement: string
   circo_number: number
   date_of_birth: string
-  debut_mandat: string
-  fin_mandat: string | null
+  mandats_this_legislature: Mandat[]
+  legislatures: number[]
   urls: { label: string; url: string }[]
   collaborateurs: { name: string }[]
   mails: string[]
@@ -21,6 +21,8 @@ export type Depute = WithLatestGroupOrNull<{
   responsabilites: DeputeResponsabilites
   top: Metrics
   votes: DeputeVotes
+  // TMP, for quick forwarding and log in front
+  other?: any
 }>
 export type DeputeCollaborateur = { name: string }
 export type DeputeUrls = { label: string; url: string }[]
@@ -30,6 +32,14 @@ export type MetricValues = {
   rank: number
   max_rank: number
 }
+export type Mandat = {
+  uid: string
+  cause_mandat: string
+  cause_fin: string | null
+  date_debut: string
+  date_fin: string | null
+}
+
 export const metricNames = [
   'semaines_presence',
   'commission_presences',

@@ -2,11 +2,7 @@ import { sql } from 'kysely'
 import { GetServerSideProps } from 'next'
 import PHPUnserialize from 'php-unserialize'
 import { dbReleve } from '../../lib/dbReleve'
-import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
 import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
-import { queryDeputeAmendementsSummary } from '../../lib/queryDeputeAmendementsSummary'
-import { queryDeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
-import { queryDeputeVotes } from '../../lib/queryDeputeVotes'
 import * as types from './DeputeFiche.types'
 
 function parseMails(mails: string): string[] {
@@ -79,10 +75,57 @@ function parseDeputeUrls(depute: {
   return urls
 }
 
+async function queryLegislatures(
+  deputeUid: string,
+): Promise<types.Depute['legislatures']> {
+  return (
+    await sql<{ legislature: number }>`
+SELECT DISTINCT 
+  (organes.data->>'legislature')::int AS legislature
+FROM acteurs
+INNER JOIN mandats
+  ON mandats.acteur_uid = acteurs.uid
+INNER JOIN organes
+  ON organes.uid = ANY(mandats.organes_uids)
+WHERE
+  organes.data->>'codeType' = 'ASSEMBLEE'
+  AND acteurs.uid = ${deputeUid}
+ORDER BY legislature
+  `.execute(dbReleve)
+  ).rows.map(_ => _.legislature)
+}
+
+async function queryMandatsOfDeputesInLegislature(
+  deputeUid: string,
+  legislature: number,
+): Promise<types.Mandat[]> {
+  return (
+    await sql<types.Mandat>`
+SELECT
+  mandats.uid,
+  mandats.data->'election'->>'causeMandat' AS cause_mandat,
+  mandats.data->'mandature'->>'causeFin' AS cause_fin,
+  mandats.data->>'dateDebut' AS date_debut,
+  mandats.data->>'dateFin' AS date_fin
+FROM acteurs
+INNER JOIN mandats
+  ON mandats.acteur_uid = acteurs.uid
+INNER JOIN organes
+  ON organes.uid = ANY(mandats.organes_uids)
+WHERE
+  organes.data->>'codeType' = 'ASSEMBLEE'
+  AND organes.data->>'legislature' = ${legislature}
+  AND acteurs.uid = ${deputeUid}
+  ORDER BY date_debut
+    `.execute(dbReleve)
+  ).rows
+}
+
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
   const slug = context.query.slug as string
+  const currentLegislature = 16
   /* 
   champs restants, à faire :
   
@@ -96,7 +139,6 @@ export const getServerSideProps: GetServerSideProps<{
   const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
   const votes = await queryDeputeVotes(baseDepute.id, 5)
 
-  debut_mandat / fin_mandat => c'est compliqué, il peut y avoir plusieurs mandats dans la même législature, il faudrait tous les afficher, et aussi les mandats dans les législatures précédente !
   
   */
 
@@ -128,7 +170,7 @@ INNER JOIN organes
   ON organes.uid = ANY(mandats.organes_uids)
 WHERE
   organes.data->>'codeType' = 'ASSEMBLEE'
-  AND organes.data->>'legislature' = ${CURRENT_LEGISLATURE}
+  AND organes.data->>'legislature' = ${currentLegislature}
   AND slug = ${slug}
 `.execute(dbReleve)
     ).rows[0] ?? null
@@ -140,10 +182,16 @@ WHERE
 
   const deputeWithLatestGroup = await addLatestGroupToDepute(depute)
 
+  const mandats_this_legislature = await queryMandatsOfDeputesInLegislature(
+    depute.uid,
+    currentLegislature,
+  )
+  const legislatures = await queryLegislatures(depute.uid)
+
   const returnedDepute: types.Depute = {
     slug,
-    debut_mandat: '',
-    fin_mandat: null,
+    mandats_this_legislature,
+    legislatures,
     urls: [],
     collaborateurs: [],
     mails: [],
@@ -182,6 +230,7 @@ WHERE
   return {
     props: {
       data: {
+        currentLegislature,
         depute: returnedDepute,
       },
     },
