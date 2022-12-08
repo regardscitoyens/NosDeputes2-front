@@ -1,7 +1,7 @@
 import Image from 'next/image'
 
-import { GroupeBadge } from '../../components/NewGroupeBadge'
 import { MyLink } from '../../components/MyLink'
+import { GroupeBadge } from '../../components/NewGroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
   addPrefixToDepartement,
@@ -12,7 +12,7 @@ import { DeputeResponsabilite } from '../../lib/queryDeputeResponsabilites'
 import { formatDate, getAge } from '../../lib/utils'
 import * as types from './DeputeFiche.types'
 
-function LinksBlock({ depute }: types.Props) {
+function LinksBlock({ depute }: { depute: types.Depute }) {
   return (
     (depute.urls && (
       <ul className="list-none">
@@ -31,23 +31,93 @@ function LinksBlock({ depute }: types.Props) {
   )
 }
 
-function InformationsBlock({ depute }: types.Props) {
-  console.log(depute)
+function LegislaturesBlock({ depute, currentLegislature }: types.Props) {
+  const { legislatures } = depute
+  if (legislatures.length == 1) {
+    return <p>C'est sa première législature</p>
+  }
+  const otherLegislatures = legislatures.filter(_ => _ != currentLegislature)
+  console.log('@@@ other', { otherLegislatures, currentLegislature })
+  if (
+    otherLegislatures.length === 1 &&
+    otherLegislatures[0] === currentLegislature - 1
+  ) {
+    return <p>Était déjà député(e) dans la législature précédente</p>
+  }
+  return (
+    <p>
+      A aussi été député(e) dans les{' '}
+      {otherLegislatures.map(_ => `${_}ème`).join(', ')} législatures{' '}
+    </p>
+  )
+}
+
+function MandatsBlock({ depute }: { depute: types.Depute }) {
+  const mandats = depute.mandats_this_legislature
+  if (mandats.length === 0) {
+    // should not happen, but let's be safe
+    return null
+  }
+  const lastMandat = mandats[mandats.length - 1]
+  const previousMandats = mandats.filter(_ => _ != lastMandat)
+
+  const { date_debut, date_fin } = lastMandat
+  const f = formatDate
+  // Note : pour voir un cas d'un député avec 3 mandats dans la même législature :
+  // cf alain-vidalies dans la legislature 14
+  return (
+    <div>
+      <p>
+        {date_fin
+          ? `Était en mandat du ${f(date_debut)} au ${f(date_fin)}`
+          : `Mandat en cours depuis le ${f(date_debut)}`}
+      </p>
+      {previousMandats.length > 0 && (
+        <div>
+          Était déjà en mandat dans cette législature :
+          <ul>
+            {previousMandats.map(mandat => (
+              <li key={mandat.uid}>
+                Du {f(mandat.date_debut)}
+                {mandat.date_fin && ` au ${f(mandat.date_fin)}`}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <Todo inline>
+        S'il n'est plus en mandat, l'afficher clairement quelque part
+      </Todo>
+      <br />
+      <Todo inline>
+        Si un seul mandat précédent, l'afficher plus proprement (ne pas démarrer
+        une liste avec 1 élément)
+      </Todo>
+      <br />
+      <Todo inline>
+        Afficher explicitement quand la date est depuis le début de la
+        législature : "Est en mandat depuis le début de la législature
+        (XX/XX/XXXX)"
+      </Todo>
+      <br />
+      <Todo inline>
+        Identifier les principales raisons de mandats fractionnés (départ au
+        gouvernement, remplacement par le suppléant, etc.) et les afficher
+        clairement avec wording dédié
+      </Todo>
+    </div>
+  )
+}
+
+function InformationsBlock(props: types.Props) {
+  const { depute } = props
   const age = getAge(depute.date_of_birth)
   const dateNaissanceFormatted = formatDate(depute.date_of_birth)
-  const mandatStartFormatted = formatDate(depute.debut_mandat)
   return (
     <div className="bg-slate-200  px-8 py-4 shadow-md">
       <h2 className="font-bold">Informations</h2>
       <div className="py-4">
         <ul className="list-none">
-          <li>
-            {depute.fin_mandat
-              ? `Était en mandat du ${mandatStartFormatted} au ${formatDate(
-                  depute.fin_mandat,
-                )}`
-              : `Mandat en cours depuis le ${mandatStartFormatted}`}
-          </li>
           <li>
             Né(e) le {dateNaissanceFormatted} ({age} ans)
           </li>
@@ -58,11 +128,13 @@ function InformationsBlock({ depute }: types.Props) {
         </ul>
         <LinksBlock depute={depute} />
       </div>
+      <MandatsBlock {...{ depute }} />
+      <LegislaturesBlock {...props} />
     </div>
   )
 }
 
-function ContactBlock({ depute }: types.Props) {
+function ContactBlock({ depute }: { depute: types.Depute }) {
   return (
     <div className="bg-slate-200  px-8 py-4 shadow-md">
       <h2 className="font-bold">Contact</h2>
@@ -106,7 +178,7 @@ function ContactBlock({ depute }: types.Props) {
   )
 }
 
-function MetricsBlock({ depute }: types.Props) {
+function MetricsBlock({ depute }: { depute: types.Depute }) {
   const metricsToDisplay: types.MetricName[] = [
     'semaines_presence',
     'commission_presences',
@@ -134,7 +206,7 @@ function MetricsBlock({ depute }: types.Props) {
   )
 }
 
-function Amendements({ depute }: types.Props) {
+function Amendements({ depute }: { depute: types.Depute }) {
   return (
     <div className="bg-slate-200 px-8 py-4 shadow-md">
       <h2 className="font-bold">Ses amendements</h2>
@@ -183,7 +255,7 @@ function VotePosition({
 
   return <span className={`font-bold ${color}`}>{position}</span>
 }
-function Votes({ depute }: types.Props) {
+function Votes({ depute }: { depute: types.Depute }) {
   const votes = depute.votes || []
   return (
     <div className="bg-slate-200 px-8 py-4 shadow-md">
@@ -211,7 +283,7 @@ function Votes({ depute }: types.Props) {
 const isResponsabiliteParlementaire = (responsabilite: DeputeResponsabilite) =>
   responsabilite.type === 'parlementaire'
 
-function Responsabilites({ depute }: types.Props) {
+function Responsabilites({ depute }: { depute: types.Depute }) {
   const sections = [
     {
       title: 'Commission permanente',
@@ -267,8 +339,8 @@ function getOrdinalSuffixFeminine(n: number) {
   return n === 1 ? 'ère' : `ème`
 }
 
-export function Page({ depute }: types.Props) {
-  console.log('@@ depute', depute.date_of_birth)
+export function Page(props: types.Props) {
+  const { depute, currentLegislature } = props
   return (
     <div className="grid grid-cols-12 gap-4">
       <h1 className="col-span-full  text-center text-2xl">
@@ -294,12 +366,12 @@ export function Page({ depute }: types.Props) {
         <Todo>graph de présence et participation</Todo>
       </div>
       <div className="col-span-full">
-        <MetricsBlock {...{ depute }} />
+        <MetricsBlock {...{ depute, currentLegislature }} />
       </div>
 
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-8">
-          <InformationsBlock {...{ depute }} />
+          <InformationsBlock {...props} />
           <ContactBlock {...{ depute }} />
           <Responsabilites {...{ depute }} />
           <Todo>
