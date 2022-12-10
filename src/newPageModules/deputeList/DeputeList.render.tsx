@@ -19,7 +19,6 @@ function prepare3Cols<A>(array: A[]) {
   ]
 }
 export function Page({ deputes, groupesData }: types.Props) {
-  console.log('@@@@ groupesData', groupesData)
   const deputesEnCoursMandat = deputes.filter(_ => _.mandatOngoing)
   const deputesByLetter = groupBy(deputes, _ => _.firstLetterLastName[0])
   // TODO fix le tri alphabétique et le groupement par lettre : attention aux accents

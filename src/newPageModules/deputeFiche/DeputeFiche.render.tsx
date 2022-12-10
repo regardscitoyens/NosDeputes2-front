@@ -1,3 +1,4 @@
+import { isUndefined } from 'lodash'
 import Image from 'next/image'
 
 import { MyLink } from '../../components/MyLink'
@@ -9,27 +10,8 @@ import {
   isCommissionPermanente,
 } from '../../lib/hardcodedData'
 import { DeputeResponsabilite } from '../../lib/queryDeputeResponsabilites'
-import { formatDate, getAge } from '../../lib/utils'
+import { formatDate, getAge, notUndefined } from '../../lib/utils'
 import * as types from './DeputeFiche.types'
-
-function LinksBlock({ depute }: { depute: types.Depute }) {
-  return (
-    (depute.urls && (
-      <ul className="list-none">
-        {depute.urls.map(({ label, url }) => {
-          return (
-            <li key={url}>
-              <MyLink targetBlank href={url}>
-                {label}
-              </MyLink>
-            </li>
-          )
-        })}
-      </ul>
-    )) ||
-    null
-  )
-}
 
 function LegislaturesBlock({ depute, currentLegislature }: types.Props) {
   const { legislatures } = depute
@@ -37,7 +19,6 @@ function LegislaturesBlock({ depute, currentLegislature }: types.Props) {
     return <p>C'est sa première législature</p>
   }
   const otherLegislatures = legislatures.filter(_ => _ != currentLegislature)
-  console.log('@@@ other', { otherLegislatures, currentLegislature })
   if (
     otherLegislatures.length === 1 &&
     otherLegislatures[0] === currentLegislature - 1
@@ -126,7 +107,6 @@ function InformationsBlock(props: types.Props) {
             <GroupeBadge groupe={depute.latestGroup} />
           </li>
         </ul>
-        <LinksBlock depute={depute} />
       </div>
       <MandatsBlock {...{ depute }} />
       <LegislaturesBlock {...props} />
@@ -135,34 +115,145 @@ function InformationsBlock(props: types.Props) {
 }
 
 function ContactBlock({ depute }: { depute: types.Depute }) {
+  //https://stackoverflow.com/questions/33577448/is-there-a-way-to-do-array-join-in-react
+  function joinWithCommas(arr: JSX.Element[]): JSX.Element {
+    return arr.reduce<JSX.Element>((acc, x, idx) => {
+      if (idx === 0) return x
+      return (
+        <>
+          {acc}, {x}
+        </>
+      )
+    }, <></>)
+  }
+
+  const {
+    emails,
+    twitter,
+    facebook,
+    instagram,
+    linkedin,
+    site_internet,
+    postales,
+  } = depute.adresses
+  // see marietta-karamanli for an example with multiple emails
   return (
     <div className="bg-slate-200  px-8 py-4 shadow-md">
       <h2 className="font-bold">Contact</h2>
       <div className="py-4">
-        {(depute.mails.length && (
-          <ul className="list-none">
-            <b>Par email :</b>
-            <br />
-            {depute.mails.map(mail => (
-              <li key={mail}>
-                <MyLink targetBlank href={`mailto:${mail}`}>
-                  {mail}
-                </MyLink>
+        <ul className="list-none">
+          {emails.length > 0 && (
+            <li>
+              Email :{' '}
+              {joinWithCommas(
+                emails.map(s => (
+                  <MyLink key={s} targetBlank href={`mailto:${s}`}>
+                    {s}
+                  </MyLink>
+                )),
+              )}
+            </li>
+          )}
+          {twitter.length > 0 && (
+            <li>
+              Twitter{' '}
+              {joinWithCommas(
+                twitter.map(s => (
+                  <MyLink key={s} href={`https://twitter.com/${s}`} targetBlank>
+                    @{s}
+                  </MyLink>
+                )),
+              )}
+            </li>
+          )}
+          {facebook.length > 0 && (
+            <li>
+              Facebook{' '}
+              {joinWithCommas(
+                facebook.map(s => {
+                  const shortUrl = `facebook.com/${s}`
+                  const url = `https://www.facebook.com/${s}`
+                  return (
+                    <MyLink key={s} href={url} targetBlank>
+                      {shortUrl}
+                    </MyLink>
+                  )
+                }),
+              )}
+            </li>
+          )}
+          {instagram.length > 0 && (
+            <li>
+              Instagram{' '}
+              {joinWithCommas(
+                instagram.map(s => {
+                  const shortUrl = `instagram.com/${s}`
+                  const url = `https://www.instagram.com/${s}`
+                  return (
+                    <MyLink key={s} href={url} targetBlank>
+                      {shortUrl}
+                    </MyLink>
+                  )
+                }),
+              )}
+            </li>
+          )}
+          {linkedin.length > 0 && (
+            <li>
+              Linkedin{' '}
+              {joinWithCommas(
+                linkedin.map(s => {
+                  const shortUrl = `linkedin.com${s}`
+                  const url = `https://www.linkedin.com${s}`
+                  return (
+                    <MyLink key={s} href={url} targetBlank>
+                      {shortUrl}
+                    </MyLink>
+                  )
+                }),
+              )}
+            </li>
+          )}
+          {site_internet.length > 0 && (
+            <li>
+              Site internet{' '}
+              {joinWithCommas(
+                site_internet.map(s => {
+                  const shortUrl = `linkedin.com${s}`
+                  const url = `https://www.linkedin.com${s}`
+                  return (
+                    <MyLink key={s} href={url} targetBlank>
+                      {shortUrl}
+                    </MyLink>
+                  )
+                }),
+              )}
+            </li>
+          )}
+          {postales.map(value => {
+            const adresseStr = [
+              value.numeroRue,
+              value.nomRue,
+              value.complementAdresse,
+              value.codePostal,
+              value.ville,
+            ]
+              .filter(notUndefined)
+              .join(' ')
+
+            return (
+              <li key={'postales-' + value.uid}>
+                Adresse postale ({value.typeLibelle}): {value.intitule}{' '}
+                {adresseStr}
               </li>
-            ))}
-          </ul>
-        )) ||
-          null}
-        {(depute.adresses.length && (
-          <ul className="list-none">
-            <b>Par courrier :</b>
-            <br />
-            {depute.adresses.map(adresse => (
-              <li key={adresse}>{adresse}</li>
-            ))}
-          </ul>
-        )) ||
-          null}
+            )
+          })}
+        </ul>
+        <Todo inline>
+          Soigner l'affichage des adresses, en faire des liens, gérer s'il y en
+          a plusieurs du même type, gérer tous les types d'adresse postale
+        </Todo>
+
         {(depute.collaborateurs.length && (
           <ul className="list-none">
             <b>Collaborateurs :</b>
@@ -341,6 +432,7 @@ function getOrdinalSuffixFeminine(n: number) {
 
 export function Page(props: types.Props) {
   const { depute, currentLegislature } = props
+  console.log('@@@ depute', depute)
   return (
     <div className="grid grid-cols-12 gap-4">
       <h1 className="col-span-full  text-center text-2xl">

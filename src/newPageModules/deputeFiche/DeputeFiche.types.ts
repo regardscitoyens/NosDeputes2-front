@@ -13,10 +13,28 @@ export type Depute = WithLatestGroupOrNull<{
   date_of_birth: string
   mandats_this_legislature: Mandat[]
   legislatures: number[]
-  urls: { label: string; url: string }[]
   collaborateurs: { name: string }[]
-  mails: string[]
-  adresses: string[]
+  adresses: {
+    emails: string[]
+    facebook: string[]
+    linkedin: string[]
+    instagram: string[]
+    twitter: string[]
+    site_internet: string[]
+    postales: {
+      uid: string
+      typeLibelle:
+        | 'Adresse officielle'
+        | 'Adresse publiée de circonscription'
+        | 'Adresse publiée pour Paris ou sa région'
+      ville?: string
+      nomRue?: string
+      numeroRue?: string
+      codePostal?: string
+      intitule?: string
+      complementAdresse?: string
+    }[]
+  }
   amendements: AmendementsDeputeSummary
   responsabilites: DeputeResponsabilites
   top: Metrics
@@ -57,3 +75,49 @@ export const metricNames = [
   'questions_orales',
 ] as const
 export type MetricName = typeof metricNames[number]
+
+export type AdresseInDb = (
+  | {
+      xsiType: 'AdresseMail_Type'
+      typeLibelle: 'Mèl'
+      valElec: string
+    }
+  | {
+      xsiType: 'AdressePostale_Type'
+      typeLibelle:
+        | 'Adresse officielle'
+        | 'Adresse publiée de circonscription'
+        | 'Adresse publiée pour Paris ou sa région'
+      ville?: string
+      nomRue?: string
+      numeroRue?: string
+      codePostal?: string
+      intitule?: string
+      complementAdresse?: string
+      poids: string // les poids les plus petits doivent apparaitre en premier
+    }
+  | {
+      xsiType: 'AdresseSiteWeb_Type'
+      typeLibelle:
+        | 'Facebook'
+        | 'Linkedin'
+        | 'Instagram'
+        | 'Twitter'
+        | 'Site internet'
+        | 'Url sénateur'
+      valElec: string
+    }
+  | {
+      xsiType: 'AdresseSiteWeb_Type'
+      typeLibelle: 'Linkedin'
+      valElec: string
+    }
+  | {
+      xsiType: 'AdresseTelephonique_Type'
+      typeLibelle: 'Téléphone' | 'Télécopie' | 'Contact presse'
+      adresseDeRattachement?: string
+      valElec: string
+    }
+) & {
+  uid: string
+}

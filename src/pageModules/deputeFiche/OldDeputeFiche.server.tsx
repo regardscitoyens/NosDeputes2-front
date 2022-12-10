@@ -5,7 +5,7 @@ import { queryDeputeAmendementsSummary } from '../../lib/queryDeputeAmendementsS
 import { queryDeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 import { queryDeputeVotes } from '../../lib/queryDeputeVotes'
 import { dbLegacy } from '../../lib/dbLegacy'
-import * as types from './DeputeFiche.types'
+import * as types from './OldDeputeFiche.types'
 
 function parseMails(mails: string): string[] {
   const unserialized = PHPUnserialize.unserialize(mails)

@@ -4,14 +4,8 @@ import PHPUnserialize from 'php-unserialize'
 import { dbReleve } from '../../lib/dbReleve'
 import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
 import * as types from './DeputeFiche.types'
-
-function parseMails(mails: string): string[] {
-  const unserialized = PHPUnserialize.unserialize(mails)
-  if (unserialized) {
-    return Object.values(unserialized) as string[]
-  }
-  return []
-}
+import sortBy from 'lodash/sortBy'
+import uniq from 'lodash/uniq'
 
 function parseCollaborateurs(
   collaborateursStr: string,
@@ -27,52 +21,82 @@ function parseCollaborateurs(
   return []
 }
 
-function parseAdresses(adresses: string): string[] {
-  const unserialized = PHPUnserialize.unserialize(adresses)
-  if (unserialized) {
-    return Object.values(PHPUnserialize.unserialize(adresses)) as string[]
+// TODO il faudrait faire tout ça dans la CLI, avant de les mettre en DB
+function organiseAdresses(
+  adressesFromDb: types.AdresseInDb[],
+): types.Depute['adresses'] {
+  function readPlainValues(
+    typeLibelle:
+      | 'Facebook'
+      | 'Instagram'
+      | 'Linkedin'
+      | 'Mèl'
+      | 'Twitter'
+      | 'Site internet',
+  ): string[] {
+    const values = adressesFromDb
+      .filter(_ => _.typeLibelle == typeLibelle)
+      .map(adresse => {
+        // we can narrow the type
+        const adresse2 = adresse as types.AdresseInDb & {
+          typeLibelle: typeof typeLibelle
+        }
+        return adresse2.valElec
+      })
+      .filter(_ => _.length > 0)
+    return uniq(values).sort()
   }
-  return []
-}
 
-function parseDeputeUrls(depute: {
-  url_an: string
-  sites_web: string | null
-  nom: string
-}): types.DeputeUrls {
-  const urls = [] as types.DeputeUrls
-  const { url_an, sites_web, nom } = depute
-  urls.push({
-    label: 'Fiche Assemblée nationale',
-    url: url_an,
-  })
-  // todo: use real wikipedia url
-  urls.push({
-    label: 'Page wikipedia',
-    url: `https://fr.wikipedia.org/wiki/${encodeURIComponent(nom)}`,
-  })
-  if (sites_web) {
-    const unserialized = PHPUnserialize.unserialize(sites_web)
-    if (unserialized) {
-      const sites = PHPUnserialize.unserialize(sites_web) as {
-        [k: string]: string
+  function removeArobaseIfPresent(values: string[]): string[] {
+    return values.map(_ => {
+      if (_[0] === '@') {
+        return _.substring(1)
       }
-      urls.push(
-        ...Object.values(sites).map(url => {
-          const label = url.match(/facebook/)
-            ? 'Page facebook'
-            : url.match(/twitter/)
-            ? `Compte twitter : ${url.replace(/^.*\/(.*)$/, '@$1')}`
-            : `Site web : ${url}`
-          return {
-            label,
-            url,
-          }
-        }),
-      )
-    }
+      return _
+    })
   }
-  return urls
+  function removeTrailingComma(s: string | undefined): string | undefined {
+    if (s?.endsWith(',')) {
+      return s.substring(0, s.length - 1)
+    }
+    return s
+  }
+
+  const emails = readPlainValues('Mèl').map(_ => _.toLowerCase())
+  // TODO pour facebook, supprimer les prefixes avant un slash
+  // car certains ont renseigné directement facebook.com/toto au lieu de toto
+  const facebook = readPlainValues('Facebook')
+  const linkedin = readPlainValues('Linkedin')
+  const instagram = readPlainValues('Instagram')
+  const twitter = removeArobaseIfPresent(readPlainValues('Twitter'))
+  const site_internet = readPlainValues('Site internet')
+
+  const postales = sortBy(
+    adressesFromDb
+      .filter(_ => _.xsiType === 'AdressePostale_Type')
+      .map(adresse => {
+        // we can narrow the type
+        return adresse as types.AdresseInDb & {
+          xsiType: 'AdressePostale_Type'
+        }
+      }),
+    _ => parseInt(_.poids, 10),
+  ).map(({ poids, xsiType, intitule, nomRue, complementAdresse, ...rest }) => ({
+    ...rest,
+    intitule: removeTrailingComma(intitule),
+    complementAdresse: removeTrailingComma(complementAdresse),
+    nomRue: removeTrailingComma(nomRue),
+  }))
+
+  return {
+    emails,
+    facebook,
+    instagram,
+    linkedin,
+    twitter,
+    site_internet,
+    postales,
+  }
 }
 
 async function queryLegislatures(
@@ -139,7 +163,6 @@ export const getServerSideProps: GetServerSideProps<{
   const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
   const votes = await queryDeputeVotes(baseDepute.id, 5)
 
-  
   */
 
   const depute =
@@ -148,6 +171,7 @@ export const getServerSideProps: GetServerSideProps<{
         uid: string
         full_name: string
         date_of_birth: string
+        adresses: types.AdresseInDb[]
         circo_departement: string
         circo_number: number
       }>`
@@ -159,6 +183,7 @@ SELECT
   	acteurs.data->'etatCivil'->'ident'->>'nom'
   ) AS full_name,
   acteurs.data->'etatCivil'->'infoNaissance'->>'dateNais' AS date_of_birth,
+  acteurs.data->'adresses' AS adresses,
   mandats.data->'election'->'lieu'->>'departement' AS circo_departement,
   (mandats.data->'election'->'lieu'->>'numCirco')::int AS circo_number
 FROM acteurs
@@ -192,10 +217,7 @@ WHERE
     slug,
     mandats_this_legislature,
     legislatures,
-    urls: [],
     collaborateurs: [],
-    mails: [],
-    adresses: [],
     amendements: {
       Adopté: { proposes: 0, signes: 0 },
       Indéfini: { proposes: 0, signes: 0 },
@@ -225,6 +247,7 @@ WHERE
     },
     votes: [],
     ...deputeWithLatestGroup,
+    adresses: organiseAdresses(deputeWithLatestGroup.adresses),
   }
 
   return {
