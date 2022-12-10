@@ -28,11 +28,11 @@ export type Depute = WithLatestGroupOrNull<{
         | 'Adresse publiée de circonscription'
         | 'Adresse publiée pour Paris ou sa région'
       ville?: string
-      nomRue?: string
+      nomRue?: string | null
       numeroRue?: string
       codePostal?: string
-      intitule?: string
-      complementAdresse?: string
+      intitule?: string | null
+      complementAdresse?: string | null
     }[]
   }
   amendements: AmendementsDeputeSummary

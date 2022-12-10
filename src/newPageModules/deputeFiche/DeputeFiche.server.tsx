@@ -1,25 +1,10 @@
 import { sql } from 'kysely'
+import sortBy from 'lodash/sortBy'
+import uniq from 'lodash/uniq'
 import { GetServerSideProps } from 'next'
-import PHPUnserialize from 'php-unserialize'
 import { dbReleve } from '../../lib/dbReleve'
 import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
 import * as types from './DeputeFiche.types'
-import sortBy from 'lodash/sortBy'
-import uniq from 'lodash/uniq'
-
-function parseCollaborateurs(
-  collaborateursStr: string,
-): types.DeputeCollaborateur[] {
-  const unserialized = PHPUnserialize.unserialize(collaborateursStr)
-  if (unserialized) {
-    const collaborateurs = Object.values(unserialized) as string[]
-    // todo: resolve collaborateur link
-    return collaborateurs.map(name => ({
-      name,
-    }))
-  }
-  return []
-}
 
 // TODO il faudrait faire tout ça dans la CLI, avant de les mettre en DB
 function organiseAdresses(
@@ -55,11 +40,11 @@ function organiseAdresses(
       return _
     })
   }
-  function removeTrailingComma(s: string | undefined): string | undefined {
+  function removeTrailingComma(s: string | undefined): string | null {
     if (s?.endsWith(',')) {
       return s.substring(0, s.length - 1)
     }
-    return s
+    return s ?? null
   }
 
   const emails = readPlainValues('Mèl').map(_ => _.toLowerCase())
@@ -148,17 +133,13 @@ WHERE
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
-  const slug = context.query.slug as string
+  const slug = context.query.slug_or_legislature as string
   const currentLegislature = 16
   /* 
   champs restants, à faire :
   
-  sites_web
   collaborateurs
-  mails
-  adresses
   top
-
   const amendements = await queryDeputeAmendementsSummary(baseDepute.id)
   const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
   const votes = await queryDeputeVotes(baseDepute.id, 5)
