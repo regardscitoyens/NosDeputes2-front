@@ -10,7 +10,7 @@ import {
 } from '../../lib/hardcodedData'
 import { DeputeResponsabilite } from '../../lib/queryDeputeResponsabilites'
 import { formatDate, getAge } from '../../lib/utils'
-import * as types from './DeputeFiche.types'
+import * as types from './OldDeputeFiche.types'
 
 function LinksBlock({ depute }: types.Props) {
   return (

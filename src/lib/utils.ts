@@ -32,6 +32,12 @@ export function notNull<A>(value: A | null): value is A {
   return value !== null
 }
 
+
+export function notUndefined<A>(value: A | undefined): value is A {
+  return value !== undefined
+}
+
+
 export function readFromEnv(name: string): string {
   const value = process.env[name]
   if (value === undefined) {
