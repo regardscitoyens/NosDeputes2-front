@@ -3,6 +3,15 @@ import sortBy from 'lodash/sortBy'
 export const FIRST_LEGISLATURE = 12
 export const LATEST_LEGISLATURE = 16
 
+// Legislatures 14 and before didn't have colors
+// we hardcode them
+// TODO remplir cette map. Pour cela, faire d'abord la page avec les membre de chaque groupe, comme ça on pourra facilement voir les correspondances approximatives entre les groupes d'une législature à l'autre
+// ou ptêt faire un script avec la CLI pour automatiquement mesurer les degrés de ressemblance
+// ou juste prendre les vieilles couleurs de NosDeputes
+export const colorsForGroupsOldLegislatures: { [acronym: string]: string } = {
+  NI: '#8D949A',
+}
+
 export function isCommissionPermanente(slug: string) {
   return [
     'commission-des-lois-constitutionnelles-de-la-legislation-et-de-l-administration-generale-de-la-republique',

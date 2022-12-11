@@ -41,7 +41,13 @@ export const getServerSideProps: GetServerSideProps<{
   const legislatureNavigationUrls = range(
     FIRST_LEGISLATURE,
     LATEST_LEGISLATURE,
-  ).map(l => [l, `/deputes${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`])
+  ).map(l => {
+    const tuple: [number, string] = [
+      l,
+      `/deputes${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
+    ]
+    return tuple
+  })
 
   const rows = await dbReleve
     .selectFrom('acteurs')
@@ -87,7 +93,10 @@ export const getServerSideProps: GetServerSideProps<{
     }
   })
 
-  const newDeputesWithGroup = await addLatestGroupToDeputes(newdeputes)
+  const newDeputesWithGroup = await addLatestGroupToDeputes(
+    newdeputes,
+    legislature,
+  )
   const groupesData = sortGroupes(
     buildGroupesData(
       newDeputesWithGroup

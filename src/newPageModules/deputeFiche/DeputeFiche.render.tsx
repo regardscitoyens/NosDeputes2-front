@@ -15,15 +15,23 @@ import {
   Responsabilites,
   Votes,
 } from './lib/variousBlocks'
+import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 
 function getOrdinalSuffixFeminine(n: number) {
   return n === 1 ? 'ère' : `ème`
 }
 
 export function Page(props: types.Props) {
-  const { depute, legislature: currentLegislature } = props
+  const { depute, legislature, legislatureNavigationUrls } = props
+  console.log('@@@@ depute', depute)
   return (
     <div className="grid grid-cols-12 gap-4">
+      <div className="col-span-full">
+        <LegislatureNavigation
+          currentLegislature={legislature}
+          urlsByLegislature={legislatureNavigationUrls}
+        />
+      </div>
       <h1 className="col-span-full  text-center text-2xl">
         <span className="font-bold">
           {depute.full_name}
@@ -47,7 +55,7 @@ export function Page(props: types.Props) {
         <Todo>graph de présence et participation</Todo>
       </div>
       <div className="col-span-full">
-        <MetricsBlock {...{ depute, currentLegislature }} />
+        <MetricsBlock {...{ depute, currentLegislature: legislature }} />
       </div>
 
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
