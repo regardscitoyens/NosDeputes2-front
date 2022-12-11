@@ -10,9 +10,30 @@ import {
 import { buildGroupesData } from '../../lib/newBuildGroupesData'
 import * as PageTypes from './DeputeList.types'
 
+// two ways to access this page :
+// /deputes
+// /deputes/15
+type Query = {
+  legislature?: string
+}
+
 export const getServerSideProps: GetServerSideProps<{
   data: PageTypes.Props
 }> = async context => {
+  const query = context.query as Query
+  const legislatureInPath = query.legislature
+    ? parseInt(query.legislature, 10)
+    : null
+  if (legislatureInPath === LATEST_LEGISLATURE) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/deputes`,
+      },
+    }
+  }
+  const legislature = legislatureInPath ?? LATEST_LEGISLATURE
+
   const rows = await dbReleve
     .selectFrom('acteurs')
     .innerJoin('mandats', 'acteurs.uid', 'mandats.acteur_uid')
@@ -22,11 +43,7 @@ export const getServerSideProps: GetServerSideProps<{
     // left join to be tolerant if the mapping to NosDeputes misses some data
     .leftJoin('nosdeputes_deputes', 'nosdeputes_deputes.uid', 'acteurs.uid')
     .where(sql`organes.data->>'codeType'`, '=', 'ASSEMBLEE')
-    .where(
-      sql`organes.data->>'legislature'`,
-      '=',
-      LATEST_LEGISLATURE.toString(),
-    )
+    .where(sql`organes.data->>'legislature'`, '=', legislature.toString())
     .select('acteurs.uid')
     .select('nosdeputes_deputes.slug')
     .select(
