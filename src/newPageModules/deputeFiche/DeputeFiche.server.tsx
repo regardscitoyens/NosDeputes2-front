@@ -4,6 +4,7 @@ import { dbReleve } from '../../lib/dbReleve'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
 import * as types from './DeputeFiche.types'
+import range from 'lodash/range'
 
 async function queryLegislatures(
   deputeUid: string,
@@ -136,7 +137,10 @@ WHERE
     }
   }
 
-  const deputeWithLatestGroup = await addLatestGroupToDepute(depute)
+  const deputeWithLatestGroup = await addLatestGroupToDepute(
+    depute,
+    legislature,
+  )
 
   const mandats_this_legislature = await queryMandatsOfDeputesInLegislature(
     depute.uid,
@@ -147,6 +151,13 @@ WHERE
       ? mandats_this_legislature[mandats_this_legislature.length - 1]
       : null
   const legislatures = await queryLegislatures(depute.uid)
+  const legislatureNavigationUrls = legislatures.map(l => {
+    const tuple: [number, string] = [
+      l,
+      `/${slug}${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
+    ]
+    return tuple
+  })
   // Théoriquement le député pourrait avoir eu des collaborateurs différents dans le mandat précédent dans la même législature
   // Mais en fait il semble que dans l'open data, les collaborateurs ne sont présents que pour le dernier mandat de la dernière législature (donc les données disparaissent ?)
   const collaborateursInLastMandat = lastMandat
@@ -194,6 +205,7 @@ WHERE
     props: {
       data: {
         legislature,
+        legislatureNavigationUrls,
         depute: returnedDepute,
       },
     },

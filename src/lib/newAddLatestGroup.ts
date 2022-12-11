@@ -2,7 +2,7 @@ import { sql } from 'kysely'
 import groupBy from 'lodash/groupBy'
 import mapValues from 'lodash/mapValues'
 import { dbReleve } from './dbReleve'
-import { LATEST_LEGISLATURE } from './hardcodedData'
+import { colorsForGroupsOldLegislatures } from './hardcodedData'
 
 export type LatestGroupForDepute = {
   nom: string
@@ -26,17 +26,20 @@ export type WithLatestGroup<D> = D & {
 
 export async function addLatestGroupToDepute<D extends { uid: string }>(
   depute: D,
+  legislature: number,
 ): Promise<WithLatestGroupOrNull<D>> {
-  return (await addLatestGroupToDeputes([depute]))[0]
+  return (await addLatestGroupToDeputes([depute], legislature))[0]
 }
 
 // For a given type of depute D, fetch for each of them their latest group
 // and add it as a new field
 export async function addLatestGroupToDeputes<D extends { uid: string }>(
   deputes: D[],
+  legislature: number,
 ): Promise<WithLatestGroupOrNull<D>[]> {
   const latestGroupsMap = await fetchLatestGroupsForDeputeIds(
     deputes.map(_ => _.uid),
+    legislature,
   )
 
   return deputes.map(depute => {
@@ -58,15 +61,14 @@ export function latestGroupIsNotNull<D>(
 ): depute is WithLatestGroup<D> {
   return depute.latestGroup !== null
 }
-
-export async function fetchLatestGroupsForDeputeIds(
+async function fetchLatestGroupsForDeputeIds(
   deputeUids: string[],
+  legislature: number,
 ): Promise<{ [uid: string]: LatestGroupForDepute | null }> {
   // https://stackoverflow.com/questions/16914098/how-to-select-id-with-max-date-group-by-category-in-postgresql
 
   const { rows } = await sql<{
     acteur_uid: string
-    organe_uid: string | null
     fonction: NewFonctionInGroupe | null
     acronym: string | null
     nom: string
@@ -75,7 +77,6 @@ export async function fetchLatestGroupsForDeputeIds(
 SELECT
 DISTINCT ON (acteurs.uid)
   acteurs.uid as acteur_uid,
-  organes.data as organe_uid,
   mandats.data->'infosQualite'->>'codeQualite' as fonction,
   organes.data->>'libelleAbrev' as acronym,
   organes.data->>'libelle' as nom,
@@ -87,7 +88,7 @@ INNER JOIN organes
   ON organes.uid = ANY(mandats.organes_uids)
 WHERE
   organes.data->>'codeType' = 'GP'
-  AND organes.data->>'legislature' = ${LATEST_LEGISLATURE.toString()}
+  AND organes.data->>'legislature' = ${legislature.toString()}
   AND acteurs.uid IN (${sql.join(deputeUids)})
 ORDER BY
   acteurs.uid, mandats.data->>'dateFin' DESC NULLS FIRST,
@@ -98,11 +99,12 @@ ORDER BY
     groupBy(rows, _ => _.acteur_uid),
     ([row]) => {
       const { fonction, acronym, nom, color } = row
-      const latestGroup: LatestGroupForDepute | null =
-        fonction == null || acronym == null || nom == null || color == null
-          ? null
-          : { fonction, acronym, nom, color }
-      return latestGroup
+      if (fonction == null || acronym == null || nom == null) {
+        return null
+      }
+      const colorWithFallback =
+        color ?? colorsForGroupsOldLegislatures[acronym] ?? '#FFFFFF'
+      return { fonction, acronym, nom, color: colorWithFallback }
     },
   )
   return res
