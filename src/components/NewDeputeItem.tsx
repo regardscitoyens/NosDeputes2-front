@@ -37,7 +37,7 @@ export function NewDeputeItem({
             {fullName}
           </MyLink>
         ) : (
-          { fullName }
+          fullName
         )}
       </>
       <GroupeBadgeWithFonction groupe={latestGroup} />
