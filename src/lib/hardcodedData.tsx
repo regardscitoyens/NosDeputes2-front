@@ -1,5 +1,6 @@
 import sortBy from 'lodash/sortBy'
 
+export const FIRST_LEGISLATURE = 12
 export const LATEST_LEGISLATURE = 16
 
 export function isCommissionPermanente(slug: string) {

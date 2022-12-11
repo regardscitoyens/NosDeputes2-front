@@ -2,13 +2,18 @@ import { sql } from 'kysely'
 import sortBy from 'lodash/sortBy'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
-import { LATEST_LEGISLATURE, sortGroupes } from '../../lib/hardcodedData'
+import {
+  FIRST_LEGISLATURE,
+  LATEST_LEGISLATURE,
+  sortGroupes,
+} from '../../lib/hardcodedData'
 import {
   addLatestGroupToDeputes,
   latestGroupIsNotNull,
 } from '../../lib/newAddLatestGroup'
 import { buildGroupesData } from '../../lib/newBuildGroupesData'
 import * as PageTypes from './DeputeList.types'
+import range from 'lodash/range'
 
 // two ways to access this page :
 // /deputes
@@ -33,6 +38,10 @@ export const getServerSideProps: GetServerSideProps<{
     }
   }
   const legislature = legislatureInPath ?? LATEST_LEGISLATURE
+  const legislatureNavigationUrls = range(
+    FIRST_LEGISLATURE,
+    LATEST_LEGISLATURE,
+  ).map(l => [l, `/deputes${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`])
 
   const rows = await dbReleve
     .selectFrom('acteurs')
@@ -90,6 +99,8 @@ export const getServerSideProps: GetServerSideProps<{
   return {
     props: {
       data: {
+        legislature,
+        legislatureNavigationUrls,
         deputes: newDeputesWithGroup,
         groupesData,
       },

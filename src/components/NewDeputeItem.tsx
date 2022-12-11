@@ -1,6 +1,7 @@
 import { GroupeBadgeWithFonction } from './NewGroupeBadge'
 import { MyLink } from './MyLink'
 import { NewFonctionInGroupe } from '../lib/newAddLatestGroup'
+import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
 
 type Props = {
   depute: {
@@ -14,11 +15,13 @@ type Props = {
       color: string
     } | null
   }
+  legislature: number
   displayCirco?: boolean
 }
 
 export function NewDeputeItem({
   depute: { slug, latestGroup, fullName, circoDepartement, mandatOngoing },
+  legislature,
   displayCirco,
 }: Props) {
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
@@ -27,7 +30,9 @@ export function NewDeputeItem({
       <>
         {slug ? (
           <MyLink
-            href={`/${slug}`}
+            href={`/${slug}${
+              legislature !== LATEST_LEGISLATURE ? `/${legislature}` : ''
+            }`}
             className={
               mandatOngoing
                 ? 'font-normal'
