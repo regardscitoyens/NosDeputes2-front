@@ -258,7 +258,7 @@ function ContactBlock({ depute }: { depute: types.Depute }) {
             <b>Collaborateurs :</b>
             <br />
             {depute.collaborateurs.map(collaborateur => (
-              <li key={collaborateur.name}>{collaborateur.name}</li>
+              <li key={collaborateur.full_name}>{collaborateur.full_name}</li>
             ))}
           </ul>
         )) ||
