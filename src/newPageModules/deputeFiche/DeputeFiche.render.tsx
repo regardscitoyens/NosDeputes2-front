@@ -230,28 +230,34 @@ function ContactBlock({ depute }: { depute: types.Depute }) {
             </li>
           )}
           {adresses_postales.map(value => {
-            const adresseStr = [
-              value.numeroRue,
-              value.nomRue,
-              value.complementAdresse,
-              value.codePostal,
-              value.ville,
-            ]
-              .filter(notUndefined)
-              .join(' ')
+            const {
+              uid,
+              typeLibelle,
+              intitule,
+              numeroRue,
+              nomRue,
+              complementAdresse,
+              codePostal,
+              ville,
+            } = value
 
             return (
-              <li key={'postales-' + value.uid}>
-                Adresse postale ({value.typeLibelle}): {value.intitule}{' '}
-                {adresseStr}
+              <li key={'postales-' + uid} className="my-2">
+                <p className="font-bold">{typeLibelle}:</p>
+                <div className="">
+                  {intitule ? <p>{intitule}</p> : null}
+                  {numeroRue || nomRue ? (
+                    <p>{[numeroRue, nomRue].filter(notUndefined).join(' ')}</p>
+                  ) : null}
+                  {complementAdresse ? <p>{complementAdresse}</p> : null}
+                  {codePostal || ville ? (
+                    <p>{[codePostal, ville].filter(notUndefined).join(' ')}</p>
+                  ) : null}
+                </div>
               </li>
             )
           })}
         </ul>
-        <Todo inline>
-          Soigner l'affichage des adresses, en faire des liens, gérer s'il y en
-          a plusieurs du même type, gérer tous les types d'adresse postale
-        </Todo>
 
         {(depute.collaborateurs.length && (
           <ul className="list-none">
