@@ -4,6 +4,8 @@ import { GroupeData } from '../../lib/newBuildGroupesData'
 export type Props = {
   deputes: Depute[]
   groupesData: GroupeData[]
+  legislature: number
+  legislatureNavigationUrls: [number, string][]
 }
 export type Depute = WithLatestGroupOrNull<DeputeSimple>
 export type DeputeSimple = {

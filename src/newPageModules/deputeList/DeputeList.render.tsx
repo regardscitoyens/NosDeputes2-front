@@ -6,6 +6,7 @@ import { GrapheRepartitionGroupes } from '../../components/NewGrapheRepartitionG
 import { NewDeputeItem } from '../../components/NewDeputeItem'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DeputeList.types'
+import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 
 function prepare3Cols<A>(array: A[]) {
   const len = array.length
@@ -18,12 +19,21 @@ function prepare3Cols<A>(array: A[]) {
     array.slice(nbInFirstCols * 2),
   ]
 }
-export function Page({ deputes, groupesData }: types.Props) {
+export function Page({
+  deputes,
+  groupesData,
+  legislature,
+  legislatureNavigationUrls,
+}: types.Props) {
   const deputesEnCoursMandat = deputes.filter(_ => _.mandatOngoing)
   const deputesByLetter = groupBy(deputes, _ => _.firstLetterLastName[0])
   // TODO fix le tri alphabétique et le groupement par lettre : attention aux accents
   return (
     <div>
+      <LegislatureNavigation
+        currentLegislature={legislature}
+        urlsByLegislature={legislatureNavigationUrls}
+      />
       <h1 className="text-2xl">Tous les députés par ordre alphabétique</h1>
       <p>
         Retrouvez ici l'ensemble des {deputes.length} députés de la{' '}
@@ -46,7 +56,10 @@ export function Page({ deputes, groupesData }: types.Props) {
                       {deputes.map(depute => {
                         return (
                           <li key={depute.uid}>
-                            <NewDeputeItem {...{ depute }} displayCirco />
+                            <NewDeputeItem
+                              {...{ depute, legislature }}
+                              displayCirco
+                            />
                           </li>
                         )
                       })}
