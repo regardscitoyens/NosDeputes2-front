@@ -1,4 +1,3 @@
-import { isUndefined } from 'lodash'
 import Image from 'next/image'
 
 import { MyLink } from '../../components/MyLink'
@@ -133,8 +132,8 @@ function ContactBlock({ depute }: { depute: types.Depute }) {
     facebook,
     instagram,
     linkedin,
-    site_internet,
-    postales,
+    sites_internet,
+    adresses_postales,
   } = depute.adresses
   // see marietta-karamanli for an example with multiple emails
   return (
@@ -214,11 +213,11 @@ function ContactBlock({ depute }: { depute: types.Depute }) {
               )}
             </li>
           )}
-          {site_internet.length > 0 && (
+          {sites_internet.length > 0 && (
             <li>
               Site internet{' '}
               {joinWithCommas(
-                site_internet.map(s => {
+                sites_internet.map(s => {
                   const shortUrl = `linkedin.com${s}`
                   const url = `https://www.linkedin.com${s}`
                   return (
@@ -230,7 +229,7 @@ function ContactBlock({ depute }: { depute: types.Depute }) {
               )}
             </li>
           )}
-          {postales.map(value => {
+          {adresses_postales.map(value => {
             const adresseStr = [
               value.numeroRue,
               value.nomRue,

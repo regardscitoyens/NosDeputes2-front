@@ -14,33 +14,11 @@ export type Depute = WithLatestGroupOrNull<{
   mandats_this_legislature: Mandat[]
   legislatures: number[]
   collaborateurs: { name: string }[]
-  adresses: {
-    emails: string[]
-    facebook: string[]
-    linkedin: string[]
-    instagram: string[]
-    twitter: string[]
-    site_internet: string[]
-    postales: {
-      uid: string
-      typeLibelle:
-        | 'Adresse officielle'
-        | 'Adresse publiée de circonscription'
-        | 'Adresse publiée pour Paris ou sa région'
-      ville?: string
-      nomRue?: string | null
-      numeroRue?: string
-      codePostal?: string
-      intitule?: string | null
-      complementAdresse?: string | null
-    }[]
-  }
+  adresses: Adresses
   amendements: AmendementsDeputeSummary
   responsabilites: DeputeResponsabilites
   top: Metrics
   votes: DeputeVotes
-  // TMP, for quick forwarding and log in front
-  other?: any
 }>
 export type DeputeCollaborateur = { name: string }
 export type DeputeUrls = { label: string; url: string }[]
@@ -76,48 +54,24 @@ export const metricNames = [
 ] as const
 export type MetricName = typeof metricNames[number]
 
-export type AdresseInDb = (
-  | {
-      xsiType: 'AdresseMail_Type'
-      typeLibelle: 'Mèl'
-      valElec: string
-    }
-  | {
-      xsiType: 'AdressePostale_Type'
-      typeLibelle:
-        | 'Adresse officielle'
-        | 'Adresse publiée de circonscription'
-        | 'Adresse publiée pour Paris ou sa région'
-      ville?: string
-      nomRue?: string
-      numeroRue?: string
-      codePostal?: string
-      intitule?: string
-      complementAdresse?: string
-      poids: string // les poids les plus petits doivent apparaitre en premier
-    }
-  | {
-      xsiType: 'AdresseSiteWeb_Type'
-      typeLibelle:
-        | 'Facebook'
-        | 'Linkedin'
-        | 'Instagram'
-        | 'Twitter'
-        | 'Site internet'
-        | 'Url sénateur'
-      valElec: string
-    }
-  | {
-      xsiType: 'AdresseSiteWeb_Type'
-      typeLibelle: 'Linkedin'
-      valElec: string
-    }
-  | {
-      xsiType: 'AdresseTelephonique_Type'
-      typeLibelle: 'Téléphone' | 'Télécopie' | 'Contact presse'
-      adresseDeRattachement?: string
-      valElec: string
-    }
-) & {
-  uid: string
+export type Adresses = {
+  emails: string[]
+  facebook: string[]
+  linkedin: string[]
+  instagram: string[]
+  twitter: string[]
+  sites_internet: string[]
+  adresses_postales: {
+    uid: string
+    typeLibelle:
+      | 'Adresse officielle'
+      | 'Adresse publiée de circonscription'
+      | 'Adresse publiée pour Paris ou sa région'
+    ville?: string
+    nomRue?: string | null
+    numeroRue?: string
+    codePostal?: string
+    intitule?: string | null
+    complementAdresse?: string | null
+  }[]
 }

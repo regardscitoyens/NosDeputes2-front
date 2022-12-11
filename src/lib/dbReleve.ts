@@ -1,5 +1,6 @@
 import { Kysely, PostgresDialect } from 'kysely'
 import { Pool } from 'pg'
+import { Adresses } from '../newPageModules/deputeFiche/DeputeFiche.types'
 import { readFromEnv, readIntFromEnv } from './utils'
 
 export type DbConnectionPool = Kysely<ReleveTables>
@@ -22,6 +23,7 @@ export interface ReleveTables {
   acteurs: {
     uid: string
     data: unknown
+    adresses: Adresses
   }
   organes: {
     uid: string
