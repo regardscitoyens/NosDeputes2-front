@@ -4,7 +4,7 @@ import { GroupeBadge } from '../../components/NewGroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
   addPrefixToDepartement,
-  CURRENT_LEGISLATURE,
+  LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import { ContactBlock } from './lib/ContactsBlock'
 import * as types from './DeputeFiche.types'
@@ -21,8 +21,7 @@ function getOrdinalSuffixFeminine(n: number) {
 }
 
 export function Page(props: types.Props) {
-  const { depute, currentLegislature } = props
-  console.log('@@@ depute', depute)
+  const { depute, legislature: currentLegislature } = props
   return (
     <div className="grid grid-cols-12 gap-4">
       <h1 className="col-span-full  text-center text-2xl">
@@ -36,7 +35,7 @@ export function Page(props: types.Props) {
       </h1>
       <div className="col-span-2">
         <Image
-          src={`/deputes/photos/${CURRENT_LEGISLATURE}/${depute.uid.substring(
+          src={`/deputes/photos/${LATEST_LEGISLATURE}/${depute.uid.substring(
             2,
           )}.jpg`}
           alt={`Photo du (de la) député(e)} ${depute.full_name}`}

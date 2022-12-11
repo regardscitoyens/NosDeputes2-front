@@ -1,5 +1,5 @@
 import { MyLink } from '../../components/MyLink'
-import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import { formatDate } from '../../lib/utils'
 import * as types from './ScrutinList.types'
 
@@ -17,7 +17,7 @@ function ScrutinList({
         const finalTitre = law ? titre.replace(law, '...') : titre
         return (
           <li key={id} className="odd:bg-slate-200 ">
-            <MyLink href={`/${CURRENT_LEGISLATURE}/scrutin/${id}`}>
+            <MyLink href={`/${LATEST_LEGISLATURE}/scrutin/${id}`}>
               {formatDate(date)} : {finalTitre}
             </MyLink>
           </li>

@@ -2,7 +2,7 @@ import { sql } from 'kysely'
 import sortBy from 'lodash/sortBy'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
-import { CURRENT_LEGISLATURE, sortGroupes } from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE, sortGroupes } from '../../lib/hardcodedData'
 import {
   addLatestGroupToDeputes,
   latestGroupIsNotNull,
@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps<{
     .where(
       sql`organes.data->>'legislature'`,
       '=',
-      CURRENT_LEGISLATURE.toString(),
+      LATEST_LEGISLATURE.toString(),
     )
     .select('acteurs.uid')
     .select('nosdeputes_deputes.slug')

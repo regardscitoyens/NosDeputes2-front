@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { ReactNode } from 'react'
-import { CURRENT_LEGISLATURE } from '../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
 import { MyLink } from './MyLink'
 
 type Props = {
@@ -54,7 +54,7 @@ export function Layout({ children }: Props) {
               />
               <BasicLink to="/dossiers/plus" label="Les plus discutés" />
               <BasicLink
-                to={`/${CURRENT_LEGISLATURE}/scrutins`}
+                to={`/${LATEST_LEGISLATURE}/scrutins`}
                 label="Les scrutins publics"
               />
             </div>

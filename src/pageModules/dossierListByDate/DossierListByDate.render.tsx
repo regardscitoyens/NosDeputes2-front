@@ -1,5 +1,5 @@
 import { MyLink } from '../../components/MyLink'
-import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DossierListByDate.types'
 
 export function Page({ sectionsGroupedByMonth }: types.Props) {
@@ -19,7 +19,7 @@ export function Page({ sectionsGroupedByMonth }: types.Props) {
                     section
                   return (
                     <li key={id}>
-                      <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${id}`}>
+                      <MyLink href={`/${LATEST_LEGISLATURE}/dossier/${id}`}>
                         <span className="text-slate-500">{min_date}</span>{' '}
                         {titre_complet}{' '}
                         {nb_interventions > 0 ? (

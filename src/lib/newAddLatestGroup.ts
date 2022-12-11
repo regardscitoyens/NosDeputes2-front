@@ -2,7 +2,7 @@ import { sql } from 'kysely'
 import groupBy from 'lodash/groupBy'
 import mapValues from 'lodash/mapValues'
 import { dbReleve } from './dbReleve'
-import { CURRENT_LEGISLATURE } from './hardcodedData'
+import { LATEST_LEGISLATURE } from './hardcodedData'
 
 export type LatestGroupForDepute = {
   nom: string
@@ -87,7 +87,7 @@ INNER JOIN organes
   ON organes.uid = ANY(mandats.organes_uids)
 WHERE
   organes.data->>'codeType' = 'GP'
-  AND organes.data->>'legislature' = ${CURRENT_LEGISLATURE.toString()}
+  AND organes.data->>'legislature' = ${LATEST_LEGISLATURE.toString()}
   AND acteurs.uid IN (${sql.join(deputeUids)})
 ORDER BY
   acteurs.uid, mandats.data->>'dateFin' DESC NULLS FIRST,

@@ -1,7 +1,6 @@
 import sortBy from 'lodash/sortBy'
 
-// TODO gérer les différentes législatures
-export const CURRENT_LEGISLATURE = 16
+export const LATEST_LEGISLATURE = 16
 
 export function isCommissionPermanente(slug: string) {
   return [
