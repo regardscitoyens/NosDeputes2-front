@@ -13,15 +13,14 @@ export type Depute = WithLatestGroupOrNull<{
   date_of_birth: string
   mandats_this_legislature: Mandat[]
   legislatures: number[]
-  collaborateurs: { name: string }[]
+  collaborateurs: Collaborateur[]
   adresses: Adresses
   amendements: AmendementsDeputeSummary
   responsabilites: DeputeResponsabilites
   top: Metrics
   votes: DeputeVotes
 }>
-export type DeputeCollaborateur = { name: string }
-export type DeputeUrls = { label: string; url: string }[]
+export type Collaborateur = { full_name: string }
 export type Metrics = { [m in MetricName]: MetricValues }
 export type MetricValues = {
   value: number

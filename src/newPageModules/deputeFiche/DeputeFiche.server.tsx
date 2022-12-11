@@ -50,6 +50,25 @@ WHERE
   ).rows
 }
 
+async function queryCollaborateursInMandat(
+  mandatUid: string,
+): Promise<types.Collaborateur[]> {
+  return (
+    await sql<{ full_name: string }>`
+WITH subquery AS (
+  SELECT
+    jsonb_array_elements(mandats.data->'collaborateurs') AS collaborateurs
+  FROM mandats
+  WHERE
+    mandats.uid = ${mandatUid}
+)
+SELECT 
+  CONCAT(collaborateurs->>'prenom', ' ', collaborateurs->>'nom') AS full_name
+FROM subquery
+    `.execute(dbReleve)
+  ).rows
+}
+
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
@@ -58,7 +77,7 @@ export const getServerSideProps: GetServerSideProps<{
   /* 
   champs restants, à faire :
   
-  collaborateurs
+  
   top
   const amendements = await queryDeputeAmendementsSummary(baseDepute.id)
   const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
@@ -112,13 +131,22 @@ WHERE
     depute.uid,
     currentLegislature,
   )
+  const lastMandat =
+    mandats_this_legislature.length > 0
+      ? mandats_this_legislature[mandats_this_legislature.length - 1]
+      : null
   const legislatures = await queryLegislatures(depute.uid)
+  // Théoriquement le député pourrait avoir eu des collaborateurs différents dans le mandat précédent dans la même législature
+  // Mais en fait il semble que dans l'open data, les collaborateurs ne sont présents que pour le dernier mandat de la dernière législature (donc les données disparaissent ?)
+  const collaborateursInLastMandat = lastMandat
+    ? await queryCollaborateursInMandat(lastMandat.uid)
+    : []
 
   const returnedDepute: types.Depute = {
     slug,
     mandats_this_legislature,
     legislatures,
-    collaborateurs: [],
+    collaborateurs: collaborateursInLastMandat,
     amendements: {
       Adopté: { proposes: 0, signes: 0 },
       Indéfini: { proposes: 0, signes: 0 },

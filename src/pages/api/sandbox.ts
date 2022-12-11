@@ -31,18 +31,29 @@ export default async function sandbox(
   `.execute(dbReleve)
   ).rows
 
+  const mandats = (
+    await sql<{
+      data: any
+    }>`
+  SELECT
+    mandats.data,
+    mandats.data->'collaborateurs' AS collaborateurs
+  FROM  mandats
+  INNER JOIN organes
+    ON organes.uid = ANY(mandats.organes_uids)
+  WHERE
+    organes.data->>'codeType' = 'ASSEMBLEE'
+  `.execute(dbReleve)
+  ).rows
+
   let fields: string[] = []
-  allDeputesAllLegislatures.forEach(depute => {
-    const adresses = depute.adresses ?? []
-    let selection: any[] = []
-    adresses.forEach(adresse => {
-      if (adresse.xsiType === 'AdressePostale_Type') {
-        // fields.push(...Object.keys(adresse))
-        console.log('-', adresse.complementAdresse)
-      }
+  mandats.forEach(mandat => {
+    const collaborateurs = mandat.data.collaborateurs ?? []
+    collaborateurs.forEach((collab: any) => {
+      fields.push(collab.qualite)
     })
   })
-  //   console.log(sortAndUniq(fields))
+  console.log(sortAndUniq(fields))
 
   //   const fields = allDeputesAllLegislatures.flatMap(depute => {
   //     return (depute.adresses ?? []).map(
