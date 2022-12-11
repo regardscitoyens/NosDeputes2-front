@@ -3,7 +3,7 @@ import { AmendementsDeputeSummary } from '../../lib/queryDeputeAmendementsSummar
 import { DeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 import { DeputeVotes } from '../../lib/queryDeputeVotes'
 
-export type Props = { depute: Depute; currentLegislature: number }
+export type Props = { depute: Depute; legislature: number }
 export type Depute = WithLatestGroupOrNull<{
   uid: string
   slug: string

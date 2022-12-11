@@ -1,6 +1,7 @@
 import { sql } from 'kysely'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
 import * as types from './DeputeFiche.types'
 
@@ -69,21 +70,31 @@ FROM subquery
   ).rows
 }
 
+// two ways to access this page :
+// /nicolas-dupont-aignant
+// /nicolas-dupont-aignant/15
+type Query = {
+  slug_or_legislature: string // here it's actually the slug
+  legislature?: string
+}
+
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
-  const slug = context.query.slug_or_legislature as string
-  const currentLegislature = 16
-  /* 
-  champs restants, à faire :
-  
-  
-  top
-  const amendements = await queryDeputeAmendementsSummary(baseDepute.id)
-  const responsabilites = await queryDeputeResponsabilites(baseDepute.id)
-  const votes = await queryDeputeVotes(baseDepute.id, 5)
-
-  */
+  const query = context.query as Query
+  const slug = query.slug_or_legislature
+  const legislatureInPath = query.legislature
+    ? parseInt(query.legislature, 10)
+    : null
+  if (legislatureInPath === LATEST_LEGISLATURE) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/${slug}`,
+      },
+    }
+  }
+  const legislature = legislatureInPath ?? LATEST_LEGISLATURE
 
   const depute =
     (
@@ -115,7 +126,7 @@ INNER JOIN organes
   ON organes.uid = ANY(mandats.organes_uids)
 WHERE
   organes.data->>'codeType' = 'ASSEMBLEE'
-  AND organes.data->>'legislature' = ${currentLegislature}
+  AND organes.data->>'legislature' = ${legislature}
   AND slug = ${slug}
 `.execute(dbReleve)
     ).rows[0] ?? null
@@ -129,7 +140,7 @@ WHERE
 
   const mandats_this_legislature = await queryMandatsOfDeputesInLegislature(
     depute.uid,
-    currentLegislature,
+    legislature,
   )
   const lastMandat =
     mandats_this_legislature.length > 0
@@ -142,6 +153,7 @@ WHERE
     ? await queryCollaborateursInMandat(lastMandat.uid)
     : []
 
+  // TODO requêter tous les champs que j'ai hardcodé ici temporairement
   const returnedDepute: types.Depute = {
     slug,
     mandats_this_legislature,
@@ -181,7 +193,7 @@ WHERE
   return {
     props: {
       data: {
-        currentLegislature,
+        legislature,
         depute: returnedDepute,
       },
     },

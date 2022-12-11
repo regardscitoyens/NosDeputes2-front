@@ -4,7 +4,7 @@ import { Todo } from '../../components/Todo'
 
 import { GrapheRepartitionGroupes } from '../../components/NewGrapheRepartitionGroupes'
 import { NewDeputeItem } from '../../components/NewDeputeItem'
-import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DeputeList.types'
 
 function prepare3Cols<A>(array: A[]) {
@@ -27,7 +27,7 @@ export function Page({ deputes, groupesData }: types.Props) {
       <h1 className="text-2xl">Tous les députés par ordre alphabétique</h1>
       <p>
         Retrouvez ici l'ensemble des {deputes.length} députés de la{' '}
-        {CURRENT_LEGISLATURE}ème législature (dont {deputesEnCoursMandat.length}{' '}
+        {LATEST_LEGISLATURE}ème législature (dont {deputesEnCoursMandat.length}{' '}
         en cours de mandat). Les informations relatives aux députés des
         précédentes législatures restent accessibles sur les liens suivants :
         <Todo inline>liens vers les autres législatures</Todo>

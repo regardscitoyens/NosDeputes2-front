@@ -6,7 +6,10 @@ import { DeputeResponsabilite } from '../../../lib/queryDeputeResponsabilites'
 import { formatDate, getAge } from '../../../lib/utils'
 import * as types from '../DeputeFiche.types'
 
-export function LegislaturesBlock({ depute, currentLegislature }: types.Props) {
+export function LegislaturesBlock({
+  depute,
+  legislature: currentLegislature,
+}: types.Props) {
   const { legislatures } = depute
   if (legislatures.length == 1) {
     return <p>C'est sa première législature</p>

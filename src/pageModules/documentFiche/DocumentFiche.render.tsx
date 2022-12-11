@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
-import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import { formatDate } from '../../lib/utils'
 import * as types from './DocumentFiche.types'
 
@@ -42,7 +42,7 @@ function DocumentAssocies({
           {nbAmendements ? (
             <li>
               <MyLink
-                href={`/${CURRENT_LEGISLATURE}/amendements/${document.numero}/all`}
+                href={`/${LATEST_LEGISLATURE}/amendements/${document.numero}/all`}
               >
                 Voir les {nbAmendements} amendement(s) déposé(s) sur ce texte
               </MyLink>
@@ -82,7 +82,7 @@ function DocumentRelatifs({
         <ul>
           {section ? (
             <li>
-              <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${section.id}`}>
+              <MyLink href={`/${LATEST_LEGISLATURE}/dossier/${section.id}`}>
                 Dossier : {section.titre_complet}
               </MyLink>
             </li>
@@ -132,7 +132,7 @@ export function Page(props: types.Props) {
         <p className="my-2 mt-4">Daté du {formatDate(document.date)}</p>
         {section !== null ? (
           <p className="my-2">
-            <MyLink href={`/${CURRENT_LEGISLATURE}/dossier/${section.id}`}>
+            <MyLink href={`/${LATEST_LEGISLATURE}/dossier/${section.id}`}>
               Voir le dossier correspondant
             </MyLink>
           </p>

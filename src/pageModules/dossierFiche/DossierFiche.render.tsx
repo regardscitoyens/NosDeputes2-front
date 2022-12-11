@@ -2,7 +2,7 @@ import { Todo } from '../../components/Todo'
 
 import { ReactNode } from 'react'
 import { MyLink } from '../../components/MyLink'
-import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DossierFiche.types'
 import { formatDate } from '../../lib/utils'
 
@@ -39,7 +39,7 @@ export function Page({
                 return (
                   <li key={id}>
                     <span className="mr-2 text-slate-500 ">n°{numero}</span>
-                    <MyLink href={`/${CURRENT_LEGISLATURE}/document/${id}`}>
+                    <MyLink href={`/${LATEST_LEGISLATURE}/document/${id}`}>
                       {type} {type_details} {titre}
                     </MyLink>
                   </li>
@@ -60,7 +60,7 @@ export function Page({
                 return (
                   <li key={seance.id}>
                     <MyLink
-                      href={`/${CURRENT_LEGISLATURE}/seance/${seance.id}#table_${section.id}`}
+                      href={`/${LATEST_LEGISLATURE}/seance/${seance.id}#table_${section.id}`}
                     >
                       Séance en {seance.type} du {formatDate(seance.date)} à{' '}
                       {seance.moment}
@@ -76,7 +76,7 @@ export function Page({
                 return (
                   <li key={depute.id}>
                     <MyLink
-                      href={`/${CURRENT_LEGISLATURE}/${depute.slug}/dossier/${section.id}`}
+                      href={`/${LATEST_LEGISLATURE}/${depute.slug}/dossier/${section.id}`}
                     >
                       {depute.nom}
                     </MyLink>
@@ -94,7 +94,7 @@ export function Page({
                 return (
                   <li key={id}>
                     <MyLink
-                      href={`/${CURRENT_LEGISLATURE}/seance/${seance_id}#table_${id}`}
+                      href={`/${LATEST_LEGISLATURE}/seance/${seance_id}#table_${id}`}
                     >
                       {titre}
                     </MyLink>

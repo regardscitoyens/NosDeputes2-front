@@ -1,6 +1,6 @@
 import { Todo } from '../../components/Todo'
 import { MyLink } from '../../components/MyLink'
-import { CURRENT_LEGISLATURE } from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import { formatDate } from '../../lib/utils'
 import * as types from './ScrutinFiche.types'
 
@@ -39,7 +39,7 @@ export function Page({
     votesGrouped,
   },
 }: types.Props) {
-  const sourceUrl = `https://www2.assemblee-nationale.fr/scrutins/detail/(legislature)/${CURRENT_LEGISLATURE}/(num)/${id}`
+  const sourceUrl = `https://www2.assemblee-nationale.fr/scrutins/detail/(legislature)/${LATEST_LEGISLATURE}/(num)/${id}`
   return (
     <div>
       <h1 className="text-center text-2xl">
@@ -55,7 +55,7 @@ export function Page({
           <>
             {' '}
             <MyLink
-              href={`/${CURRENT_LEGISLATURE}/seance/${seance_id}#inter_${interventionMd5}`}
+              href={`/${LATEST_LEGISLATURE}/seance/${seance_id}#inter_${interventionMd5}`}
             >
               en séance publique
             </MyLink>
