@@ -1,88 +1,8 @@
 import { sql } from 'kysely'
-import sortBy from 'lodash/sortBy'
-import uniq from 'lodash/uniq'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
 import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
 import * as types from './DeputeFiche.types'
-
-// TODO il faudrait faire tout ça dans la CLI, avant de les mettre en DB
-function organiseAdresses(
-  adressesFromDb: types.AdresseInDb[],
-): types.Depute['adresses'] {
-  function readPlainValues(
-    typeLibelle:
-      | 'Facebook'
-      | 'Instagram'
-      | 'Linkedin'
-      | 'Mèl'
-      | 'Twitter'
-      | 'Site internet',
-  ): string[] {
-    const values = adressesFromDb
-      .filter(_ => _.typeLibelle == typeLibelle)
-      .map(adresse => {
-        // we can narrow the type
-        const adresse2 = adresse as types.AdresseInDb & {
-          typeLibelle: typeof typeLibelle
-        }
-        return adresse2.valElec
-      })
-      .filter(_ => _.length > 0)
-    return uniq(values).sort()
-  }
-
-  function removeArobaseIfPresent(values: string[]): string[] {
-    return values.map(_ => {
-      if (_[0] === '@') {
-        return _.substring(1)
-      }
-      return _
-    })
-  }
-  function removeTrailingComma(s: string | undefined): string | null {
-    if (s?.endsWith(',')) {
-      return s.substring(0, s.length - 1)
-    }
-    return s ?? null
-  }
-
-  const emails = readPlainValues('Mèl').map(_ => _.toLowerCase())
-  // TODO pour facebook, supprimer les prefixes avant un slash
-  // car certains ont renseigné directement facebook.com/toto au lieu de toto
-  const facebook = readPlainValues('Facebook')
-  const linkedin = readPlainValues('Linkedin')
-  const instagram = readPlainValues('Instagram')
-  const twitter = removeArobaseIfPresent(readPlainValues('Twitter'))
-  const site_internet = readPlainValues('Site internet')
-
-  const postales = sortBy(
-    adressesFromDb
-      .filter(_ => _.xsiType === 'AdressePostale_Type')
-      .map(adresse => {
-        // we can narrow the type
-        return adresse as types.AdresseInDb & {
-          xsiType: 'AdressePostale_Type'
-        }
-      }),
-    _ => parseInt(_.poids, 10),
-  ).map(({ poids, xsiType, intitule, nomRue, complementAdresse, ...rest }) => ({
-    ...rest,
-    intitule: removeTrailingComma(intitule),
-    complementAdresse: removeTrailingComma(complementAdresse),
-    nomRue: removeTrailingComma(nomRue),
-  }))
-
-  return {
-    emails,
-    facebook,
-    instagram,
-    linkedin,
-    twitter,
-    site_internet,
-    postales,
-  }
-}
 
 async function queryLegislatures(
   deputeUid: string,
@@ -152,7 +72,7 @@ export const getServerSideProps: GetServerSideProps<{
         uid: string
         full_name: string
         date_of_birth: string
-        adresses: types.AdresseInDb[]
+        adresses: types.Adresses
         circo_departement: string
         circo_number: number
       }>`
@@ -164,7 +84,7 @@ SELECT
   	acteurs.data->'etatCivil'->'ident'->>'nom'
   ) AS full_name,
   acteurs.data->'etatCivil'->'infoNaissance'->>'dateNais' AS date_of_birth,
-  acteurs.data->'adresses' AS adresses,
+  acteurs.adresses,
   mandats.data->'election'->'lieu'->>'departement' AS circo_departement,
   (mandats.data->'election'->'lieu'->>'numCirco')::int AS circo_number
 FROM acteurs
@@ -228,7 +148,6 @@ WHERE
     },
     votes: [],
     ...deputeWithLatestGroup,
-    adresses: organiseAdresses(deputeWithLatestGroup.adresses),
   }
 
   return {
