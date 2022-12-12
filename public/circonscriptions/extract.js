@@ -45,13 +45,14 @@ zones.forEach(zone => {
       .scale(5) // make it big by default
       .encode()
     circoSvg.plot(pathTranslated)
+
+    // fix path ids to be SVG compatible ( The id value must begin with a letter ([A-Za-z]))
     circoSvg.attr('id', `id-${circoSvg.attr('id')}`)
     outSvg.add(circoSvg)
   })
   const bbox2 = outSvg.bbox()
   outSvg.size(bbox2.width, bbox2.height)
 
-  // fix path ids to be SVG compatible ( The id value must begin with a letter ([A-Za-z]))
   // make borders visible
   outSvg
     .fill('#eee')

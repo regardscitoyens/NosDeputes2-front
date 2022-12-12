@@ -4,7 +4,7 @@ import { GroupeBadge } from '../../components/GroupeBadge'
 import { MyLink } from '../../components/MyLink'
 import { Todo } from '../../components/Todo'
 import {
-  addPrefixToDepartement,
+  addPrefixToCirconscription,
   CURRENT_LEGISLATURE,
   isCommissionPermanente,
 } from '../../lib/hardcodedData'
@@ -278,7 +278,7 @@ export function Page({ depute }: types.Props) {
         député de la {depute.num_circo}
         <sup>
           {getOrdinalSuffixFeminine(depute.num_circo)}
-        </sup> circonscription {addPrefixToDepartement(depute.nom_circo)}
+        </sup> circonscription {addPrefixToCirconscription(depute.nom_circo)}
       </h1>
       <div className="col-span-2">
         <Image
