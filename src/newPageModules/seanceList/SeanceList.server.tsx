@@ -6,11 +6,14 @@ import {
   FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS as FIRST_LEGISLATURE_FOR_SEANCES,
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
+import { querySessions } from '../../lib/querySessions'
 import * as types from './SeanceList.types'
 
 type Query = {
   legislature?: string
 }
+
+// TODO il faudra faire aussi les réunions de commission et les réunions à l'initiative des parlementaires, ptêt sur une autre page ?
 
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
@@ -39,30 +42,36 @@ export const getServerSideProps: GetServerSideProps<{
     return tuple
   })
 
-  const seances = (
-    await sql<types.Seance>`
-SELECT
-  uid,
-  data->>'timestampDebut' AS date_debut,
-  data->>'sessionRef' AS session_ref
-FROM reunions
-WHERE
-  legislature = ${legislature}
-  AND data->'cycleDeVie'->>'etat' != ALL( '{Annulé, Supprimé}')
-  AND data->>'xsiType' = 'seance_type'
-  AND data->'lieu'->>'lieuRef' = 'AN'
-ORDER BY data->>'timestampDebut' DESC
-`.execute(dbReleve)
-  ).rows
+  const sessions = await querySessions(legislature)
 
-  // TODO après, faire aussi les réunions de commission et les réunions à l'initiative des parlementaires
+  const sessionsWithSeances = await Promise.all(
+    sessions.map(async session => {
+      // We do one query by session. Could be optimized if needed
+      const seances = (
+        await sql<{ uid: string; session_ref: string; start_date: string }>`
+SELECT 
+  uid,
+  data->>'sessionRef' AS session_ref,
+  data->>'timestampDebut' AS start_date
+FROM reunions
+WHERE data->>'xsiType' = 'seance_type'
+  AND data->'lieu'->>'lieuRef' = 'AN'
+  AND data->'cycleDeVie'->>'etat' = 'Confirmé'
+  AND data->>'sessionRef' = ${session.uid}
+ORDER BY start_date
+      `.execute(dbReleve)
+      ).rows
+
+      return { ...session, seances }
+    }),
+  )
 
   return {
     props: {
       data: {
         legislature,
         legislatureNavigationUrls,
-        seances,
+        sessionsWithSeances,
       },
     },
   }
