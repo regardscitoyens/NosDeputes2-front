@@ -2,6 +2,7 @@ import sortBy from 'lodash/sortBy'
 
 export const FIRST_LEGISLATURE = 12
 export const LATEST_LEGISLATURE = 16
+export const FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS = 15
 
 // Legislatures 14 and before didn't have colors
 // we hardcode them
