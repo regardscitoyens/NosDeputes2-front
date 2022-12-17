@@ -16,6 +16,20 @@ export function formatDate(dateIsoString: string) {
   return str
 }
 
+export function formatDateWithTime(dateIsoString: string) {
+  const [date, time] = new Date(dateIsoString)
+    .toLocaleString('fr-FR', {
+      timeZone: 'Europe/Paris',
+    })
+    .split(' ')
+  const [hour, minutes] = time.split(':')
+  return `${date} à ${noLeadingZero(hour)}h${minutes != '00' ? minutes : ''}`
+}
+
+function noLeadingZero(number: string) {
+  return parseInt(number, 10).toString()
+}
+
 export function uniqBy<A, B>(arr: A[], fn: (a: A) => B): A[] {
   const foundAlready: B[] = []
   return arr.filter(a => {
@@ -32,11 +46,9 @@ export function notNull<A>(value: A | null): value is A {
   return value !== null
 }
 
-
 export function notUndefined<A>(value: A | undefined): value is A {
   return value !== undefined
 }
-
 
 export function readFromEnv(name: string): string {
   const value = process.env[name]

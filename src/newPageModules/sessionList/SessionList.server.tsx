@@ -1,11 +1,10 @@
-import { sql } from 'kysely'
 import range from 'lodash/range'
 import { GetServerSideProps } from 'next'
-import { dbReleve } from '../../lib/dbReleve'
 import {
   FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS,
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
+import { querySessions } from '../../lib/querySessions'
 import * as types from './SessionList.types'
 
 type Query = {
@@ -39,20 +38,7 @@ export const getServerSideProps: GetServerSideProps<{
     return tuple
   })
 
-  const rows = await dbReleve
-    .selectFrom('sessions')
-    .where('legislature', '=', legislature)
-    .orderBy('start_date')
-    .orderBy('end_date')
-    .select(['uid', 'ordinaire', 'start_date', 'end_date'])
-    .execute()
-
-  const sessions: types.Session[] = rows.map(row => ({
-    uid: row.uid,
-    kind: row.ordinaire ? 'ordinaire' : 'extraordinaire',
-    start_date: row.start_date.toISOString(),
-    end_date: row.end_date.toISOString(),
-  }))
+  const sessions = await querySessions(legislature)
 
   return {
     props: {
