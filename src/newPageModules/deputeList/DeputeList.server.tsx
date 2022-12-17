@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps<{
   const legislature = legislatureInPath ?? LATEST_LEGISLATURE
   const legislatureNavigationUrls = range(
     FIRST_LEGISLATURE,
-    LATEST_LEGISLATURE,
+    LATEST_LEGISLATURE + 1,
   ).map(l => {
     const tuple: [number, string] = [
       l,

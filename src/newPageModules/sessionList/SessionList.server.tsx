@@ -2,8 +2,11 @@ import { sql } from 'kysely'
 import range from 'lodash/range'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
-import { FIRST_LEGISLATURE, LATEST_LEGISLATURE } from '../../lib/hardcodedData'
-import * as types from './ReunionList.types'
+import {
+  FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS,
+  LATEST_LEGISLATURE,
+} from '../../lib/hardcodedData'
+import * as types from './SessionList.types'
 
 type Query = {
   legislature?: string
@@ -20,38 +23,43 @@ export const getServerSideProps: GetServerSideProps<{
     return {
       redirect: {
         permanent: false,
-        destination: `/reunions`,
+        destination: `/sessions`,
       },
     }
   }
   const legislature = legislatureInPath ?? LATEST_LEGISLATURE
   const legislatureNavigationUrls = range(
-    FIRST_LEGISLATURE,
-    LATEST_LEGISLATURE,
+    FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS,
+    LATEST_LEGISLATURE + 1,
   ).map(l => {
     const tuple: [number, string] = [
       l,
-      `/reunions${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
+      `/sessions${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
     ]
     return tuple
   })
 
-  const reunions = (
-    await sql<types.Reunion>`
-SELECT
-  uid,
-  data->>'xsiType' AS xsi_type
-FROM reunions
-WHERE legislature = ${legislature}
-`.execute(dbReleve)
-  ).rows
+  const rows = await dbReleve
+    .selectFrom('sessions')
+    .where('legislature', '=', legislature)
+    .orderBy('start_date')
+    .orderBy('end_date')
+    .select(['uid', 'ordinaire', 'start_date', 'end_date'])
+    .execute()
+
+  const sessions: types.Session[] = rows.map(row => ({
+    uid: row.uid,
+    kind: row.ordinaire ? 'ordinaire' : 'extraordinaire',
+    start_date: row.start_date.toISOString(),
+    end_date: row.end_date.toISOString(),
+  }))
 
   return {
     props: {
       data: {
         legislature,
         legislatureNavigationUrls,
-        reunions,
+        sessions,
       },
     },
   }

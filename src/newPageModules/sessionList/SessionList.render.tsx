@@ -1,28 +1,24 @@
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
-import * as types from './ReunionList.types'
+import * as types from './SessionList.types'
+import { formatDate } from '../../lib/utils'
 
 export function Page({
-  reunions,
+  sessions,
   legislature,
   legislatureNavigationUrls,
 }: types.Props) {
-  console.log('reunions', reunions)
   return (
     <div>
       <LegislatureNavigation
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <div className="bg-orange-400">
-        Cette page est une exploration du dataset "Agenda" de l'open data. Pas
-        sûr de ce que ça devenir
-      </div>
-      <h1 className="text-2xl">Reunions</h1>
+      <h1 className="text-2xl">Sessions</h1>
       <ul>
-        {reunions.map(reunion => {
+        {sessions.map(s => {
           return (
-            <li key={reunion.uid}>
-              {reunion.uid} {reunion.xsi_type}
+            <li key={s.uid}>
+              {formatDate(s.start_date)} au {formatDate(s.end_date)}
             </li>
           )
         })}

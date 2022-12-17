@@ -45,4 +45,11 @@ export interface ReleveTables {
     legislature: number
     path_in_dataset: string
   }
+  sessions: {
+    uid: string
+    ordinaire: boolean
+    legislature: number
+    start_date: Date
+    end_date: Date
+  }
 }
