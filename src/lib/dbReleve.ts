@@ -39,4 +39,10 @@ export interface ReleveTables {
     uid: string
     slug: string
   }
+  reunions: {
+    uid: string
+    data: unknown
+    legislature: number
+    path_in_dataset: string
+  }
 }
