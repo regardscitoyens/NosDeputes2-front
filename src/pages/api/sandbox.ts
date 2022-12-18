@@ -3,64 +3,69 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
 import lo from 'lodash'
 import { type } from 'os'
+import { querySessions } from '../../lib/querySessions'
 // Dummy api routes to quickly explore some queries
 export default async function sandbox(
   _req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const allDeputesAllLegislatures = (
-    await sql<{
-      uid: string
-      slug: string
-      adresses: any[]
-    }>`
-  SELECT
-    acteurs.uid AS uid,
-    nosdeputes_deputes.slug,
-    acteurs.data->'adresses' AS adresses
-  FROM acteurs
-  INNER JOIN nosdeputes_deputes
-    ON nosdeputes_deputes.uid = acteurs.uid
-  INNER JOIN mandats
-    ON mandats.acteur_uid = acteurs.uid
-  INNER JOIN organes
-    ON organes.uid = ANY(mandats.organes_uids)
-  WHERE
-    organes.data->>'codeType' = 'ASSEMBLEE'
-    AND organes.data->>'legislature' = '16'
-  `.execute(dbReleve)
-  ).rows
+  const sessions = (
+    await Promise.all([querySessions(15), querySessions(16)])
+  ).flat()
 
-  const mandats = (
-    await sql<{
-      data: any
-    }>`
-  SELECT
-    mandats.data,
-    mandats.data->'collaborateurs' AS collaborateurs
-  FROM  mandats
-  INNER JOIN organes
-    ON organes.uid = ANY(mandats.organes_uids)
-  WHERE
-    organes.data->>'codeType' = 'ASSEMBLEE'
-  `.execute(dbReleve)
-  ).rows
+  const sessionsWithSeances = await Promise.all(
+    sessions.map(async session => {
+      // We do one query by session. Could be optimized if needed
+      const seances = (
+        await sql<{
+          uid: string
+          session_ref: string
+          start_date: string
+          odj: { pointsOdj?: any[] }
+        }>`
+SELECT 
+  uid,
+  data->>'sessionRef' AS session_ref,
+  data->>'timestampDebut' AS start_date,
+  data->'odj' AS odj
+FROM reunions
+WHERE data->>'xsiType' = 'seance_type'
+  AND data->'lieu'->>'lieuRef' = 'AN'
+  AND data->'cycleDeVie'->>'etat' = 'Confirmé'
+  AND data->>'sessionRef' = ${session.uid}
+ORDER BY start_date
+      `.execute(dbReleve)
+      ).rows
 
-  let fields: string[] = []
-  mandats.forEach(mandat => {
-    const collaborateurs = mandat.data.collaborateurs ?? []
-    collaborateurs.forEach((collab: any) => {
-      fields.push(collab.qualite)
+      return { ...session, seances }
+    }),
+  )
+
+  const seances = sessionsWithSeances.flatMap(s => s.seances)
+
+  console.log('@@@ got seances', seances.length)
+
+  /*
+
+'comiteSecret',
+  'cycleDeVie',
+  */
+
+  const acc: string[] = []
+  seances.forEach(seance => {
+    seance.odj.pointsOdj?.forEach(pointOdj => {
+      console.log('SEANCE', seance.start_date)
+      acc.push(JSON.stringify(pointOdj.procedure) ?? '-missing-')
+      console.log(pointOdj)
     })
-  })
-  console.log(sortAndUniq(fields))
 
-  //   const fields = allDeputesAllLegislatures.flatMap(depute => {
-  //     return (depute.adresses ?? []).map(
-  //       adresse => adresse.xsiType + ' - ' + adresse.typeLibelle,
-  //     )
-  //   })
-  //   console.log(lo.sortBy(lo.uniq(fields)), s => s)
+    // acc.push(Array.isArray(seance.odj.pointsOdj) + '')
+    // if (!Array.isArray(seance.odj.pointsOdj)) {
+    // console.log(seance.odj)
+    // }
+  })
+
+  console.log('@@@', sortAndUniq(acc))
 
   res.status(200).json({ name: 'John Doe' })
 }

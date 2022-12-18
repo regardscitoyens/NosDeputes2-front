@@ -13,7 +13,27 @@ type Query = {
   legislature?: string
 }
 
-// TODO il faudra faire aussi les réunions de commission et les réunions à l'initiative des parlementaires, ptêt sur une autre page ?
+// TODO on pourrait faire aussi les réunions de commission et les réunions à l'initiative des parlementaires, ptêt sur une autre page ?
+
+function transformOdj(
+  ordre_du_jour: types.PointOdjRawFromDb[],
+): types.PointOdjFinal[] {
+  return ordre_du_jour
+    .filter(
+      _ => _.cycleDeVie.etat !== 'Annulé' && _.cycleDeVie.etat !== 'Supprimé',
+    )
+    .map(_ => {
+      return {
+        uid: _.uid,
+        typePointOdj: _.typePointOdj,
+        ...(_.procedure ? { procedure: _.procedure } : null),
+        objet: _.objet,
+        ...(_.dossiersLegislatifsRefs
+          ? { dossierLegislatifRef: _.dossiersLegislatifsRefs[0] }
+          : null),
+      }
+    })
+}
 
 export const getServerSideProps: GetServerSideProps<{
   data: types.Props
@@ -48,11 +68,17 @@ export const getServerSideProps: GetServerSideProps<{
     sessions.map(async session => {
       // We do one query by session. Could be optimized if needed
       const seances = (
-        await sql<{ uid: string; session_ref: string; start_date: string }>`
+        await sql<{
+          uid: string
+          session_ref: string
+          start_date: string
+          ordre_du_jour: types.PointOdjRawFromDb[]
+        }>`
 SELECT 
   uid,
   data->>'sessionRef' AS session_ref,
-  data->>'timestampDebut' AS start_date
+  data->>'timestampDebut' AS start_date,
+  data->'odj'->'pointsOdj' AS ordre_du_jour
 FROM reunions
 WHERE data->>'xsiType' = 'seance_type'
   AND data->'lieu'->>'lieuRef' = 'AN'
@@ -60,7 +86,10 @@ WHERE data->>'xsiType' = 'seance_type'
   AND data->>'sessionRef' = ${session.uid}
 ORDER BY start_date
       `.execute(dbReleve)
-      ).rows
+      ).rows.map(row => ({
+        ...row,
+        ordre_du_jour: transformOdj(row.ordre_du_jour),
+      }))
 
       return { ...session, seances }
     }),
