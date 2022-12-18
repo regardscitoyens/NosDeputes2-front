@@ -16,14 +16,52 @@ export function formatDate(dateIsoString: string) {
   return str
 }
 
-export function formatDateWithTime(dateIsoString: string) {
-  const [date, time] = new Date(dateIsoString)
+export function formatDateWithTimeAndWeekday(dateIsoString: string) {
+  const d = new Date(dateIsoString)
+  const weekday = d.toLocaleString('fr-FR', {
+    timeZone: 'Europe/Paris',
+    weekday: 'long',
+  })
+  const [date, time] = d
     .toLocaleString('fr-FR', {
       timeZone: 'Europe/Paris',
     })
     .split(' ')
   const [hour, minutes] = time.split(':')
-  return `${date} à ${noLeadingZero(hour)}h${minutes != '00' ? minutes : ''}`
+  return `${weekday} ${date} à ${noLeadingZero(hour)}h${
+    minutes != '00' ? minutes : ''
+  }`
+}
+
+// from https://weeknumber.com/how-to/javascript
+// there are a bunch of other implementations here https://stackoverflow.com/questions/9045868/javascript-date-getweek
+// I don't know which is one is most correct
+export function getWeek(date: Date): number {
+  const d = new Date(date.getTime())
+  // Returns the ISO week of the date.
+  d.setHours(0, 0, 0, 0)
+  // Thursday in current week decides the year.
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7))
+  // January 4 is always in week 1.
+  var week1 = new Date(d.getFullYear(), 0, 4)
+  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+  return (
+    1 +
+    Math.round(
+      ((d.getTime() - week1.getTime()) / 86400000 -
+        3 +
+        ((week1.getDay() + 6) % 7)) /
+        7,
+    )
+  )
+}
+
+// from https://weeknumber.com/how-to/javascript
+// Returns the four-digit year corresponding to the ISO week of the date.
+export function getWeekYear(date: Date) {
+  const d = new Date(date.getTime())
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7))
+  return d.getFullYear()
 }
 
 function noLeadingZero(number: string) {

@@ -1,6 +1,12 @@
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import * as types from './SeanceList.types'
-import { formatDate, formatDateWithTime } from '../../lib/utils'
+import {
+  formatDate,
+  formatDateWithTimeAndWeekday,
+  getWeek,
+  getWeekYear,
+} from '../../lib/utils'
+import groupBy from 'lodash/groupBy'
 
 export function Page({
   sessionsWithSeances,
@@ -17,6 +23,12 @@ export function Page({
       <ul>
         {sessionsWithSeances.map(session => {
           const { uid, kind, start_date, end_date, seances } = session
+
+          const seancesByWeek = groupBy(seances, _ => {
+            const d = new Date(_.start_date)
+            return `${getWeekYear(d)} ${getWeek(d)}`
+          })
+
           return (
             <li key={uid} className="py-2">
               <h2 className="text-xl">
@@ -24,11 +36,20 @@ export function Page({
                 {formatDate(end_date)}
               </h2>
               <ul className="pl-8">
-                {seances.map(seance => {
-                  const { uid, start_date } = seance
+                {Object.entries(seancesByWeek).map(([week, seancesOfWeek]) => {
                   return (
-                    <li key={uid}>
-                      Séance du {formatDateWithTime(start_date)}
+                    <li key={week} className="py-2">
+                      <ul>
+                        {seancesOfWeek.map(seance => {
+                          const { uid, start_date } = seance
+                          return (
+                            <li key={uid}>
+                              Séance du{' '}
+                              {formatDateWithTimeAndWeekday(start_date)}
+                            </li>
+                          )
+                        })}
+                      </ul>
                     </li>
                   )
                 })}
