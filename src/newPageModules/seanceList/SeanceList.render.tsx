@@ -7,6 +7,7 @@ import {
   getWeekYear,
 } from '../../lib/utils'
 import groupBy from 'lodash/groupBy'
+import { start } from 'repl'
 
 export function Page({
   sessionsWithSeances,
@@ -42,8 +43,12 @@ export function Page({
                       <ul>
                         {seancesOfWeek.map(seance => {
                           const { uid, start_date } = seance
+                          const isFuture = new Date(start_date) > new Date()
                           return (
-                            <li key={uid}>
+                            <li
+                              key={uid}
+                              className={isFuture ? 'text-slate-500' : ''}
+                            >
                               Séance du{' '}
                               {formatDateWithTimeAndWeekday(start_date)}
                             </li>
