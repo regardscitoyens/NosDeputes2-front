@@ -16,9 +16,9 @@ type Query = {
 // TODO on pourrait faire aussi les réunions de commission et les réunions à l'initiative des parlementaires, ptêt sur une autre page ?
 
 function transformOdj(
-  ordre_du_jour: types.PointOdjRawFromDb[],
+  ordre_du_jour: types.PointOdjRawFromDb[] | null,
 ): types.PointOdjFinal[] {
-  return ordre_du_jour
+  return (ordre_du_jour ?? [])
     .filter(
       _ => _.cycleDeVie.etat !== 'Annulé' && _.cycleDeVie.etat !== 'Supprimé',
     )
@@ -72,7 +72,7 @@ export const getServerSideProps: GetServerSideProps<{
           uid: string
           session_ref: string
           start_date: string
-          ordre_du_jour: types.PointOdjRawFromDb[]
+          ordre_du_jour: types.PointOdjRawFromDb[] | null
         }>`
 SELECT 
   uid,
@@ -86,10 +86,15 @@ WHERE data->>'xsiType' = 'seance_type'
   AND data->>'sessionRef' = ${session.uid}
 ORDER BY start_date
       `.execute(dbReleve)
-      ).rows.map(row => ({
-        ...row,
-        ordre_du_jour: transformOdj(row.ordre_du_jour),
-      }))
+      ).rows.map(row => {
+        if (!row.ordre_du_jour) {
+          console.log(row.start_date)
+        }
+        return {
+          ...row,
+          ordre_du_jour: transformOdj(row.ordre_du_jour),
+        }
+      })
 
       return { ...session, seances }
     }),
