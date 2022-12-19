@@ -20,6 +20,7 @@
     "switch_local": "rm -f .env.local && cp .env.local.db_local .env.local"
   },
   "dependencies": {
+    "@react-hook/mouse-position": "^4.1.3",
     "@types/lodash": "^4.14.186",
     "@types/pg": "^8.6.5",
     "autoprefixer": "^10.4.12",

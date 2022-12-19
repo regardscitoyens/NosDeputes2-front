@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { SvgLoader, SvgProxy } from 'react-svgmt'
 import Image from 'next/image'
 import { GroupeBadge } from '../../../components/GroupeBadge'
+import useMouse from '@react-hook/mouse-position'
 
 import {
   DeputeInDepartement,
@@ -68,9 +69,18 @@ function MapDepartement({
   ouMouseOut: Function
   onClick: Function
 }) {
+  const ref = useRef(null)
+  const [titre, setTitre] = useState<null | string>(null)
+  const [description, setDescription] = useState<null | string>(null)
+  const mouse = useMouse(ref, {
+    enterDelay: 100,
+    leaveDelay: 100,
+  })
+
   function onNodeOver(e) {
-    console.log('this', this)
     this.style.zIndex = 10
+    setTitre(this.querySelector('title').textContent)
+    setDescription(this.querySelector('desc').textContent)
     onHover({ id: this.getAttribute('id').replace(/^.*-(\d+)/, '$1') })
   }
   function onNodeOut(e) {
@@ -83,39 +93,63 @@ function MapDepartement({
     circonscription && circonscription.length < 2
       ? `0${circonscription}`
       : `${circonscription}`
+
+  const tooltipStyle = {
+    position: 'absolute',
+    left: mouse.pageX ? mouse.pageX + 15 : undefined,
+    top: mouse.pageY ? mouse.pageY + 15 : undefined,
+    //top: mouse.pageY + 5 || undefined,
+    width: 600,
+    background: 'white',
+    border: '1px solid #333',
+    padding: 5,
+  }
   return (
-    <SvgLoader
-      width="400"
-      height="400"
-      path={getSvgUrl(id)}
-      style={{
-        width: '100%',
-        height: '100%',
-        strokeWidth: 3,
-        fill: '#bfbfbf',
-        stroke: '#eeeeee',
-      }}
-    >
-      <SvgProxy
-        selector={'.circo'}
-        fill="inherit"
-        stroke="inherit"
-        onElementSelected={e => {
-          Array.from(e).map((node: any) => {
-            node.style.cursor = 'pointer'
-            // todo: remove all listeners
-            node.addEventListener('mouseover', onNodeOver)
-            node.addEventListener('mouseout', onNodeOut)
-            node.addEventListener('click', onNodeClick)
-          })
+    <div ref={ref}>
+      <SvgLoader
+        width="400"
+        height="400"
+        path={getSvgUrl(id)}
+        style={{
+          width: '100%',
+          height: '100%',
+          strokeWidth: 3,
+          fill: '#bfbfbf',
+          stroke: '#eeeeee',
+          //'pointer-events': 'none',
         }}
-      />
-      <SvgProxy
-        selector={`path.circo[id$='-${paddedCirconscription}']`}
-        fill="#bec78f"
-        stroke="#95a857"
-      />
-    </SvgLoader>
+      >
+        {circonscription &&
+          mouse && mouse.x && mouse.x > 0 && mouse.y &&
+          mouse.y > 0 && (
+              /* @ts-ignore */
+              <div style={tooltipStyle}>
+                <b>{titre}</b>
+                <br />
+                {description}
+              </div>,
+            )}
+        <SvgProxy
+          selector={'.circo'}
+          fill="inherit"
+          stroke="inherit"
+          onElementSelected={e => {
+            Array.from(e).map((node: any) => {
+              node.style.cursor = 'pointer'
+              // todo: remove all listeners
+              node.addEventListener('mouseover', onNodeOver)
+              node.addEventListener('mouseout', onNodeOut)
+              node.addEventListener('click', onNodeClick)
+            })
+          }}
+        />
+        <SvgProxy
+          selector={`path.circo[id$='-${paddedCirconscription}']`}
+          fill="#bec78f"
+          stroke="#95a857"
+        />
+      </SvgLoader>
+    </div>
   )
 }
 
@@ -144,10 +178,8 @@ export default function Page({
     desc: string
   }) => {
     setCirconscription(id)
-    //setCirconscriptionTitle$0.querySelector('desc').textContent
   }
   const onCirconscriptionClick = (circonscriptionId: string) => {
-    console.log('click', circonscriptionId)
     const depute = deputes.find(
       depute => depute.num_circo === parseInt(circonscriptionId),
     )
@@ -155,10 +187,8 @@ export default function Page({
       router.push(`/${depute.slug}`)
     }
   }
-  const ouCirconscriptionMouseOut = (circonscriptionId: string) => {
-    if (circonscription === circonscriptionId) {
-      setCirconscription(null)
-    }
+  const onCirconscriptionMouseOut = (circonscriptionId: string) => {
+    setCirconscription(null)
   }
 
   const isCurrentCirconscription = (num_circo: number) => {
@@ -171,9 +201,7 @@ export default function Page({
     setCirconscription(depute.num_circo.toString())
   }
   const onDeputeMouseOut = (depute: DeputeInDepartement) => {
-    if (circonscription === depute.num_circo.toString()) {
-      setCirconscription(null)
-    }
+    setCirconscription(null)
   }
   return (
     <div className="grid grid-cols-12 gap-4">
@@ -238,7 +266,7 @@ export default function Page({
               circonscription={circonscription}
               onHover={onCirconscriptionHover}
               onClick={onCirconscriptionClick}
-              ouMouseOut={ouCirconscriptionMouseOut}
+              ouMouseOut={onCirconscriptionMouseOut}
             />
           </div>
         </div>
