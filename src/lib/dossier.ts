@@ -9,13 +9,7 @@ export type Dossier = {
     dossierAbsorbantRef: string
   }
   indexation: unknown // https://data.tricoteuses.fr/doc/assemblee/document.html#indexation.json
-  initiateur?: {
-    acteurs?: {
-      acteurRef: string
-      mandatRef: string
-    }[]
-    organeRef?: string
-  }
+  initiateur?: Initiateur
   legislature: string // c'est un nombre stringifié
   plf?: Plf
   procedureParlementaire: {
@@ -90,6 +84,8 @@ type Plf = {
   ordreCommission: '1'
 }[]
 
+// J'ai séparé le type des actes au premier niveau des niveaux suivants
+// pas sûr que ce soit utile, on verra
 type ActeRacine = {
   uid: string
   xsiType: 'Etape_Type'
@@ -141,7 +137,7 @@ type ActeRacine = {
       | 'troisième lecture'
   }
   organeRef?: string
-  actesLegislatifs: unknown
+  actesLegislatifs: ActeNested[]
 }
 
 type ActeNested = {
@@ -205,32 +201,202 @@ type ActeNested = {
     urlLegifrance: string
     referenceNor?: string
   }
-  infoJoRect?: unknown
-  infoJoce?: unknown
-  initiateur?: unknown
-  libelleActe: unknown
-  motif?: unknown
-  numDecision?: unknown
-  odjRef?: unknown
-  organeRef?: unknown
-  provenanceRef?: unknown
-  rapporteurs?: unknown
-  referenceNor?: unknown
-  reunionRef?: unknown
-  statutAdoption?: unknown
-  statutConclusion?: unknown
-  texteAdopteRef?: unknown
-  texteAssocieRef?: unknown
-  texteEuropeen?: unknown
-  texteLoiRef?: unknown
-  textesAssocies?: unknown
-  titreLoi?: unknown
-  typeDeclaration?: unknown
-  typeMotion?: unknown
-  typeMotionCensure?: unknown
-  urlConclusion?: unknown
-  urlEcheancierLoi?: unknown
-  urlLegifrance?: unknown
-  voteRefs?: unknown
+  infoJoRect?: {
+    dateJo: string
+    numJo: string // number stringified
+    typeJo: 'JO_LOI_DECRET'
+    urlLegifrance?: string
+    referenceNor?: string
+  }[] // only 1 or 2 items
+  infoJoce?: {
+    refJoce: string
+    dateJoce: string
+  }
+  initiateur?: Initiateur
+  libelleActe: {
+    libelleCourt:
+      | "1er dépôt d'une initiative."
+      | 'Accord international'
+      | 'Adoption par les instances communautaires'
+      | "Allocution du Président de l'Assemblée nationale"
+      | "Avis du Conseil d'Etat"
+      | 'Commission Mixte Paritaire'
+      | "Commission d'enquête"
+      | 'Conclusion du conseil constitutionnel'
+      | "Convocation d'une CMP"
+      | "Création d'une commission d'enquête"
+      | "Création d'une mission d'information"
+      | 'Discussion en séance publique'
+      | 'Décision'
+      | 'Décision de la CMP'
+      | 'Décision sur une motion de censure'
+      | "Dépôt d'un projet de loi"
+      | "Dépôt d'une déclaration du gouvernement"
+      | "Dépôt d'une initiative en navette"
+      | "Dépôt d'une lettre rectificative."
+      | 'Dépôt de rapport'
+      | "Dépôt du rapport d'une CMP"
+      | "Etude d'impact"
+      | "Le gouvernement déclare l'urgence / engage la procédure accélérée"
+      | 'Message du président de la république'
+      | "Mission d'information"
+      | 'Motion de censure'
+      | 'Motion de procédure'
+      | 'Motion référendaire'
+      | 'Nomination de rapporteur'
+      | 'Nomination de rapporteur budgétaire'
+      | "Promulgation d'une loi"
+      | "Rapport sur l'application des lois"
+      | 'Recevabilité par le Bureau'
+      | 'Renvoi en commission au fond'
+      | 'Renvoi préalable'
+      | 'Renvoi préalable à la CAE'
+      | "Retrait d'une initiative"
+      | 'Réunion de commission'
+      | "Saisine d'une délégation ou d'un office"
+      | 'Saisine du conseil constitutionnel'
+      | "Saisine pour avis d'une commission"
+      | "Travaux d'une commission saisie pour avis"
+      | "Travaux d'une délégation saisie pour avis"
+      | 'Travaux de la commission saisie au fond'
+      | 'Travaux des commissions'
+    nomCanonique:
+      | "1er dépôt d'une initiative."
+      | 'Accord international'
+      | 'Adoption par les instances communautaires'
+      | "Allocution du Président de l'Assemblée nationale"
+      | "Avis du Conseil d'Etat"
+      | 'Commission Mixte Paritaire'
+      | "Commission d'enquête"
+      | 'Conclusion du conseil constitutionnel'
+      | "Convocation d'une CMP"
+      | "Création d'une commission d'enquête"
+      | "Création d'une mission d'information"
+      | 'Discussion en séance publique'
+      | 'Décision'
+      | 'Décision de la CMP'
+      | 'Décision sur une motion de censure'
+      | "Dépôt d'un projet de loi"
+      | "Dépôt d'une déclaration du gouvernement"
+      | "Dépôt d'une initiative en navette"
+      | "Dépôt d'une lettre rectificative."
+      | 'Dépôt de rapport'
+      | "Dépôt du rapport d'une CMP"
+      | "Etude d'impact"
+      | "Le gouvernement déclare l'urgence / engage la procédure accélérée"
+      | 'Message du président de la république'
+      | "Mission d'information"
+      | 'Motion de censure'
+      | 'Motion de procédure'
+      | 'Motion référendaire'
+      | 'Nomination de rapporteur'
+      | 'Nomination de rapporteur budgétaire'
+      | "Promulgation d'une loi"
+      | "Rapport sur l'application des lois"
+      | 'Recevabilité par le Bureau'
+      | 'Renvoi en commission au fond'
+      | 'Renvoi préalable'
+      | 'Renvoi préalable à la CAE'
+      | "Retrait d'une initiative"
+      | 'Réunion de commission'
+      | "Saisine d'une délégation ou d'un office"
+      | 'Saisine du conseil constitutionnel'
+      | "Saisine pour avis d'une commission"
+      | "Travaux d'une commission saisie pour avis"
+      | "Travaux d'une délégation saisie pour avis"
+      | 'Travaux de la commission saisie au fond'
+      | 'Travaux des commissions'
+  }
+  motif?: "En application de l'article 61§2 de la Constitution"
+  numDecision?: string // number stringified
+  odjRef?: string
+  organeRef?: string
+  provenanceRef?: string
+  rapporteurs?: {
+    acteurRef: string
+    typeRapporteur:
+      | 'rapporteur'
+      | 'rapporteur général'
+      | 'rapporteur pour avis'
+      | 'rapporteur spécial'
+    etudePlfRef?: string
+  }
+  referenceNor?: string
+  reunionRef?: string
+  statutAdoption?: {
+    libelle: 'adopté'
+  }
+  statutConclusion?: {
+    libelle:
+      | 'Accord'
+      | 'Conforme'
+      | 'Conforme avec réserve'
+      | 'Désaccord'
+      | 'Motion adopté(e)'
+      | 'Motion adoptée'
+      | 'Non conforme'
+      | 'Partiellement conforme'
+      | 'TCD01,'
+      | 'TCD02,'
+      | 'TCD04,'
+      | 'adopté'
+      | 'adopté avec modifications'
+      | 'adopté définitivement'
+      | 'adopté sans modification'
+      | "adopté, dans les conditions prévues à l'article 45, alinéa 3, de la Constitution"
+      | 'adoptée'
+      | 'adoptée avec modifications'
+      | 'adoptée définitivement'
+      | "adoptée en application de l'article 151-7 du Règlement"
+      | 'adoptée sans modification'
+      | "adoptée, dans les conditions prévues à l'article 45, alinéa 3, de la Constitution"
+      | "considéré comme adopté par l'Assemblée nationale en application de l'article 49, alinéa 3 de la Constitution"
+      | "considérée comme définitive en application de l'article 151-7 du Règlement"
+      | "considérée comme définitive en application de l'article 151-9 du Règlement"
+      | 'modifié'
+      | 'modifié par le Sénat, considéré comme adopté par l’Assemblée nationale en application de l’article 49, alinéa 3, de la Constitution après engagement de la procédure accélérée'
+      | 'modifiée'
+      | 'rejet du texte par la commission préalable'
+      | 'rejeté'
+      | 'rejeté définitivement'
+      | 'rejetée'
+      | 'voté par les deux assemblées du Parlement en termes identiques'
+  }
+  texteAdopteRef?: string
+  texteAssocieRef?: string
+  texteEuropeen?: {
+    typeTexteEuropeen:
+      | 'Acte du Conseil'
+      | 'Décision du Conseil'
+      | 'Règlement de la Commission'
+    titreTexteEuropeen: string
+  }
+  texteLoiRef?: string
+  textesAssocies?: {
+    typeTexte: 'BTA' | 'TAP'
+    texteAssocieRef: string
+  }[] // 1 or 2 items
+  titreLoi?: string
+  typeDeclaration?: {
+    libelle: "Déclaration engageant la responsabilité du Gouvernement devant l'Assemblée nationale sur le vote d'un texte"
+  }
+  typeMotion?: {
+    libelle: 'Question préalable' | 'Motions de renvoi en commission'
+  }
+  typeMotionCensure?: {
+    libelle: 'Motion de censure 49-3' | 'Motion de censure 49-2'
+  }
+  urlConclusion?: string
+  urlEcheancierLoi?: string
+  urlLegifrance?: string
+  voteRefs?: string[]
   actesLegislatifs?: ActeNested[]
+}
+
+type Initiateur = {
+  acteurs?: {
+    acteurRef: string
+    mandatRef: string
+  }[]
+  organeRef?: string
 }

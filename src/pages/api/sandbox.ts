@@ -22,50 +22,15 @@ FROM dossiers
   console.log('@@@ got dossiers', rows.length)
 
   const acc: string[] = []
-  const keys = [
-    'actesLegislatifs',
-    'anneeDecision',
-    'auteurMotion',
-    'auteursRefs',
-    'casSaisine',
-    'codeActe',
-    'codeLoi',
-    'contributionInternaute',
-    'dateActe',
-    'decision',
-    'depotInitialLectureDefinitiveRef',
-    'formuleDecision',
-    'infoJo',
-    'infoJoRect',
-    'infoJoce',
-    'initiateur',
-    'libelleActe',
-    'motif',
-    'numDecision',
-    'odjRef',
-    'organeRef',
-    'provenanceRef',
-    'rapporteurs',
-    'referenceNor',
-    'reunionRef',
-    'statutAdoption',
-    'statutConclusion',
-    'texteAdopteRef',
-    'texteAssocieRef',
-    'texteEuropeen',
-    'texteLoiRef',
-    'textesAssocies',
-    'titreLoi',
-    'typeDeclaration',
-    'typeMotion',
-    'typeMotionCensure',
-    'uid',
-    'urlConclusion',
-    'urlEcheancierLoi',
-    'urlLegifrance',
-    'voteRefs',
-    'xsiType',
-  ]
+
+  function str(a: any) {
+    return JSON.stringify(a)
+  }
+
+  function keys(a: any) {
+    return Object.keys(a)
+  }
+
   rows.forEach(row => {
     const { data } = row
     // console.log('SEANCE', row.start_date)
@@ -80,16 +45,42 @@ FROM dossiers
       actesLegislatifs?.forEach(child => {
         handleActeLegislatif(child, level + 1)
       })
-
+      // ---
+      // ---
+      // ---
+      // ---
+      // ---
+      // ---
+      // ---
+      // ---
+      // ---
       if (level > 1) {
-        const field = 'infoJo'
-        const value = acte[field]
-        if (value) {
-          acc.push(value.referenceNor)
+        const field = 'voteRefs'
+        const a = acte[field]
+        if (a) {
+          acc.push(...a)
         }
       }
     }
-
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
+    // ---
     const { actesLegislatifs } = data
     if (actesLegislatifs)
       actesLegislatifs.forEach(acte => {
