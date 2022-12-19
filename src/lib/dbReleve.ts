@@ -35,6 +35,10 @@ export interface ReleveTables {
     acteur_uid: string
     organes_uids: string[]
   }
+  dossiers: {
+    uid: string
+    data: unknown
+  }
   nosdeputes_deputes: {
     uid: string
     slug: string

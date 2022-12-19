@@ -1,63 +1,105 @@
 import { sql } from 'kysely'
+import lo from 'lodash'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
-import lo from 'lodash'
-import { type } from 'os'
-import { querySessions } from '../../lib/querySessions'
 // Dummy api routes to quickly explore some queries
 export default async function sandbox(
   _req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const sessions = (
-    await Promise.all([querySessions(15), querySessions(16)])
-  ).flat()
-
-  const sessionsWithSeances = await Promise.all(
-    sessions.map(async session => {
-      // We do one query by session. Could be optimized if needed
-      const seances = (
-        await sql<{
-          uid: string
-          session_ref: string
-          start_date: string
-          odj: { pointsOdj?: any[] }
-        }>`
+  const rows = (
+    await sql<{
+      uid: string
+      data: any
+    }>`
 SELECT 
-  uid,
-  data->>'sessionRef' AS session_ref,
-  data->>'timestampDebut' AS start_date,
-  data->'odj' AS odj
-FROM reunions
-WHERE data->>'xsiType' = 'seance_type'
-  AND data->'lieu'->>'lieuRef' = 'AN'
-  AND data->'cycleDeVie'->>'etat' = 'Confirmé'
-  AND data->>'sessionRef' = ${session.uid}
-ORDER BY start_date
-      `.execute(dbReleve)
-      ).rows
+uid,
+data
+FROM dossiers
+  `.execute(dbReleve)
+  ).rows
 
-      return { ...session, seances }
-    }),
-  )
-
-  const seances = sessionsWithSeances.flatMap(s => s.seances)
-
-  console.log('@@@ got seances', seances.length)
-
-  /*
-
-'comiteSecret',
-  'cycleDeVie',
-  */
+  console.log('@@@ got dossiers', rows.length)
 
   const acc: string[] = []
-  seances.forEach(seance => {
-    seance.odj.pointsOdj?.forEach(pointOdj => {
-      console.log('SEANCE', seance.start_date)
-      acc.push(JSON.stringify(pointOdj.procedure) ?? '-missing-')
-      console.log(pointOdj)
-    })
+  const keys = [
+    'actesLegislatifs',
+    'anneeDecision',
+    'auteurMotion',
+    'auteursRefs',
+    'casSaisine',
+    'codeActe',
+    'codeLoi',
+    'contributionInternaute',
+    'dateActe',
+    'decision',
+    'depotInitialLectureDefinitiveRef',
+    'formuleDecision',
+    'infoJo',
+    'infoJoRect',
+    'infoJoce',
+    'initiateur',
+    'libelleActe',
+    'motif',
+    'numDecision',
+    'odjRef',
+    'organeRef',
+    'provenanceRef',
+    'rapporteurs',
+    'referenceNor',
+    'reunionRef',
+    'statutAdoption',
+    'statutConclusion',
+    'texteAdopteRef',
+    'texteAssocieRef',
+    'texteEuropeen',
+    'texteLoiRef',
+    'textesAssocies',
+    'titreLoi',
+    'typeDeclaration',
+    'typeMotion',
+    'typeMotionCensure',
+    'uid',
+    'urlConclusion',
+    'urlEcheancierLoi',
+    'urlLegifrance',
+    'voteRefs',
+    'xsiType',
+  ]
+  rows.forEach(row => {
+    const { data } = row
+    // console.log('SEANCE', row.start_date)
+
+    // fusionDossier?: {
+    //   cause: 'Dossier absorbé' | 'Examen commun'
+    //   dossierAbsorbantRef: string
+    // }
+
+    function handleActeLegislatif(acte: any, level: number) {
+      const { actesLegislatifs } = acte
+      actesLegislatifs?.forEach(child => {
+        handleActeLegislatif(child, level + 1)
+      })
+
+      if (level > 1) {
+        const field = 'infoJo'
+        const value = acte[field]
+        if (value) {
+          acc.push(value.referenceNor)
+        }
+      }
+    }
+
+    const { actesLegislatifs } = data
+    if (actesLegislatifs)
+      actesLegislatifs.forEach(acte => {
+        handleActeLegislatif(acte, 1)
+      })
+    // acc.push(
+    //   data.plf?.flatMap(_ => _.rapporteurs?.map(_ => _.typeRapporteur)) ??
+    //     '-UNDEFINED-',
+    // )
+    // console.log(pointOdj)
 
     // acc.push(Array.isArray(seance.odj.pointsOdj) + '')
     // if (!Array.isArray(seance.odj.pointsOdj)) {
@@ -72,4 +114,9 @@ ORDER BY start_date
 
 function sortAndUniq(arr: string[]) {
   return lo.sortBy(lo.uniq(arr), _ => _)
+}
+
+function exists(a: any): string {
+  if (a !== undefined) return 'defined'
+  return 'undefined'
 }
