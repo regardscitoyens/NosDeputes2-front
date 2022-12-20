@@ -37,7 +37,7 @@ export type Dossier = {
   }
   titreDossier: {
     titre: string
-    senatChemin: string
+    senatChemin?: string
     titreChemin: string
   }
   uid: string

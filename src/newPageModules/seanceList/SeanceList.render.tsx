@@ -1,5 +1,6 @@
 import groupBy from 'lodash/groupBy'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
+import { MyLink } from '../../components/MyLink'
 import {
   formatDate,
   formatDateWithTimeAndWeekday,
@@ -51,10 +52,10 @@ export function Page({
                             >
                               Séance du{' '}
                               {formatDateWithTimeAndWeekday(start_date)}
-                              <ul className="ml-8 italic text-slate-500">
+                              <ul className="ml-8  text-slate-500">
                                 {seance.ordre_du_jour.map(point => {
                                   return (
-                                    <li key={point.uid}>
+                                    <li key={point.uid} className="">
                                       <PointOrdreDuJour {...{ point }} />
                                     </li>
                                   )
@@ -104,7 +105,8 @@ function PointOrdreDuJour({ point }: { point: types.PointOdjFinal }) {
   return (
     <span>
       <span className="mr-1 bg-green-100 px-1">{kind}</span>
-      {objet} <DossierLegislatifRef {...{ dossierLegislatifRef }} />
+      <span className="italic">{objet}</span>{' '}
+      <DossierLegislatifRef {...{ dossierLegislatifRef }} />
     </span>
   )
 }
@@ -115,7 +117,16 @@ function DossierLegislatifRef({
   dossierLegislatifRef?: string
 }) {
   if (dossierLegislatifRef) {
-    return <span className="font-bold">{dossierLegislatifRef}</span>
+    return (
+      <span>
+        <MyLink
+          href={`/dossiers/${dossierLegislatifRef}`}
+          className="font-bold"
+        >
+          {dossierLegislatifRef}
+        </MyLink>
+      </span>
+    )
   }
   return null
 }
