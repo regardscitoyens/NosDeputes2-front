@@ -121,6 +121,7 @@ function ActeLegislatifs({
 function ActeLegislatifRacine({ acte }: { acte: dossierTypes.ActeRacine }) {
   return (
     <div className="m-4 border-2 border-slate-300 bg-slate-200 p-4 shadow-lg">
+      <p className="text-md font-mono text-blue-600">{acte.codeActe}</p>
       {acte.libelleActe.nomCanonique}
 
       {acte.actesLegislatifs.map(childActe => {
@@ -143,6 +144,7 @@ function ActeLegislatifNested({ acte }: { acte: dossierTypes.ActeNested }) {
     decision,
     depotInitialLectureDefinitiveRef,
     initiateur,
+    codeActe,
     libelleActe,
     statutAdoption,
     statutConclusion,
@@ -154,6 +156,7 @@ function ActeLegislatifNested({ acte }: { acte: dossierTypes.ActeNested }) {
   return (
     <div className=" m-2 border-2 border-slate-300 bg-slate-200 p-2 shadow-lg">
       <div>
+        <p className="text-md font-mono text-blue-600">{codeActe}</p>
         {xsiType && (
           <>
             <span className="text-sm italic text-slate-500">{xsiType}</span>{' '}
