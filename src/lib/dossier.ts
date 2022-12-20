@@ -86,7 +86,7 @@ type Plf = {
 
 // J'ai séparé le type des actes au premier niveau des niveaux suivants
 // pas sûr que ce soit utile, on verra
-type ActeRacine = {
+export type ActeRacine = {
   uid: string
   xsiType: 'Etape_Type'
   codeActe:
@@ -140,8 +140,8 @@ type ActeRacine = {
   actesLegislatifs: ActeNested[]
 }
 
-type ActeNested = {
-  uid: unknown
+export type ActeNested = {
+  uid: string
   xsiType?:
     | 'Adoption_Europe_Type'
     | 'ConclusionEtapeCC_Type'
