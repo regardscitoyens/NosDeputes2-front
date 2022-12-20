@@ -55,10 +55,10 @@ FROM dossiers
       // ---
       // ---
       if (level > 1) {
-        const field = 'voteRefs'
-        const a = acte[field]
-        if (a) {
-          acc.push(...a)
+        const a = acte.codeActe
+        const b = acte.libelleActe.nomCanonique
+        if (a !== b) {
+          acc.push(`${b} ${a} ${level}`)
         }
       }
     }

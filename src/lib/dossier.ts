@@ -89,37 +89,8 @@ type Plf = {
 export type ActeRacine = {
   uid: string
   xsiType: 'Etape_Type'
-  codeActe:
-    | 'AN-APPLI'
-    | 'AN1'
-    | 'AN2'
-    | 'AN20'
-    | 'AN21'
-    | 'AN3'
-    | 'ANLDEF'
-    | 'ANLUNI'
-    | 'ANNLEC'
-    | 'CC'
-    | 'CMP'
-    | 'EU'
-    | 'PROM'
-    | 'SN1'
-    | 'SN2'
-    | 'SN3'
-    | 'SNNLEC'
+  codeActe: string
   libelleActe: {
-    libelleCourt?:
-      | '1ère lecture'
-      | '2ème lecture'
-      | '3ème lecture'
-      | 'Commission Mixte Paritaire'
-      | 'Conseil constitutionnel'
-      | 'Débat'
-      | 'Instances communautaires'
-      | 'Lecture définitive'
-      | 'Mise en application de la loi'
-      | 'Nouvelle lecture'
-      | 'Promulgation de la loi'
     nomCanonique:
       | '1ère lecture (1ère assemblée saisie)'
       | '1ère lecture (2ème assemblée saisie)'
@@ -172,7 +143,7 @@ export type ActeNested = {
     | 'SaisieComAvis_Type'
     | 'SaisieComFond_Type'
     | 'SaisineConseilConstit_Type'
-  codeActe: unknown
+  codeActe: string
 
   anneeDecision?: string
   auteurMotion?: string
