@@ -1,18 +1,25 @@
 import { MyLink } from '../../components/MyLink'
 import * as types from './DossierFiche.types'
+import * as dossierTypes from '../../lib/dossier'
+import { formatDate, formatDateWithTimeAndWeekday } from '../../lib/utils'
 
 export function Page(props: types.Props) {
   const { dossier } = props
   console.log('@@@@ dossier', dossier)
-
-  const { legislature, titreDossier, initiateur, fusionDossier } = dossier
+  const {
+    legislature,
+    titreDossier,
+    initiateur,
+    fusionDossier,
+    actesLegislatifs,
+  } = dossier
   const { titre, senatChemin, titreChemin } = titreDossier
   const urlAn = `http://www.assemblee-nationale.fr/dyn/${legislature}/dossiers/${titreChemin}`
 
   return (
     <div className="">
       <p>
-        Titre : <span className="text-2xl">{dossier.titreDossier.titre}</span>
+        Titre : <span className="text-2xl">{titre}</span>
       </p>
       <p>xsiType : {dossier.xsiType}</p>
       <FusionDossier {...{ fusionDossier }} />
@@ -35,6 +42,8 @@ export function Page(props: types.Props) {
       <p>procédure parlementaire : {dossier.procedureParlementaire.libelle}</p>
       <p>Législature : {dossier.legislature}</p>
       <Initiateur {...{ initiateur }} />
+
+      <ActeLegislatifs {...{ actesLegislatifs }} />
     </div>
   )
 }
@@ -91,4 +100,71 @@ function FusionDossier({
     }
   }
   return null
+}
+
+function ActeLegislatifs({
+  actesLegislatifs,
+}: {
+  actesLegislatifs: types.Props['dossier']['actesLegislatifs']
+}) {
+  if (actesLegislatifs) {
+    return (
+      <div className="p-4">
+        {actesLegislatifs.map(childActe => {
+          return <ActeLegislatifRacine key={childActe.uid} acte={childActe} />
+        })}
+      </div>
+    )
+  }
+  return null
+}
+function ActeLegislatifRacine({ acte }: { acte: dossierTypes.ActeRacine }) {
+  return (
+    <div className="m-4 border-2 border-slate-300 bg-slate-200 p-4 shadow-lg">
+      {acte.libelleActe.nomCanonique}
+
+      {acte.actesLegislatifs.map(childActe => {
+        return <ActeLegislatifNested key={childActe.uid} acte={childActe} />
+      })}
+    </div>
+  )
+}
+
+function ActeLegislatifNested({ acte }: { acte: dossierTypes.ActeNested }) {
+  const {
+    xsiType,
+    anneeDecision,
+    auteurMotion,
+    auteursRefs,
+    casSaisine,
+    codeLoi,
+    dateActe,
+  } = acte
+  const libelleCasSaisine = casSaisine?.libelle
+
+  return (
+    <div className=" m-2 border-2 border-slate-300 bg-slate-200 p-2 shadow-lg">
+      <div>
+        {xsiType && (
+          <>
+            <span className="text-sm italic text-slate-500">{xsiType}</span>{' '}
+          </>
+        )}
+        {anneeDecision && (
+          <>
+            <span className="text-sm font-bold ">({anneeDecision})</span>{' '}
+          </>
+        )}
+        {acte.libelleActe.nomCanonique}
+        {acte.actesLegislatifs?.map(childActe => {
+          return <ActeLegislatifNested key={childActe.uid} acte={childActe} />
+        })}
+      </div>
+      {auteurMotion && <p>Auteur de la motion {auteurMotion}</p>}
+      {auteursRefs && <p>Références des auteurs {auteursRefs.join(', ')}</p>}
+      {libelleCasSaisine && <p>Cas de saisine {libelleCasSaisine}</p>}
+      {codeLoi && <p>Code loi {codeLoi}</p>}
+      {dateActe && <p>Date {formatDate(dateActe)}</p>}
+    </div>
+  )
 }
