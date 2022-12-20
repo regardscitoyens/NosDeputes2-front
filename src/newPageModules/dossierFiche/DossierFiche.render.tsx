@@ -138,10 +138,19 @@ function ActeLegislatifNested({ acte }: { acte: dossierTypes.ActeNested }) {
     auteursRefs,
     casSaisine,
     codeLoi,
+    titreLoi,
     dateActe,
+    decision,
+    depotInitialLectureDefinitiveRef,
+    initiateur,
+    libelleActe,
+    statutAdoption,
+    statutConclusion,
   } = acte
   const libelleCasSaisine = casSaisine?.libelle
-
+  const libelleDecision = decision?.libelle
+  const libelleStatusAdoption = statutAdoption?.libelle
+  const libelleStatutConclusion = statutConclusion?.libelle
   return (
     <div className=" m-2 border-2 border-slate-300 bg-slate-200 p-2 shadow-lg">
       <div>
@@ -155,16 +164,47 @@ function ActeLegislatifNested({ acte }: { acte: dossierTypes.ActeNested }) {
             <span className="text-sm font-bold ">({anneeDecision})</span>{' '}
           </>
         )}
-        {acte.libelleActe.nomCanonique}
+        {libelleActe.nomCanonique}
+
         {acte.actesLegislatifs?.map(childActe => {
           return <ActeLegislatifNested key={childActe.uid} acte={childActe} />
         })}
       </div>
+      {libelleActe.libelleCourt !== libelleActe.nomCanonique && (
+        <p className="text-amber-900">{libelleActe.libelleCourt}</p>
+      )}
       {auteurMotion && <p>Auteur de la motion {auteurMotion}</p>}
       {auteursRefs && <p>Références des auteurs {auteursRefs.join(', ')}</p>}
       {libelleCasSaisine && <p>Cas de saisine {libelleCasSaisine}</p>}
-      {codeLoi && <p>Code loi {codeLoi}</p>}
+      {titreLoi && (
+        <p>
+          Titre : <span className="italic">{titreLoi}</span>
+        </p>
+      )}
+      {codeLoi && <p>Code {codeLoi}</p>}
+      {depotInitialLectureDefinitiveRef && (
+        <p>
+          depotInitialLectureDefinitiveRef {depotInitialLectureDefinitiveRef}
+        </p>
+      )}
       {dateActe && <p>Date {formatDate(dateActe)}</p>}
+      {libelleDecision && (
+        <p>
+          Décision : <span className="font-bold">{libelleDecision}</span>
+        </p>
+      )}
+      {libelleStatusAdoption && (
+        <p>
+          <span className="font-bold">{libelleStatusAdoption}</span>
+        </p>
+      )}
+      {libelleStatutConclusion && (
+        <p>
+          Conclusion :{' '}
+          <span className="font-bold">{libelleStatutConclusion}</span>
+        </p>
+      )}
+      <Initiateur {...{ initiateur }} />
     </div>
   )
 }
