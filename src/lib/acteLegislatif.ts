@@ -202,47 +202,115 @@ type SubtypeOfActe =
         referenceNor?: string
       }[] // only 1 or 2 items
     }
-  //TODO continue here
   | {
       xsiType: 'EtudeImpact_Type'
       libelleActe: "Etude d'impact"
+      dateActe: string
+      texteAssocieRef: string
+      contributionInternaute: { dateOuverture: string; dateFermeture?: string }
     }
   | {
       xsiType: 'DepotAccordInternational_Type'
       libelleActe: 'Accord international'
+      dateActe: string
+      texteAssocieRef: string
     }
   | {
       xsiType: 'RenvoiCMP_Type'
       libelleActe: "Convocation d'une CMP"
+      dateActe: string
+      initiateur: { acteurs: { acteurRef: string; mandatRef: string }[] }
     }
   | {
       xsiType: 'DepotAvisConseilEtat_Type'
       libelleActe: "Avis du Conseil d'Etat"
+      dateActe: string
+      texteAssocieRef: string
     }
   | {
       xsiType: 'SaisineConseilConstit_Type'
       libelleActe: 'Saisine du conseil constitutionnel'
+      dateActe: string
+      motif: "En application de l'article 61§2 de la Constitution"
+      casSaisine: {
+        libelle:
+          | 'De droit (article 61 alinéa 1 de la Constitution)'
+          | 'Premier Ministre'
+          | "Président de l'Assemblée nationale"
+          | 'Président de la République'
+          | 'Président du Sénat'
+          | 'Soixante députés au moins'
+          | 'Soixante sénateurs au moins'
+      }
+      initiateur?: { acteurs: { acteurRef: string }[] }
     }
   | {
       xsiType: 'ConclusionEtapeCC_Type'
       libelleActe: 'Conclusion du conseil constitutionnel'
+      dateActe: string
+      numDecision: string
+      anneeDecision: string
+      urlConclusion: string
+      statutConclusion:
+        | {
+            famCode: 'TCD01'
+            libelle: 'Confirme'
+          }
+        | {
+            famCode: 'TCD01,'
+            libelle: 'TCD01,'
+          }
+        | {
+            famCode: 'TCD02'
+            libelle: 'Partiellement conforme'
+          }
+        | {
+            famCode: 'TCD02,'
+            libelle: 'TCD02,'
+          }
+        | {
+            famCode: 'TCD03'
+            libelle: 'Conforme avec réserve'
+          }
+        | {
+            famCode: 'TCD04'
+            libelle: 'Non conforme'
+          }
+        | {
+            famCode: 'TCD04,'
+            libelle: 'TCD04,'
+          }
     }
   | {
       xsiType: 'DepotMotionCensure_Type'
       libelleActe: 'Motion de censure'
+      dateActe: string
+      auteursRefs: string[]
+      typeMotionCensure: {
+        libelle: 'Motion de censure 49-3' | 'Motion de censure 49-2'
+      }
     }
   | {
       xsiType: 'DecisionMotionCensure_Type'
       libelleActe: 'Décision sur une motion de censure'
+      dateActe: string
+      decision: { famCode: 'TSORTMOT02' }
+      voteRefs?: [string]
     }
   | {
       xsiType: 'DeclarationGouvernement_Type'
       libelleActe: "Dépôt d'une déclaration du gouvernement"
+      dateActe: string
+      texteAssocieRef: string
+      typeDeclaration: "Déclaration engageant la responsabilité du Gouvernement devant l'Assemblée nationale sur le vote d'un texte"
     }
   | {
       xsiType: 'RetraitInitiative_Type'
       libelleActe: "Retrait d'une initiative"
+      dateActe: string
+      texteAssocieRef: string
     }
+  //TODO continue here
   | {
       xsiType: 'RenvoiPrealable_Type'
       libelleActe: 'Renvoi préalable'
