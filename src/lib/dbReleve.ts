@@ -1,6 +1,6 @@
 import { Kysely, PostgresDialect } from 'kysely'
 import { Pool } from 'pg'
-import { Adresses } from '../newPageModules/deputeFiche/DeputeFiche.types'
+import { Adresses } from '../pageModules/deputeFiche/DeputeFiche.types'
 import { readFromEnv, readIntFromEnv } from './utils'
 
 console.log('Starting releve DB connection pool')
