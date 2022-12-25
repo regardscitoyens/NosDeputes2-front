@@ -44,6 +44,18 @@ FROM dossiers
   const nomCanoniquesForXsiType: { [k: string]: string[] } = {}
   const xsiTypeForNomCanonique: { [k: string]: string[] } = {}
 
+  const keysFrequencies: { [k: string]: number } = {}
+
+  function registerKeysOf(a: any) {
+    Object.keys(a).forEach(k => {
+      keysFrequencies[k] = keysFrequencies[k] | 0
+      keysFrequencies[k]++
+    })
+  }
+  function registerValue(a: string) {
+    acc.push(a)
+  }
+
   rows.forEach(row => {
     const { data } = row
     // console.log('SEANCE', row.start_date)
@@ -58,6 +70,7 @@ FROM dossiers
       acte.actesLegislatifs?.forEach(child => {
         handleActeLegislatif(child, level + 1)
       })
+
       // ---
       // ---
       // ---
@@ -70,10 +83,24 @@ FROM dossiers
 
       const xsiType = acte.xsiType as ActeLegislatif['xsiType']
 
-      const { actesLegislatifs, ...rest } = acte
+      const {
+        actesLegislatifs,
+        uid,
+        codeActe,
+        xsiType: _xsiType,
+        ...rest
+      } = acte
 
-      if (xsiType === 'DepotInitiative_Type') {
-        console.log(rest)
+      if (
+        xsiType === 'NominRapporteurs_Type' &&
+        acte.libelleActe == 'Nomination de rapporteur'
+      ) {
+        // console.log(rest)
+
+        rest.rapporteurs.forEach(rapporteur => {
+          registerKeysOf(rapporteur)
+          registerValue(rapporteur.typeRapporteur)
+        })
       }
     }
     // ---
@@ -100,19 +127,12 @@ FROM dossiers
       actesLegislatifs.forEach(acte => {
         handleActeLegislatif(acte, 1)
       })
-    // acc.push(
-    //   data.plf?.flatMap(_ => _.rapporteurs?.map(_ => _.typeRapporteur)) ??
-    //     '-UNDEFINED-',
-    // )
-    // console.log(pointOdj)
-
-    // acc.push(Array.isArray(seance.odj.pointsOdj) + '')
-    // if (!Array.isArray(seance.odj.pointsOdj)) {
-    // console.log(seance.odj)
-    // }
   })
 
-  console.log('@@@', sortAndUniq(acc))
+  console.log('Fréquence de chaque clé')
+  console.log(keysFrequencies)
+
+  console.log('Valeurs uniques', sortAndUniq(acc))
 
   res.status(200).json({ name: 'John Doe' })
 }

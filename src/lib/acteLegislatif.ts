@@ -8,17 +8,32 @@ type SubtypeOfActe =
   | {
       xsiType: 'DepotInitiative_Type'
       libelleActe: "1er dépôt d'une initiative."
+      dateActe: string
+      organeRef: string
+      texteAssocieRef: string
     }
   | {
       xsiType: 'SaisieComFond_Type'
       libelleActe: 'Renvoi en commission au fond'
+      dateActe: string
+      organeRef: string
     }
   | {
       xsiType: 'NominRapporteurs_Type'
       libelleActe:
         | 'Nomination de rapporteur'
         | 'Nomination de rapporteur budgétaire'
+      dateActe?: string
+      organeRef: string
+      rapporteurs: {
+        acteurRef: string
+        typeRapporteur:
+          | 'rapporteur'
+          | 'rapporteur général'
+          | 'rapporteur pour avis'
+      }[]
     }
+  // TODO continuer pour les types suivants
   | {
       xsiType: 'DepotRapport_Type'
       libelleActe:
