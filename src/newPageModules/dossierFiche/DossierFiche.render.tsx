@@ -1,7 +1,7 @@
 import { MyLink } from '../../components/MyLink'
-import * as types from './DossierFiche.types'
 import * as dossierTypes from '../../lib/dossier'
-import { formatDate, formatDateWithTimeAndWeekday } from '../../lib/utils'
+import { formatDate } from '../../lib/utils'
+import * as types from './DossierFiche.types'
 
 export function Page(props: types.Props) {
   const { dossier } = props
