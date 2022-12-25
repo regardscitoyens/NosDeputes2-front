@@ -1,7 +1,7 @@
 import { InferGetServerSidePropsType } from 'next'
 
-import * as render from '../../newPageModules/deputeFiche/DeputeFiche.render'
-import * as server from '../../newPageModules/deputeFiche/DeputeFiche.server'
+import * as render from '../../pageModules/deputeFiche/DeputeFiche.render'
+import * as server from '../../pageModules/deputeFiche/DeputeFiche.server'
 
 export const getServerSideProps = server.getServerSideProps
 
