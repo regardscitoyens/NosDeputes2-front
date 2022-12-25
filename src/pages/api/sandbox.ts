@@ -41,6 +41,10 @@ FROM dossiers
     return Object.keys(a)
   }
 
+  function json(a: any): string {
+    return JSON.stringify(a)
+  }
+
   let actesCount = 0
   const nomCanoniquesForXsiType: { [k: string]: string[] } = {}
   const xsiTypeForNomCanonique: { [k: string]: string[] } = {}
@@ -88,15 +92,19 @@ FROM dossiers
         ...rest
       } = acte
 
-      if (xsiType === 'Promulgation_Type') {
-        // console.log(rest)
+      if (xsiType === 'RenvoiPrealable_Type') {
+        // console.log(rest.auteursRef)
         actesCount++
-        // registerKeysOf(rest.infoJoRect)
-        // registerValue(rest.infoJoRect)
-        rest.infoJoRect?.forEach(o => {
-          registerKeysOf(o)
-          registerValue(o.typeJo)
-        })
+        registerKeysOf(rest)
+        // registerValue(json(rest.typeDeclaration))
+
+        // if (rest.auteursRef {
+
+        // }
+        // rest.initiateur.acteurs?.forEach(o => {
+        //   registerKeysOf(o)
+        //   //   registerValue(o.typeJo)
+        // })
       }
     }
     // ---
