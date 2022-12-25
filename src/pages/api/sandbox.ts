@@ -88,15 +88,15 @@ FROM dossiers
         ...rest
       } = acte
 
-      if (xsiType === 'SaisieComAvis_Type') {
+      if (xsiType === 'Promulgation_Type') {
         // console.log(rest)
         actesCount++
-        registerKeysOf(rest)
-        // registerValue(JSON.stringify(rest.auteurMotion))
-        // rest.voteRefs?.forEach(o => {
-        //   registerKeysOf(o)
-        //   // registerValue(t.texteAssocieRef)
-        // })
+        // registerKeysOf(rest.infoJoRect)
+        // registerValue(rest.infoJoRect)
+        rest.infoJoRect?.forEach(o => {
+          registerKeysOf(o)
+          registerValue(o.typeJo)
+        })
       }
     }
     // ---
