@@ -4,6 +4,10 @@ export type ActeLegislatif = {
   codeActe: string
   libelleActe: string
   organeRef: string
+  // on sait que certains types ont ou n'ont pas cette date, mais c'est plus pratique de déclarer le champ au niveau racine
+  dateActe?: string
+  // idem
+  texteAssocieRef?: string
 } & SubtypeOfActe
 
 type SubtypeOfActe =

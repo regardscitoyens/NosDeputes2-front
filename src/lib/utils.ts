@@ -7,12 +7,23 @@ export function getAge(date_naissance: string) {
   return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
-export function formatDate(dateIsoString: string) {
-  const str = new Date(dateIsoString)
-    .toLocaleString('fr-FR', {
-      timeZone: 'Europe/Paris',
-    })
-    .split(' ')[0]
+export function formatDate(
+  dateIsoString: string,
+  style: 'normal' | 'precise' | 'precise_with_time' = 'precise',
+) {
+  const str = new Date(dateIsoString).toLocaleString('fr-FR', {
+    timeZone: 'Europe/Paris',
+    weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    ...(style === 'precise_with_time'
+      ? {
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      : {}),
+  })
   return str
 }
 
@@ -121,4 +132,9 @@ export function pickTextColor(bgColor: string): 'text-white' | 'text-black' {
   const b = parseInt(bgColor.substring(5, 7), 16)
   const perceivedLuminosity = (r * 299 + g * 587 + b * 114) / 1000
   return perceivedLuminosity >= 150 ? 'text-black' : 'text-white'
+}
+
+export function capitalizeFirstLetter(s: string): string {
+  if (s.length > 0) return s.charAt(0).toUpperCase() + s.slice(1)
+  return s
 }

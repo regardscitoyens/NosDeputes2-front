@@ -1,6 +1,9 @@
 import { MyLink } from '../../components/MyLink'
 import { ActeLegislatif } from '../../lib/acteLegislatif'
+import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
 import * as types from './DossierFiche.types'
+
+const f = formatDate
 
 export function Page(props: types.Props) {
   const { dossier, organes } = props
@@ -128,13 +131,33 @@ function Acte({
   acte: ActeLegislatif
   organes: types.Organe[]
 }) {
-  const { xsiType, organeRef, libelleActe, actesLegislatifs } = acte
+  const { xsiType, organeRef, libelleActe, actesLegislatifs, texteAssocieRef } =
+    acte
   const organe = findOrgane(organeRef, organes)
+  const isLeaf = (actesLegislatifs || []).length === 0
   return (
-    <div className="m-2 border-2 border-slate-400 bg-slate-200 p-2 shadow-lg">
-      {organe && <p className="text-slate-500">{organe.libelle}</p>}
-      <p className="text-sm italic">{xsiType}</p>
-      <p className="font-bold">{libelleActe}</p>
+    <div
+      className={`m-2 border-2 border-slate-400 p-2 shadow-lg ${
+        isLeaf ? 'bg-slate-50 shadow-slate-400' : 'bg-slate-200'
+      }`}
+    >
+      <div className="flex space-x-2 ">
+        {acte.dateActe && <p className="font-bold">{f(acte.dateActe)} </p>}
+        {organe && <p className=" text-slate-500">{organe.libelle}</p>}
+      </div>
+      <p className="font-mono ">{capitalizeFirstLetter(libelleActe)}</p>
+
+      {texteAssocieRef && (
+        <p className="italic">
+          <MyLink
+            href={`https://www.assemblee-nationale.fr/dyn/docs/${texteAssocieRef}.raw`}
+          >
+            Texte associé {acte.texteAssocieRef}
+          </MyLink>
+        </p>
+      )}
+      <p className="text-xs italic text-slate-400">{xsiType}</p>
+
       {actesLegislatifs?.map(childActe => {
         return <Acte key={childActe.uid} acte={childActe} organes={organes} />
       })}
