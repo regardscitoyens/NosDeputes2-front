@@ -11,7 +11,7 @@ import {
   addLatestGroupToDeputes,
   latestGroupIsNotNull,
 } from '../../lib/newAddLatestGroup'
-import { buildGroupesData } from '../../lib/newBuildGroupesData'
+import { buildGroupesData } from '../../lib/buildGroupesData'
 import * as PageTypes from './DeputeList.types'
 import range from 'lodash/range'
 
@@ -103,7 +103,6 @@ export const getServerSideProps: GetServerSideProps<{
         .filter(_ => _.mandatOngoing)
         .filter(latestGroupIsNotNull),
     ),
-    true,
   )
   return {
     props: {

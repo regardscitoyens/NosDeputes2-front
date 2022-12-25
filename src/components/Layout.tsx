@@ -41,49 +41,16 @@ export function Layout({ children }: Props) {
           <nav className="my-2 space-y-2 bg-slate-200 py-4 px-4">
             <div className="flex space-x-2">
               <BasicLink to="/deputes" label="Les députés" />
-              <BasicLink to="/circonscription" label="Par circonscription" />
-              <BasicLink to="/organismes" label="Par organisme" />
-              <BasicLink to="/deputes/tags" label="Par mot clé" />
-              <BasicLink to="/synthese" label="Synthese" />
-              <BasicLink to="/hasard" label="Au hasard" />
-            </div>
-            <div className="flex space-x-2">
-              <BasicLink
-                to="/dossiers/date"
-                label="Les dossiers (les derniers dossiers)"
-              />
-              <BasicLink to="/dossiers/plus" label="Les plus discutés" />
-              <BasicLink
-                to={`/${LATEST_LEGISLATURE}/scrutins`}
-                label="Les scrutins publics"
-              />
-            </div>
-            <div className="flex space-x-2">
-              <BasicLink to="/recherche/foobar" label="Recherche" />
+              <BasicLink to="/circonscription" label="Les circonscription" />
+              <BasicLink to="/sessions" label="Les sessions parlementaires" />
+              <BasicLink to="/seances" label="Les séances en hémicycle" />
             </div>
           </nav>
           <main className="grow px-8 py-8 text-slate-800 ">{children}</main>
           <footer className="rounded bg-slate-200">
             <nav className="flex space-x-2  py-4 px-4">
               <BasicLink to="/faq" label="Questions fréquentes (FAQ)" />
-              <BasicLink
-                to="/assister-aux-debats"
-                label="Assister aux débats"
-              />
-              <BasicLink
-                to="/donnees"
-                label="Données (dont api, dumps, etc.)"
-              />
-              <BasicLink
-                to="/to-be-defined"
-                label="Législature précédente/suivante"
-              />
               <BasicLink to="/mentions-legales" label="Mention légales" />
-              <BasicLink to="/nous-contacter" label="Nous contacter" />
-              <BasicLink
-                to="https://www.regardscitoyens.org"
-                label="Regards citoyens"
-              />
             </nav>
           </footer>
         </div>
