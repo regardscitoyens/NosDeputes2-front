@@ -1,11 +1,11 @@
 import { MyLink } from '../../components/MyLink'
-import * as dossierTypes from '../../lib/dossier'
-import { formatDate } from '../../lib/utils'
+import { ActeLegislatif } from '../../lib/acteLegislatif'
 import * as types from './DossierFiche.types'
 
 export function Page(props: types.Props) {
-  const { dossier } = props
-  console.log('@@@@ dossier', dossier)
+  const { dossier, organes } = props
+  // console.log('@@@@ dossier', dossier)
+  console.log('@@@@ organes', organes)
   const {
     legislature,
     titreDossier,
@@ -43,7 +43,7 @@ export function Page(props: types.Props) {
       <p>Législature : {dossier.legislature}</p>
       <Initiateur {...{ initiateur }} />
 
-      <ActeLegislatifs {...{ actesLegislatifs }} />
+      <ActeLegislatifs {...{ actesLegislatifs, organes }} />
     </div>
   )
 }
@@ -104,107 +104,47 @@ function FusionDossier({
 
 function ActeLegislatifs({
   actesLegislatifs,
+  organes,
 }: {
   actesLegislatifs: types.Props['dossier']['actesLegislatifs']
+  organes: types.Organe[]
 }) {
   if (actesLegislatifs) {
     return (
       <div className="p-4">
         {actesLegislatifs.map(childActe => {
-          return <ActeLegislatifRacine key={childActe.uid} acte={childActe} />
+          return <Acte key={childActe.uid} acte={childActe} organes={organes} />
         })}
       </div>
     )
   }
   return null
 }
-function ActeLegislatifRacine({ acte }: { acte: dossierTypes.ActeRacine }) {
-  return (
-    <div className="m-4 border-2 border-slate-300 bg-slate-200 p-4 shadow-lg">
-      <p className="text-md font-mono text-blue-600">{acte.codeActe}</p>
-      {acte.libelleActe.nomCanonique}
 
-      {acte.actesLegislatifs.map(childActe => {
-        return <ActeLegislatifNested key={childActe.uid} acte={childActe} />
+function Acte({
+  acte,
+  organes,
+}: {
+  acte: ActeLegislatif
+  organes: types.Organe[]
+}) {
+  const { xsiType, organeRef, libelleActe, actesLegislatifs } = acte
+  const organe = findOrgane(organeRef, organes)
+  return (
+    <div className="m-2 border-2 border-slate-400 bg-slate-200 p-2 shadow-lg">
+      {organe && <p className="text-slate-500">{organe.libelle}</p>}
+      <p className="text-sm italic">{xsiType}</p>
+      <p className="font-bold">{libelleActe}</p>
+      {actesLegislatifs?.map(childActe => {
+        return <Acte key={childActe.uid} acte={childActe} organes={organes} />
       })}
     </div>
   )
 }
 
-function ActeLegislatifNested({ acte }: { acte: dossierTypes.ActeNested }) {
-  const {
-    xsiType,
-    anneeDecision,
-    auteurMotion,
-    auteursRefs,
-    casSaisine,
-    codeLoi,
-    titreLoi,
-    dateActe,
-    decision,
-    depotInitialLectureDefinitiveRef,
-    initiateur,
-    codeActe,
-    libelleActe,
-    statutAdoption,
-    statutConclusion,
-  } = acte
-  const libelleCasSaisine = casSaisine?.libelle
-  const libelleDecision = decision?.libelle
-  const libelleStatusAdoption = statutAdoption?.libelle
-  const libelleStatutConclusion = statutConclusion?.libelle
-  return (
-    <div className=" m-2 border-2 border-slate-300 bg-slate-200 p-2 shadow-lg">
-      <div>
-        <p className="text-md font-mono text-blue-600">{codeActe}</p>
-        {xsiType && (
-          <>
-            <span className="text-sm italic text-slate-500">{xsiType}</span>{' '}
-          </>
-        )}
-        {anneeDecision && (
-          <>
-            <span className="text-sm font-bold ">({anneeDecision})</span>{' '}
-          </>
-        )}
-        {libelleActe.nomCanonique}
-
-        {acte.actesLegislatifs?.map(childActe => {
-          return <ActeLegislatifNested key={childActe.uid} acte={childActe} />
-        })}
-      </div>
-      {auteurMotion && <p>Auteur de la motion {auteurMotion}</p>}
-      {auteursRefs && <p>Références des auteurs {auteursRefs.join(', ')}</p>}
-      {libelleCasSaisine && <p>Cas de saisine {libelleCasSaisine}</p>}
-      {titreLoi && (
-        <p>
-          Titre : <span className="italic">{titreLoi}</span>
-        </p>
-      )}
-      {codeLoi && <p>Code {codeLoi}</p>}
-      {depotInitialLectureDefinitiveRef && (
-        <p>
-          depotInitialLectureDefinitiveRef {depotInitialLectureDefinitiveRef}
-        </p>
-      )}
-      {dateActe && <p>Date {formatDate(dateActe)}</p>}
-      {libelleDecision && (
-        <p>
-          Décision : <span className="font-bold">{libelleDecision}</span>
-        </p>
-      )}
-      {libelleStatusAdoption && (
-        <p>
-          <span className="font-bold">{libelleStatusAdoption}</span>
-        </p>
-      )}
-      {libelleStatutConclusion && (
-        <p>
-          Conclusion :{' '}
-          <span className="font-bold">{libelleStatutConclusion}</span>
-        </p>
-      )}
-      <Initiateur {...{ initiateur }} />
-    </div>
-  )
+function findOrgane(
+  organeRef: string,
+  organes: types.Organe[],
+): types.Organe | null {
+  return organes.find(_ => _.uid === organeRef) ?? null
 }

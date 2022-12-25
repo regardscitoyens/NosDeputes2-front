@@ -323,7 +323,6 @@ type SubtypeOfActe =
       dateActe: string
       initiateur?: { organeRef: string }
     }
-  //TODO continue here
   | {
       xsiType: 'DepotLettreRectificative_Type'
       libelleActe: "Dépôt d'une lettre rectificative."
@@ -350,8 +349,13 @@ type SubtypeOfActe =
   | {
       xsiType: 'DepotMotionReferendaire_Type'
       libelleActe: 'Motion référendaire'
+      dateActe: string
+      auteursRefs?: string[]
     }
   | {
       xsiType: 'DecisionRecevabiliteBureau_Type'
       libelleActe: 'Recevabilité par le Bureau'
+      dateActe: { famCode: '02'; libelle: 'irrecevable' }
+      decision: string
+      formuleDecision: string
     }
