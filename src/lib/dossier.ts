@@ -185,52 +185,6 @@ export type ActeNested = {
   }
   initiateur?: Initiateur
   libelleActe: {
-    libelleCourt:
-      | "1er dépôt d'une initiative."
-      | 'Accord international'
-      | 'Adoption par les instances communautaires'
-      | "Allocution du Président de l'Assemblée nationale"
-      | "Avis du Conseil d'Etat"
-      | 'Commission Mixte Paritaire'
-      | "Commission d'enquête"
-      | 'Conclusion du conseil constitutionnel'
-      | "Convocation d'une CMP"
-      | "Création d'une commission d'enquête"
-      | "Création d'une mission d'information"
-      | 'Discussion en séance publique'
-      | 'Décision'
-      | 'Décision de la CMP'
-      | 'Décision sur une motion de censure'
-      | "Dépôt d'un projet de loi"
-      | "Dépôt d'une déclaration du gouvernement"
-      | "Dépôt d'une initiative en navette"
-      | "Dépôt d'une lettre rectificative."
-      | 'Dépôt de rapport'
-      | "Dépôt du rapport d'une CMP"
-      | "Etude d'impact"
-      | "Le gouvernement déclare l'urgence / engage la procédure accélérée"
-      | 'Message du président de la république'
-      | "Mission d'information"
-      | 'Motion de censure'
-      | 'Motion de procédure'
-      | 'Motion référendaire'
-      | 'Nomination de rapporteur'
-      | 'Nomination de rapporteur budgétaire'
-      | "Promulgation d'une loi"
-      | "Rapport sur l'application des lois"
-      | 'Recevabilité par le Bureau'
-      | 'Renvoi en commission au fond'
-      | 'Renvoi préalable'
-      | 'Renvoi préalable à la CAE'
-      | "Retrait d'une initiative"
-      | 'Réunion de commission'
-      | "Saisine d'une délégation ou d'un office"
-      | 'Saisine du conseil constitutionnel'
-      | "Saisine pour avis d'une commission"
-      | "Travaux d'une commission saisie pour avis"
-      | "Travaux d'une délégation saisie pour avis"
-      | 'Travaux de la commission saisie au fond'
-      | 'Travaux des commissions'
     nomCanonique:
       | "1er dépôt d'une initiative."
       | 'Accord international'

@@ -1,7 +1,17 @@
 import { sql } from 'kysely'
 import lo from 'lodash'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { ActeLegislatif } from '../../lib/acteLegislatif'
 import { dbReleve } from '../../lib/dbReleve'
+
+function removeBloat(acte: any): any {
+  const { libelleActe } = acte
+  return {
+    ...acte,
+    libelleActe: libelleActe.nomCanonique,
+  }
+}
+
 // Dummy api routes to quickly explore some queries
 export default async function sandbox(
   _req: NextApiRequest,
@@ -31,6 +41,9 @@ FROM dossiers
     return Object.keys(a)
   }
 
+  const nomCanoniquesForXsiType: { [k: string]: string[] } = {}
+  const xsiTypeForNomCanonique: { [k: string]: string[] } = {}
+
   rows.forEach(row => {
     const { data } = row
     // console.log('SEANCE', row.start_date)
@@ -40,9 +53,9 @@ FROM dossiers
     //   dossierAbsorbantRef: string
     // }
 
-    function handleActeLegislatif(acte: any, level: number) {
-      const { actesLegislatifs } = acte
-      actesLegislatifs?.forEach(child => {
+    function handleActeLegislatif(_acte: any, level: number) {
+      const acte = removeBloat(_acte)
+      acte.actesLegislatifs?.forEach(child => {
         handleActeLegislatif(child, level + 1)
       })
       // ---
@@ -54,12 +67,13 @@ FROM dossiers
       // ---
       // ---
       // ---
-      if (level > 1) {
-        const a = acte.codeActe
-        const b = acte.libelleActe.nomCanonique
-        if (a !== b) {
-          acc.push(`${b} ${a} ${level}`)
-        }
+
+      const xsiType = acte.xsiType as ActeLegislatif['xsiType']
+
+      const { actesLegislatifs, ...rest } = acte
+
+      if (xsiType === 'DepotInitiative_Type') {
+        console.log(rest)
       }
     }
     // ---
