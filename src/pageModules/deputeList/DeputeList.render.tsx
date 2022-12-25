@@ -2,8 +2,8 @@ import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import { Todo } from '../../components/Todo'
 
-import { GrapheRepartitionGroupes } from '../../components/NewGrapheRepartitionGroupes'
-import { NewDeputeItem } from '../../components/NewDeputeItem'
+import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
+import { DeputeItem } from '../../components/DeputeItem'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import * as types from './DeputeList.types'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
@@ -54,7 +54,7 @@ export function Page({
                       {deputes.map(depute => {
                         return (
                           <li key={depute.uid}>
-                            <NewDeputeItem
+                            <DeputeItem
                               {...{ depute, legislature }}
                               displayCirco
                             />

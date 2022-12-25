@@ -1,6 +1,6 @@
-import { GroupeBadgeWithFonction } from './NewGroupeBadge'
+import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
-import { NewFonctionInGroupe } from '../lib/newAddLatestGroup'
+import { FonctionInGroupe } from '../lib/newAddLatestGroup'
 import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
     mandatOngoing: boolean
     latestGroup: {
       acronym: string
-      fonction: NewFonctionInGroupe
+      fonction: FonctionInGroupe
       color: string
     } | null
   }
@@ -19,7 +19,7 @@ type Props = {
   displayCirco?: boolean
 }
 
-export function NewDeputeItem({
+export function DeputeItem({
   depute: { slug, latestGroup, fullName, circoDepartement, mandatOngoing },
   legislature,
   displayCirco,

@@ -1,4 +1,3 @@
-import { getColorForGroupeAcronym } from '../lib/hardcodedData'
 import { pickTextColor } from '../lib/utils'
 import { MyLink } from './MyLink'
 
