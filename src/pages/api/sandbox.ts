@@ -92,11 +92,11 @@ FROM dossiers
         ...rest
       } = acte
 
-      if (xsiType === 'Adoption_Europe_Type') {
-        // console.log(rest.auteursRef)
+      if (xsiType === 'DecisionRecevabiliteBureau_Type') {
+        console.log(rest)
         actesCount++
-        // registerKeysOf(rest.texteEuropeen)
-        registerValue(json(rest.statutAdoption))
+        registerKeysOf(rest)
+        // registerValue(json(rest.auteursRefs))
 
         // if (rest.auteursRef {
 
