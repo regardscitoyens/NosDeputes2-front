@@ -1,5 +1,5 @@
 import { WithLatestGroupOrNull } from '../../lib/newAddLatestGroup'
-import { GroupeData } from '../../lib/newBuildGroupesData'
+import { GroupeData } from '../../lib/buildGroupesData'
 
 export type Props = {
   deputes: Depute[]

@@ -9,6 +9,7 @@ export const FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS = 15
 // TODO remplir cette map. Pour cela, faire d'abord la page avec les membre de chaque groupe, comme ça on pourra facilement voir les correspondances approximatives entre les groupes d'une législature à l'autre
 // ou ptêt faire un script avec la CLI pour automatiquement mesurer les degrés de ressemblance
 // ou juste prendre les vieilles couleurs de NosDeputes
+// ou ptêt aller voir sur le site de l'AN si on peut pas les retrouver manuellement
 export const colorsForGroupsOldLegislatures: { [acronym: string]: string } = {
   NI: '#8D949A',
 }
@@ -26,21 +27,7 @@ export function isCommissionPermanente(slug: string) {
   ].includes(slug)
 }
 
-// L'ordre serait peut-être déductible à partir des places dans l'hémicycle de chaque député ?
-export const groupesDisplayOrder: string[] = [
-  'LFI',
-  'GDR',
-  'SOC',
-  'ECO',
-  'LIOT',
-  'REN',
-  'MODEM',
-  'HOR',
-  'LR',
-  'RN',
-  'NI',
-]
-export const groupesDisplayOrderWithNewAcronyms: string[] = [
+const groupesDisplayOrderWithNewAcronyms: string[] = [
   'LFI-NUPES',
   'GDR-NUPES',
   'SOC',
@@ -54,15 +41,9 @@ export const groupesDisplayOrderWithNewAcronyms: string[] = [
   'NI',
 ]
 
-export function sortGroupes<A extends { acronym: string }>(
-  groupes: A[],
-  withNewAcronyms: boolean = false,
-): A[] {
+export function sortGroupes<A extends { acronym: string }>(groupes: A[]): A[] {
   return sortBy(groupes, _ =>
-    (withNewAcronyms
-      ? groupesDisplayOrderWithNewAcronyms
-      : groupesDisplayOrder
-    ).indexOf(_.acronym),
+    groupesDisplayOrderWithNewAcronyms.indexOf(_.acronym),
   )
 }
 
@@ -238,25 +219,8 @@ export const fonctionsInOrganismeWithFeminineVersion = {
   apparenté: 'apparentée',
 } as const
 
-export function normalizeFonctionInGroup(f: string): FonctionInGroupe {
-  switch (f) {
-    case 'présidente':
-    case 'président':
-      return 'president'
-    case 'apparentée':
-    case 'apparenté':
-      return 'apparente'
-    case 'membre':
-      return 'membre'
-    default:
-      console.log('Warning: unknown fonction in groupe', f)
-      return 'membre'
-  }
-}
-export type FonctionInGroupe = 'president' | 'membre' | 'apparente'
-
 // sorts des amendements
-export const amendementsSorts = [
+const amendementsSorts = [
   'Adopté',
   'Indéfini',
   'Irrecevable',

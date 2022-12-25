@@ -38,9 +38,7 @@ export function Page({
       <p>
         Retrouvez ici l'ensemble des {deputes.length} députés de la{' '}
         {LATEST_LEGISLATURE}ème législature (dont {deputesEnCoursMandat.length}{' '}
-        en cours de mandat). Les informations relatives aux députés des
-        précédentes législatures restent accessibles sur les liens suivants :
-        <Todo inline>liens vers les autres législatures</Todo>
+        en cours de mandat).
       </p>
       <GrapheRepartitionGroupes {...{ groupesData }} />
       {sortBy(Object.entries(deputesByLetter), _ => _[0]).map(

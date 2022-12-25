@@ -109,7 +109,7 @@ export function chunkBy<A, B>(arr: A[], fn: (a: A) => B): A[][] {
   return Object.values(groupBy(arr, fn))
 }
 
-export function parseIntOrNull(str: string): number | null {
+function parseIntOrNull(str: string): number | null {
   const parsed = parseInt(str)
   if (isNaN(parsed)) return null
   return parsed

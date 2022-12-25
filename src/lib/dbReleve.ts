@@ -3,10 +3,8 @@ import { Pool } from 'pg'
 import { Adresses } from '../newPageModules/deputeFiche/DeputeFiche.types'
 import { readFromEnv, readIntFromEnv } from './utils'
 
-export type DbConnectionPool = Kysely<ReleveTables>
-
 console.log('Starting releve DB connection pool')
-export const dbReleve: DbConnectionPool = new Kysely<ReleveTables>({
+export const dbReleve = new Kysely<ReleveTables>({
   dialect: new PostgresDialect({
     pool: new Pool({
       host: readFromEnv('DB_RELEVE_HOST'),
@@ -19,7 +17,7 @@ export const dbReleve: DbConnectionPool = new Kysely<ReleveTables>({
   log: ['query'],
 })
 
-export interface ReleveTables {
+interface ReleveTables {
   acteurs: {
     uid: string
     data: unknown
