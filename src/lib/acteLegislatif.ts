@@ -2,47 +2,11 @@ export type ActeLegislatif = {
   actesLegislatifs?: ActeLegislatif[]
   uid: string
   codeActe: string
+  libelleActe: string
+  organeRef: string
 } & SubtypeOfActe
 
 type SubtypeOfActe =
-  | {
-      xsiType: 'DepotInitiative_Type'
-      libelleActe: "1er dépôt d'une initiative."
-      dateActe: string
-      organeRef: string
-      texteAssocieRef: string
-    }
-  | {
-      xsiType: 'SaisieComFond_Type'
-      libelleActe: 'Renvoi en commission au fond'
-      dateActe: string
-      organeRef: string
-    }
-  | {
-      xsiType: 'NominRapporteurs_Type'
-      libelleActe:
-        | 'Nomination de rapporteur'
-        | 'Nomination de rapporteur budgétaire'
-      dateActe?: string
-      organeRef: string
-      rapporteurs: {
-        acteurRef: string
-        typeRapporteur:
-          | 'rapporteur'
-          | 'rapporteur général'
-          | 'rapporteur pour avis'
-      }[]
-    }
-  // TODO continuer pour les types suivants
-  | {
-      xsiType: 'DepotRapport_Type'
-      libelleActe:
-        | "Allocution du Président de l'Assemblée nationale"
-        | 'Dépôt de rapport'
-        | "Dépôt du rapport d'une CMP"
-        | 'Message du président de la république'
-        | "Rapport sur l'application des lois"
-    }
   | {
       xsiType: 'Etape_Type'
       libelleActe:
@@ -70,34 +34,143 @@ type SubtypeOfActe =
         | 'troisième lecture'
     }
   | {
+      xsiType: 'DepotInitiative_Type'
+      libelleActe: "1er dépôt d'une initiative."
+      dateActe: string
+      texteAssocieRef: string
+    }
+  | {
+      xsiType: 'SaisieComFond_Type'
+      libelleActe: 'Renvoi en commission au fond'
+      dateActe: string
+    }
+  | {
+      xsiType: 'NominRapporteurs_Type'
+      libelleActe: 'Nomination de rapporteur'
+      dateActe: string
+      rapporteurs: {
+        acteurRef: string
+        typeRapporteur:
+          | 'rapporteur'
+          | 'rapporteur général'
+          | 'rapporteur pour avis'
+      }[]
+    }
+  | {
+      xsiType: 'NominRapporteurs_Type'
+      libelleActe: 'Nomination de rapporteur budgétaire'
+      dateActe: string
+      rapporteurs: {
+        acteurRef: string
+        typeRapporteur: 'rapporteur pour avis' | 'rapporteur spécial'
+        etudePlfRef?: string
+      }[]
+    }
+  | {
+      xsiType: 'DepotRapport_Type'
+      libelleActe: 'Dépôt de rapport' | "Dépôt du rapport d'une CMP"
+      dateActe: string
+      texteAssocieRef: string
+      texteAdopteRef?: string
+    }
+  | {
+      xsiType: 'DepotRapport_Type'
+      libelleActe:
+        | "Allocution du Président de l'Assemblée nationale"
+        | 'Message du président de la république'
+        | "Rapport sur l'application des lois"
+      dateActe: string
+      texteAssocieRef: string
+    }
+  | {
       xsiType: 'Decision_Type'
-      libelleActe: 'Décision' | 'Décision de la CMP'
+      libelleActe: 'Décision'
+      dateActe: string
+      statutConclusion?: {
+        famCode:
+          | 'TCCMP01'
+          | 'TCCMP02'
+          | 'TMRC01'
+          | 'TSORTF01'
+          | 'TSORTF02'
+          | 'TSORTF03'
+          | 'TSORTF04'
+          | 'TSORTF05'
+          | 'TSORTF06'
+          | 'TSORTF07'
+          | 'TSORTF13'
+          | 'TSORTF14'
+          | 'TSORTF18'
+          | 'TSORTF19'
+          | 'TSORTF20'
+          | 'TSORTF21'
+          | 'TSORTF23'
+          | 'TSORTMOT01'
+        // the libelle almost corresponds to the code, but the texts varies a bit too much
+        libelle: string
+      }
+      textesAssocies?: { typeTexte: 'BTA' | 'TAP'; texteAssocieRef: string }[]
+      reunionRef?: string
+      voteRefs?: string[]
+    }
+  | {
+      xsiType: 'Decision_Type'
+      libelleActe: 'Décision de la CMP'
+      dateActe: string
+      statutConclusion?:
+        | {
+            famCode: 'TCCMP01'
+            libelle: 'Accord'
+          }
+        | {
+            famCode: 'TCCMP02'
+            libelle: 'Désaccord'
+          }
     }
   | {
       xsiType: 'DepotInitiativeNavette_Type'
-      libelleActe:
-        | "Dépôt d'un projet de loi"
-        | "Dépôt d'une initiative en navette"
+      libelleActe: "Dépôt d'un projet de loi"
+      dateActe: string
+      provenanceRef: string
+      texteAssocieRef: string
+    }
+  | {
+      xsiType: 'DepotInitiativeNavette_Type'
+      libelleActe: "Dépôt d'une initiative en navette"
+      dateActe: string
+      provenanceRef: string
+      texteAssocieRef: string
+      depotInitialLectureDefinitiveRef?: string
     }
   | {
       xsiType: 'DiscussionCommission_Type'
       libelleActe: 'Réunion de commission'
+      dateActe: string
+      odjRef?: string
+      reunionRef?: string
     }
   | {
       xsiType: 'DiscussionSeancePublique_Type'
       libelleActe: 'Discussion en séance publique'
+      dateActe: string
+      odjRef: string
+      reunionRef: string
     }
   | {
       xsiType: 'MotionProcedure_Type'
       libelleActe: 'Motion de procédure'
+      dateActe: string
+      typeMotion: {
+        libelle: 'Question préalable' | 'Motions de renvoi en commission'
+      }
+      auteurMotion?: string
     }
+  //TODO continue here
   | {
       xsiType: 'SaisieComAvis_Type'
-      libelleActe: {
-        nomCanonique:
-          | "Saisine d'une délégation ou d'un office"
-          | "Saisine pour avis d'une commission"
-      }
+      libelleActe:
+        | "Saisine d'une délégation ou d'un office"
+        | "Saisine pour avis d'une commission"
     }
   | {
       xsiType: 'ProcedureAccelere_Type'

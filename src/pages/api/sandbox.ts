@@ -41,6 +41,7 @@ FROM dossiers
     return Object.keys(a)
   }
 
+  let actesCount = 0
   const nomCanoniquesForXsiType: { [k: string]: string[] } = {}
   const xsiTypeForNomCanonique: { [k: string]: string[] } = {}
 
@@ -58,12 +59,6 @@ FROM dossiers
 
   rows.forEach(row => {
     const { data } = row
-    // console.log('SEANCE', row.start_date)
-
-    // fusionDossier?: {
-    //   cause: 'Dossier absorbé' | 'Examen commun'
-    //   dossierAbsorbantRef: string
-    // }
 
     function handleActeLegislatif(_acte: any, level: number) {
       const acte = removeBloat(_acte)
@@ -87,20 +82,21 @@ FROM dossiers
         actesLegislatifs,
         uid,
         codeActe,
+        libelleActe,
+        organeRef,
         xsiType: _xsiType,
         ...rest
       } = acte
 
-      if (
-        xsiType === 'NominRapporteurs_Type' &&
-        acte.libelleActe == 'Nomination de rapporteur'
-      ) {
+      if (xsiType === 'SaisieComAvis_Type') {
         // console.log(rest)
-
-        rest.rapporteurs.forEach((rapporteur: { typeRapporteur: string }) => {
-          registerKeysOf(rapporteur)
-          registerValue(rapporteur.typeRapporteur)
-        })
+        actesCount++
+        registerKeysOf(rest)
+        // registerValue(JSON.stringify(rest.auteurMotion))
+        // rest.voteRefs?.forEach(o => {
+        //   registerKeysOf(o)
+        //   // registerValue(t.texteAssocieRef)
+        // })
       }
     }
     // ---
@@ -129,8 +125,12 @@ FROM dossiers
       })
   })
 
+  console.log(`Nombre d'actes sélectionnés`, actesCount)
+
   console.log('Fréquence de chaque clé')
-  console.log(keysFrequencies)
+  console.log(
+    Object.fromEntries(lo.sortBy(Object.entries(keysFrequencies), _ => -_[1])),
+  )
 
   console.log('Valeurs uniques', sortAndUniq(acc))
 
