@@ -1,5 +1,5 @@
 import { MyLink } from '../../../components/MyLink'
-import { GroupeBadge } from '../../../components/NewGroupeBadge'
+import { GroupeBadge } from '../../../components/GroupeBadge'
 import { Todo } from '../../../components/Todo'
 import { isCommissionPermanente } from '../../../lib/hardcodedData'
 import { DeputeResponsabilite } from '../../../lib/queryDeputeResponsabilites'

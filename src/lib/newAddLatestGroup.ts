@@ -7,11 +7,11 @@ import { colorsForGroupsOldLegislatures } from './hardcodedData'
 export type LatestGroupForDepute = {
   nom: string
   acronym: string
-  fonction: NewFonctionInGroupe
+  fonction: FonctionInGroupe
   color: string
 }
 
-export type NewFonctionInGroupe =
+export type FonctionInGroupe =
   | 'Président'
   | 'Membre apparenté'
   | 'Membre'
@@ -69,7 +69,7 @@ async function fetchLatestGroupsForDeputeIds(
 
   const { rows } = await sql<{
     acteur_uid: string
-    fonction: NewFonctionInGroupe | null
+    fonction: FonctionInGroupe | null
     acronym: string | null
     nom: string
     color: string

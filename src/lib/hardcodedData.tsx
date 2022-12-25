@@ -27,7 +27,7 @@ export function isCommissionPermanente(slug: string) {
   ].includes(slug)
 }
 
-const groupesDisplayOrderWithNewAcronyms: string[] = [
+const groupesDisplayOrder: string[] = [
   'LFI-NUPES',
   'GDR-NUPES',
   'SOC',
@@ -43,7 +43,7 @@ const groupesDisplayOrderWithNewAcronyms: string[] = [
 
 export function sortGroupes<A extends { acronym: string }>(groupes: A[]): A[] {
   return sortBy(groupes, _ =>
-    groupesDisplayOrderWithNewAcronyms.indexOf(_.acronym),
+    groupesDisplayOrder.indexOf(_.acronym),
   )
 }
 

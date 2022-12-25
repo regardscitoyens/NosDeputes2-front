@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { GroupeBadge } from '../../components/NewGroupeBadge'
+import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
   addPrefixToDepartement,

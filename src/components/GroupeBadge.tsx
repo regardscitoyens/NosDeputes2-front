@@ -1,4 +1,4 @@
-import { NewFonctionInGroupe } from '../lib/newAddLatestGroup'
+import { FonctionInGroupe } from '../lib/newAddLatestGroup'
 import { pickTextColor } from '../lib/utils'
 import { MyLink } from './MyLink'
 
@@ -7,7 +7,7 @@ export function GroupeBadgeWithFonction({
 }: {
   groupe: {
     acronym: string
-    fonction: NewFonctionInGroupe
+    fonction: FonctionInGroupe
     color: string
   } | null
 }) {
@@ -38,7 +38,7 @@ function BaseGroupeBadge({
   color,
 }: {
   acronym: string
-  fonction?: NewFonctionInGroupe
+  fonction?: FonctionInGroupe
   color: string
 }) {
   return (
