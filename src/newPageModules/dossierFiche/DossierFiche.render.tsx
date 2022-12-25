@@ -173,9 +173,6 @@ function ActeLegislatifNested({ acte }: { acte: dossierTypes.ActeNested }) {
           return <ActeLegislatifNested key={childActe.uid} acte={childActe} />
         })}
       </div>
-      {libelleActe.libelleCourt !== libelleActe.nomCanonique && (
-        <p className="text-amber-900">{libelleActe.libelleCourt}</p>
-      )}
       {auteurMotion && <p>Auteur de la motion {auteurMotion}</p>}
       {auteursRefs && <p>Références des auteurs {auteursRefs.join(', ')}</p>}
       {libelleCasSaisine && <p>Cas de saisine {libelleCasSaisine}</p>}
