@@ -67,7 +67,7 @@ FROM dossiers
 
     function handleActeLegislatif(_acte: any, level: number) {
       const acte = removeBloat(_acte)
-      acte.actesLegislatifs?.forEach(child => {
+      acte.actesLegislatifs?.forEach((child: any) => {
         handleActeLegislatif(child, level + 1)
       })
 
@@ -97,7 +97,7 @@ FROM dossiers
       ) {
         // console.log(rest)
 
-        rest.rapporteurs.forEach(rapporteur => {
+        rest.rapporteurs.forEach((rapporteur: { typeRapporteur: string }) => {
           registerKeysOf(rapporteur)
           registerValue(rapporteur.typeRapporteur)
         })
@@ -124,7 +124,7 @@ FROM dossiers
     // ---
     const { actesLegislatifs } = data
     if (actesLegislatifs)
-      actesLegislatifs.forEach(acte => {
+      actesLegislatifs.forEach((acte: any) => {
         handleActeLegislatif(acte, 1)
       })
   })
