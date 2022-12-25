@@ -310,24 +310,42 @@ type SubtypeOfActe =
       dateActe: string
       texteAssocieRef: string
     }
-  //TODO continue here
   | {
       xsiType: 'RenvoiPrealable_Type'
       libelleActe: 'Renvoi préalable'
+      dateActe: string
     }
   | {
       xsiType: 'CreationOrganeTemporaire_Type'
       libelleActe:
         | "Création d'une commission d'enquête"
         | "Création d'une mission d'information"
+      dateActe: string
+      initiateur?: { organeRef: string }
     }
+  //TODO continue here
   | {
       xsiType: 'DepotLettreRectificative_Type'
       libelleActe: "Dépôt d'une lettre rectificative."
+      dateActe: string
+      texteAssocieRef: string
     }
   | {
       xsiType: 'Adoption_Europe_Type'
       libelleActe: 'Adoption par les instances communautaires'
+      dateActe: string
+      infoJoce: {
+        refJoce: string
+        dateJoce: string
+      }
+      texteEuropeen: {
+        typeTexteEuropeen:
+          | 'Acte du Conseil'
+          | 'Décision du Conseil'
+          | 'Règlement de la Commission'
+        titreTexteEuropeen: string
+      }
+      statutAdoption: { famCode: 'ETTD01'; libelle: 'adopté' }
     }
   | {
       xsiType: 'DepotMotionReferendaire_Type'

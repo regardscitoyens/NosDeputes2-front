@@ -92,11 +92,11 @@ FROM dossiers
         ...rest
       } = acte
 
-      if (xsiType === 'RenvoiPrealable_Type') {
+      if (xsiType === 'Adoption_Europe_Type') {
         // console.log(rest.auteursRef)
         actesCount++
-        registerKeysOf(rest)
-        // registerValue(json(rest.typeDeclaration))
+        // registerKeysOf(rest.texteEuropeen)
+        registerValue(json(rest.statutAdoption))
 
         // if (rest.auteursRef {
 
