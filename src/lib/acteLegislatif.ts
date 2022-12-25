@@ -165,21 +165,44 @@ type SubtypeOfActe =
       }
       auteurMotion?: string
     }
-  //TODO continue here
   | {
       xsiType: 'SaisieComAvis_Type'
       libelleActe:
         | "Saisine d'une délégation ou d'un office"
         | "Saisine pour avis d'une commission"
+      dateActe: string
     }
   | {
       xsiType: 'ProcedureAccelere_Type'
       libelleActe: "Le gouvernement déclare l'urgence / engage la procédure accélérée"
+      dateActe: string
     }
   | {
       xsiType: 'Promulgation_Type'
       libelleActe: "Promulgation d'une loi"
+      infoJo: {
+        dateJo: string
+        numJo: string // number stringified
+        typeJo: 'JO_LOI_DECRET'
+        referenceNor?: string
+        urlLegifrance?: string
+      }
+      codeLoi: string
+      dateActe: string
+      titreLoi: string
+      texteLoiRef?: string
+      referenceNor?: string
+      urlLegifrance?: string
+      urlEcheancierLoi?: string
+      infoJoRect?: {
+        dateJo: string
+        numJo: string // number stringified
+        typeJo: 'JO_LOI_DECRET'
+        urlLegifrance?: string
+        referenceNor?: string
+      }[] // only 1 or 2 items
     }
+  //TODO continue here
   | {
       xsiType: 'EtudeImpact_Type'
       libelleActe: "Etude d'impact"
