@@ -43,9 +43,7 @@ FROM dossiers
     return JSON.stringify(a)
   }
 
-  let actesCount = 0
-  const nomCanoniquesForXsiType: { [k: string]: string[] } = {}
-  const xsiTypeForNomCanonique: { [k: string]: string[] } = {}
+  let count = 0
 
   const keysFrequencies: { [k: string]: number } = {}
 
@@ -55,83 +53,33 @@ FROM dossiers
       keysFrequencies[k]++
     })
   }
+
   function registerValue(a: string) {
     acc.push(a)
   }
 
   rows.forEach(row => {
     const { data } = row
-
     function handleActeLegislatif(_acte: any, level: number) {
       const acte = removeBloat(_acte)
       acte.actesLegislatifs?.forEach((child: any) => {
         handleActeLegislatif(child, level + 1)
       })
-
-      // ---
-      // ---
-      // ---
-      // ---
-      // ---
-      // ---
-      // ---
-      // ---
-      // ---
-
-      const xsiType = acte.xsiType as ActeLegislatif['xsiType']
-
-      const {
-        actesLegislatifs,
-        uid,
-        codeActe,
-        libelleActe,
-        organeRef,
-        xsiType: _xsiType,
-        ...rest
-      } = acte
-
-      if (xsiType === 'DecisionRecevabiliteBureau_Type') {
-        console.log(rest)
-        actesCount++
-        registerKeysOf(rest)
-        // registerValue(json(rest.auteursRefs))
-
-        // if (rest.auteursRef {
-
-        // }
-        // rest.initiateur.acteurs?.forEach(o => {
-        //   registerKeysOf(o)
-        //   //   registerValue(o.typeJo)
-        // })
-      }
     }
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
-    // ---
     const { actesLegislatifs } = data
-    if (actesLegislatifs)
+    if (actesLegislatifs) {
       actesLegislatifs.forEach((acte: any) => {
         handleActeLegislatif(acte, 1)
       })
+    }
+
+    if (row.data.initiateur) {
+      count++
+      registerKeysOf(row.data.initiateur ?? {})
+    }
   })
 
-  console.log(`Nombre d'actes sélectionnés`, actesCount)
+  console.log(`Nombre d'éléments`, count)
 
   console.log('Fréquence de chaque clé')
   console.log(

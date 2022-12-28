@@ -6,7 +6,7 @@ import * as types from './DossierFiche.types'
 const f = formatDate
 
 export function Page(props: types.Props) {
-  const { dossier, organes } = props
+  const { dossier, organes, acteurs } = props
   console.log('@@@@ dossier', dossier)
   // console.log('@@@@ organes', organes)
   const {
@@ -43,25 +43,28 @@ export function Page(props: types.Props) {
             </>
           )}
         </p>
-        <Initiateur {...{ initiateur }} />
+        <Initiateur {...{ initiateur, organes }} />
       </div>
 
-      <ActeLegislatifs {...{ actesLegislatifs, organes }} />
+      <ActeLegislatifs {...{ actesLegislatifs, organes, acteurs }} />
     </div>
   )
 }
 
 function Initiateur({
   initiateur,
+  organes,
 }: {
   initiateur: types.Props['dossier']['initiateur']
+  organes: types.Organe[]
 }) {
   if (initiateur) {
     const { organeRef, acteurs } = initiateur
+    const organe = organeRef ? findOrgane(organeRef, organes) : null
     return (
       <>
         <p className="font-bold">Initiateur: </p>
-        {organeRef && <p>{organeRef}</p>}
+        {organe && <p>{organe.libelle}</p>}
         {acteurs && (
           <ul>
             {acteurs.map(acteur => {
@@ -218,4 +221,11 @@ function findOrgane(
   organes: types.Organe[],
 ): types.Organe | null {
   return organes.find(_ => _.uid === organeRef) ?? null
+}
+
+function findActeur(
+  acteurRef: string,
+  acteurs: types.Acteur[],
+): types.Acteur | null {
+  return acteurs.find(_ => _.uid === acteurRef) ?? null
 }

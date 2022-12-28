@@ -7,6 +7,13 @@ export function getAge(date_naissance: string) {
   return Math.abs(ageDate.getUTCFullYear() - 1970)
 }
 
+export function arrIfDefined<A>(a: A | undefined): A[] {
+  if (a === undefined) {
+    return []
+  }
+  return [a]
+}
+
 export function formatDate(
   dateIsoString: string,
   style: 'normal' | 'precise' | 'precise_with_time' = 'precise',

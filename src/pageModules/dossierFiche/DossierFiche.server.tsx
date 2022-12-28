@@ -5,6 +5,7 @@ import { Dossier } from '../../lib/dossier'
 import * as types from './DossierFiche.types'
 import uniq from 'lodash/uniq'
 import { sql } from 'kysely'
+import { arrIfDefined as arrIfDefined } from '../../lib/utils'
 
 type Query = {
   id: string
@@ -49,30 +50,33 @@ function removeBloat(acte: any): any {
 }
 
 function collectOrganeRefsFromDossier(dossier: Dossier): string[] {
-  return dossier.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
-}
-
-function collectActeursRefsFromDossier(dossier: Dossier): string[] {
-  // TODO lire champ initiateur
-  return dossier.actesLegislatifs?.flatMap(collectActeursRefsFromActe) ?? []
-}
-
-function collectOrganeRefsFromActe(acte: ActeLegislatif): string[] {
-  const initiateurOrganeRef =
-    acte.xsiType === 'CreationOrganeTemporaire_Type'
-      ? acte.initiateur?.organeRef
-      : undefined
-  const childrenOrganeRef =
-    acte.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
-
   return [
-    acte.organeRef,
-    ...(initiateurOrganeRef ? [initiateurOrganeRef] : []),
-    ...childrenOrganeRef,
+    ...arrIfDefined(dossier.initiateur?.organeRef),
+    ...(dossier.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []),
   ]
 }
 
+function collectActeursRefsFromDossier(dossier: Dossier): string[] {
+  return [
+    ...(dossier.initiateur?.acteurs?.map(_ => _.acteurRef) ?? []),
+    ...(dossier.actesLegislatifs?.flatMap(collectActeursRefsFromActe) ?? []),
+  ]
+}
+
+function collectOrganeRefsFromActe(acte: ActeLegislatif): string[] {
+  const initiateurOrganeRef = arrIfDefined(
+    acte.xsiType === 'CreationOrganeTemporaire_Type'
+      ? acte.initiateur?.organeRef
+      : undefined,
+  )
+  const childrenOrganeRef =
+    acte.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
+
+  return [acte.organeRef, ...initiateurOrganeRef, ...childrenOrganeRef]
+}
+
 function collectActeursRefsFromActe(acte: ActeLegislatif): string[] {
+  // TODO lire les acteurs refs
   const childrenActeurRef =
     acte.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
   return [...childrenActeurRef]
