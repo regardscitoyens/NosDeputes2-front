@@ -52,6 +52,11 @@ function collectOrganeRefsFromDossier(dossier: Dossier): string[] {
   return dossier.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
 }
 
+function collectActeursRefsFromDossier(dossier: Dossier): string[] {
+  // TODO lire champ initiateur
+  return dossier.actesLegislatifs?.flatMap(collectActeursRefsFromActe) ?? []
+}
+
 function collectOrganeRefsFromActe(acte: ActeLegislatif): string[] {
   const initiateurOrganeRef =
     acte.xsiType === 'CreationOrganeTemporaire_Type'
@@ -65,6 +70,12 @@ function collectOrganeRefsFromActe(acte: ActeLegislatif): string[] {
     ...(initiateurOrganeRef ? [initiateurOrganeRef] : []),
     ...childrenOrganeRef,
   ]
+}
+
+function collectActeursRefsFromActe(acte: ActeLegislatif): string[] {
+  const childrenActeurRef =
+    acte.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
+  return [...childrenActeurRef]
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -95,6 +106,7 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   const organeRefs = uniq(collectOrganeRefsFromDossier(dossier))
+  const acteurRefs = uniq(collectActeursRefsFromDossier(dossier))
   const organes = (
     await sql<{
       uid: string
@@ -108,11 +120,29 @@ WHERE uid IN (${sql.join(organeRefs)})
 `.execute(dbReleve)
   ).rows
 
+  const acteurs = (
+    await sql<{
+      uid: string
+      full_name: string
+    }>`
+SELECT
+  uid, 
+  CONCAT (
+    data->'etatCivil'->'ident'->>'prenom',
+    ' ',
+    data->'etatCivil'->'ident'->>'nom'
+  ) AS full_name
+FROM acteurs
+WHERE uid IN (${sql.join(acteurRefs)})
+`.execute(dbReleve)
+  ).rows
+
   return {
     props: {
       data: {
         dossier,
         organes,
+        acteurs,
       },
     },
   }

@@ -43,7 +43,6 @@ export function Page(props: types.Props) {
             </>
           )}
         </p>
-        <p>Législature : {dossier.legislature}</p>
         <Initiateur {...{ initiateur }} />
       </div>
 
