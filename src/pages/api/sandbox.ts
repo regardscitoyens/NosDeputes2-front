@@ -29,8 +29,6 @@ FROM dossiers
   `.execute(dbReleve)
   ).rows
 
-  console.log('@@@ got dossiers', rows.length)
-
   const acc: string[] = []
 
   function str(a: any) {
