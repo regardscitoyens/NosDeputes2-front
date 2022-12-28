@@ -11,7 +11,10 @@ export type Dossier = {
     dossierAbsorbantRef: string
   }
   indexation: unknown // https://data.tricoteuses.fr/doc/assemblee/document.html#indexation.json
-  initiateur?: Initiateur
+  initiateur?: {
+    acteurs?: { acteurRef: string; mandatRef: string }[]
+    organeRef?: string
+  }
   legislature: string // c'est un nombre stringifié
   plf?: Plf
   procedureParlementaire: {
