@@ -28,26 +28,28 @@ export function Layout({ children }: Props) {
       </Head>
       <div className="bg-slate-300">
         <div className="container mx-auto flex min-h-screen flex-col  px-4 py-4">
-          <header className="rounded bg-slate-200 px-4 py-4 ">
-            <MyLink href={'/'}>
-              <h1 className="text-2xl font-bold uppercase text-slate-700">
-                NosDéputés.fr
-              </h1>
-              <p className="text-slate-500">
-                Observatoire citoyen de l'activité parlementaire
-              </p>
-            </MyLink>
+          <header>
+            <nav className="space-y-2 bg-slate-200 py-4 px-4">
+              <div className="flex space-x-2 ">
+                <MyLink href={'/'}>
+                  <h1>
+                    <span className="text-xl font-bold uppercase  text-slate-500">
+                      NosDéputés.fr
+                    </span>{' '}
+                  </h1>
+                  <p className=" text-md  text-center font-bold uppercase  text-slate-400 ">
+                    (relève)
+                  </p>
+                </MyLink>
+                <BasicLink to="/deputes" label="Les députés" />
+                <BasicLink to="/circonscription" label="Les circonscription" />
+                <BasicLink to="/sessions" label="Les sessions parlementaires" />
+                <BasicLink to="/seances" label="Les séances en hémicycle" />
+                <BasicLink to="/dossiers" label="Les dossiers législatifs" />
+              </div>
+            </nav>
           </header>
-          <nav className="my-2 space-y-2 bg-slate-200 py-4 px-4">
-            <div className="flex space-x-2">
-              <BasicLink to="/deputes" label="Les députés" />
-              <BasicLink to="/circonscription" label="Les circonscription" />
-              <BasicLink to="/sessions" label="Les sessions parlementaires" />
-              <BasicLink to="/seances" label="Les séances en hémicycle" />
-              <BasicLink to="/dossiers" label="Les dossiers législatifs" />
-            </div>
-          </nav>
-          <main className="grow px-8 py-8 text-slate-800 ">{children}</main>
+          <main className="grow px-8 py-4 text-slate-800 ">{children}</main>
           <footer className="rounded bg-slate-200">
             <nav className="flex space-x-2  py-4 px-4">
               <BasicLink to="/faq" label="Questions fréquentes (FAQ)" />

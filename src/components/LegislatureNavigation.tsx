@@ -20,7 +20,9 @@ export function LegislatureNavigation({
     <div className="mb-4 flex bg-slate-200">
       <div className="w-1/3 py-2 text-center">
         {previousLegislatureUrl ? (
-          <MyLink href={previousLegislatureUrl}>Législature précédente</MyLink>
+          <MyLink href={previousLegislatureUrl}>
+            {'<'} Législature précédente
+          </MyLink>
         ) : null}
       </div>
       <div className="w-1/3 py-2 text-center">
@@ -30,7 +32,7 @@ export function LegislatureNavigation({
       </div>
       <div className="w-1/3 py-2 text-center">
         {nextLegislatureUrl ? (
-          <MyLink href={nextLegislatureUrl}>Législature suivante</MyLink>
+          <MyLink href={nextLegislatureUrl}>Législature suivante {'>'}</MyLink>
         ) : null}
       </div>
     </div>
