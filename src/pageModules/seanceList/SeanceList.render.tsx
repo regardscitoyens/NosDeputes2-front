@@ -119,10 +119,7 @@ function DossierLegislatifRef({
   if (dossierLegislatifRef) {
     return (
       <span>
-        <MyLink
-          href={`/dossier/${dossierLegislatifRef}`}
-          className="font-bold"
-        >
+        <MyLink href={`/dossier/${dossierLegislatifRef}`} className="font-bold">
           {dossierLegislatifRef}
         </MyLink>
       </span>
