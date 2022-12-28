@@ -211,7 +211,7 @@ type SubtypeOfActe =
       libelleActe: "Etude d'impact"
       dateActe: string
       texteAssocieRef: string
-      contributionInternaute: { dateOuverture: string; dateFermeture?: string }
+      contributionInternaute: { dateOuverture?: string; dateFermeture?: string }
     }
   | {
       xsiType: 'DepotAccordInternational_Type'
