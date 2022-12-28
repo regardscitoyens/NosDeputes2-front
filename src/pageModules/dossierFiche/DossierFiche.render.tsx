@@ -7,8 +7,8 @@ const f = formatDate
 
 export function Page(props: types.Props) {
   const { dossier, organes } = props
-  // console.log('@@@@ dossier', dossier)
-  console.log('@@@@ organes', organes)
+  console.log('@@@@ dossier', dossier)
+  // console.log('@@@@ organes', organes)
   const {
     legislature,
     titreDossier,
@@ -20,31 +20,33 @@ export function Page(props: types.Props) {
   const urlAn = `http://www.assemblee-nationale.fr/dyn/${legislature}/dossiers/${titreChemin}`
 
   return (
-    <div className="">
-      <p>
-        Titre : <span className="text-2xl">{titre}</span>
-      </p>
-      <p>xsiType : {dossier.xsiType}</p>
-      <FusionDossier {...{ fusionDossier }} />
-      <p>
-        URL AN :{' '}
-        <MyLink href={urlAn} targetBlank>
-          {urlAn}
-        </MyLink>
-      </p>
-
-      {senatChemin && (
+    <div>
+      <div className="">
+        <p className="text-center  text-2xl italic">{titre}</p>
+        <p>xsiType : {dossier.xsiType}</p>
+        <FusionDossier {...{ fusionDossier }} />
         <p>
-          URL sur le site du Sénat{' '}
-          <MyLink href={senatChemin} targetBlank>
-            {senatChemin}
+          URL AN :{' '}
+          <MyLink href={urlAn} targetBlank>
+            {urlAn}
           </MyLink>
         </p>
-      )}
 
-      <p>procédure parlementaire : {dossier.procedureParlementaire.libelle}</p>
-      <p>Législature : {dossier.legislature}</p>
-      <Initiateur {...{ initiateur }} />
+        {senatChemin && (
+          <p>
+            URL sur le site du Sénat{' '}
+            <MyLink href={senatChemin} targetBlank>
+              {senatChemin}
+            </MyLink>
+          </p>
+        )}
+
+        <p>
+          procédure parlementaire : {dossier.procedureParlementaire.libelle}
+        </p>
+        <p>Législature : {dossier.legislature}</p>
+        <Initiateur {...{ initiateur }} />
+      </div>
 
       <ActeLegislatifs {...{ actesLegislatifs, organes }} />
     </div>
@@ -137,7 +139,7 @@ function Acte({
   const isLeaf = (actesLegislatifs || []).length === 0
   return (
     <div
-      className={`m-2 border-2 border-slate-400 p-2 shadow-lg ${
+      className={`my-2 border-2 border-slate-400 px-4 py-2 shadow-lg ${
         isLeaf ? 'bg-slate-50 shadow-slate-400' : 'bg-slate-200'
       }`}
     >
@@ -155,6 +157,28 @@ function Acte({
             Texte associé {acte.texteAssocieRef}
           </MyLink>
         </p>
+      )}
+      {acte.xsiType === 'EtudeImpact_Type' && (
+        <p className="italic">
+          Contribution d'internautes
+          {acte.contributionInternaute.dateOuverture && (
+            <span>Du {f(acte.contributionInternaute.dateOuverture)}</span>
+          )}
+          {acte.contributionInternaute.dateFermeture && (
+            <span>au {f(acte.contributionInternaute.dateFermeture)}</span>
+          )}
+        </p>
+      )}
+      {acte.xsiType === 'NominRapporteurs_Type' && (
+        <ul>
+          {acte.rapporteurs.map(rapporteur => {
+            return (
+              <li key={rapporteur.acteurRef}>
+                {rapporteur.typeRapporteur} {rapporteur.acteurRef}
+              </li>
+            )
+          })}
+        </ul>
       )}
       <p className="text-xs italic text-slate-400">{xsiType}</p>
 

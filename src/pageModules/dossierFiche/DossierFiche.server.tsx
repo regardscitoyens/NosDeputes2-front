@@ -10,10 +10,35 @@ type Query = {
   id: string
 }
 
+function fixDate(date: string): string {
+  // some date are like this : 2022-01-13+02:00
+  if (date.indexOf('T') === -1) {
+    return date.split('+')[0]
+  }
+  return date
+}
+
+function fixDatesContributionInternaute(acte: any): any {
+  const { contributionInternaute } = acte
+  if (contributionInternaute)
+    return {
+      ...acte,
+      contributionInternaute: {
+        ...(contributionInternaute.dateOuverture
+          ? { dateOuverture: fixDate(contributionInternaute.dateOuverture) }
+          : null),
+        ...(contributionInternaute.dateFermeture
+          ? { dateFermeture: fixDate(contributionInternaute.dateFermeture) }
+          : null),
+      },
+    }
+  else return acte
+}
+
 function removeBloat(acte: any): any {
   const { libelleActe } = acte
   return {
-    ...acte,
+    ...fixDatesContributionInternaute(acte),
     libelleActe: libelleActe.nomCanonique,
     ...(acte.actesLegislatifs
       ? {
