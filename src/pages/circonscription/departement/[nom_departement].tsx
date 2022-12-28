@@ -11,7 +11,7 @@ import {
 } from '../../../lib/queryDeputesForDepartement'
 import {
   getIdDepartement,
-  CURRENT_LEGISLATURE,
+  LATEST_LEGISLATURE,
 } from '../../../lib/hardcodedData'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -120,15 +120,18 @@ function MapDepartement({
         }}
       >
         {circonscription &&
-          mouse && mouse.x && mouse.x > 0 && mouse.y &&
+          mouse &&
+          mouse.x &&
+          mouse.x > 0 &&
+          mouse.y &&
           mouse.y > 0 && (
-              /* @ts-ignore */
-              <div style={tooltipStyle}>
-                <b>{titre}</b>
-                <br />
-                {description}
-              </div>,
-            )}
+            /* @ts-ignore */
+            <div style={tooltipStyle}>
+              <b>{titre}</b>
+              <br />
+              {description}
+            </div>
+          )}
         <SvgProxy
           selector={'.circo'}
           fill="inherit"
@@ -233,7 +236,7 @@ export default function Page({
                 width={40}
                 height={60}
                 alt={`Photo de ${depute.nom}`}
-                src={`/deputes/photos/${CURRENT_LEGISLATURE}/${depute.id_an}.jpg`}
+                src={`/deputes/photos/${LATEST_LEGISLATURE}/${depute.id_an}.jpg`}
                 style={{ display: 'inline-block', verticalAlign: 'top' }}
               />
               <div
