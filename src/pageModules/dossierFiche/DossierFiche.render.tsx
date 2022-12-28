@@ -10,6 +10,7 @@ export function Page(props: types.Props) {
   console.log('@@@@ dossier', dossier)
   // console.log('@@@@ organes', organes)
   const {
+    xsiType,
     legislature,
     titreDossier,
     initiateur,
@@ -22,27 +23,25 @@ export function Page(props: types.Props) {
   return (
     <div>
       <div className="">
-        <p className="text-center  text-2xl italic">{titre}</p>
-        <p>xsiType : {dossier.xsiType}</p>
+        <div className="text-center italic">
+          <p>{dossier.procedureParlementaire.libelle}</p>
+          <p className="font-serif text-2xl italic">«{titre}»</p>
+        </div>
+        <p className="text-xs italic text-slate-400">{xsiType}</p>
         <FusionDossier {...{ fusionDossier }} />
         <p>
-          URL AN :{' '}
           <MyLink href={urlAn} targetBlank>
-            {urlAn}
+            Voir ce dossier sur le site de l'Assemblée Nationale
           </MyLink>
-        </p>
-
-        {senatChemin && (
-          <p>
-            URL sur le site du Sénat{' '}
-            <MyLink href={senatChemin} targetBlank>
-              {senatChemin}
-            </MyLink>
-          </p>
-        )}
-
-        <p>
-          procédure parlementaire : {dossier.procedureParlementaire.libelle}
+          {senatChemin && (
+            <>
+              {' '}
+              ou{' '}
+              <MyLink href={senatChemin} targetBlank>
+                sur le site du Sénat
+              </MyLink>
+            </>
+          )}
         </p>
         <p>Législature : {dossier.legislature}</p>
         <Initiateur {...{ initiateur }} />
@@ -116,7 +115,7 @@ function ActeLegislatifs({
 }) {
   if (actesLegislatifs) {
     return (
-      <div className="p-4">
+      <div className="mt-8">
         {actesLegislatifs.map(childActe => {
           return <Acte key={childActe.uid} acte={childActe} organes={organes} />
         })}
@@ -139,8 +138,10 @@ function Acte({
   const isLeaf = (actesLegislatifs || []).length === 0
   return (
     <div
-      className={`my-2 border-2 border-slate-400 px-4 py-2 shadow-lg ${
-        isLeaf ? 'bg-slate-50 shadow-slate-400' : 'bg-slate-200'
+      className={`my-2 border-2  px-4 py-2 shadow-lg ${
+        isLeaf
+          ? 'border-slate-500 bg-slate-50 shadow-slate-400'
+          : 'border-slate-300 bg-slate-200'
       }`}
     >
       <div className="flex space-x-2 ">
@@ -179,6 +180,30 @@ function Acte({
             )
           })}
         </ul>
+      )}
+      {acte.xsiType === 'Promulgation_Type' && (
+        <>
+          <p className="">"{acte.titreLoi}"</p>
+          <p className="">Code {acte.codeLoi}</p>
+          {acte.urlLegifrance && (
+            <p className="">
+              <MyLink href={acte.urlLegifrance}>{acte.urlLegifrance}</MyLink>
+            </p>
+          )}
+          {acte.urlEcheancierLoi && (
+            <p className="">
+              <MyLink href={acte.urlEcheancierLoi}>
+                {acte.urlEcheancierLoi}
+              </MyLink>
+            </p>
+          )}
+          {acte.texteLoiRef && (
+            <p className="">texteLoiRef : {acte.texteLoiRef}</p>
+          )}
+          {acte.referenceNor && (
+            <p className="">referenceNor : {acte.referenceNor}</p>
+          )}
+        </>
       )}
       <p className="text-xs italic text-slate-400">{xsiType}</p>
 
