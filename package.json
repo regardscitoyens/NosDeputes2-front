@@ -15,7 +15,9 @@
     "format": "prettier --write .",
     "checkformat": "prettier --check .",
     "import-latest-dump": "ts-node ./scripts/import-latest-dump.ts",
-    "analyze-nosdeputes-visits": "ts-node ./scripts/analyze-nosdeputes-visits.ts"
+    "analyze-nosdeputes-visits": "ts-node ./scripts/analyze-nosdeputes-visits.ts",
+    "switch_server": "rm -f .env.local && cp .env.local.db_server .env.local",
+    "switch_local": "rm -f .env.local && cp .env.local.db_local .env.local"
   },
   "dependencies": {
     "@types/lodash": "^4.14.186",
