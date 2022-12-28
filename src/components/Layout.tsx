@@ -44,6 +44,7 @@ export function Layout({ children }: Props) {
               <BasicLink to="/circonscription" label="Les circonscription" />
               <BasicLink to="/sessions" label="Les sessions parlementaires" />
               <BasicLink to="/seances" label="Les séances en hémicycle" />
+              <BasicLink to="/dossiers" label="Les dossiers législatifs" />
             </div>
           </nav>
           <main className="grow px-8 py-8 text-slate-800 ">{children}</main>

@@ -88,7 +88,7 @@ function FusionDossier({
   if (fusionDossier) {
     const { cause, dossierAbsorbantRef } = fusionDossier
     const link = (
-      <MyLink href={`/dossiers/${dossierAbsorbantRef}`}>
+      <MyLink href={`/dossier/${dossierAbsorbantRef}`}>
         {dossierAbsorbantRef}
       </MyLink>
     )
