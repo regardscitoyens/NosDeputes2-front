@@ -46,11 +46,12 @@ SELECT
   data->>'titre' AS title,
   data->'sort'->>'code' AS sort,
   data->'typeVote' AS type_vote,
-  data->'demandeur'->>'texte' AS demandeur_texte
+  data->'demandeur'->>'texte' AS demandeur_texte,
+  data->>'dateScrutin' AS date_scrutin
 FROM scrutins
 WHERE 
   data->>'legislature' = ${legislature.toString()}
-ORDER BY title
+ORDER BY date_scrutin DESC
   `.execute(dbReleve)
   ).rows
 

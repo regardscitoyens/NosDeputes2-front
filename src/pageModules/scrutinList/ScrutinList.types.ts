@@ -25,4 +25,5 @@ export type Scrutin = {
   }
   // plein de valeurs possibles, mais elles pourraient être un peu analysées et traitées sous forme plus gérable
   demandeur_texte: string
+  date_scrutin: string
 }

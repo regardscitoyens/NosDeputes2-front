@@ -66,12 +66,12 @@ FROM scrutins
     const { data } = row
 
     count++
-    registerKeysOf(row.data.demandeur)
-    registerValue(
-      row.data.demandeur.texte,
-      //   '- ' +
-      // row.data.typeVote.typeMajorite,
-    )
+    registerKeysOf(row.data)
+    // registerValue(
+    //   row.data.demandeur.texte,
+    //   //   '- ' +
+    //   // row.data.typeVote.typeMajorite,
+    // )
   })
 
   console.log(`Nombre d'éléments`, count)
