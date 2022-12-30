@@ -1,5 +1,5 @@
 import { MyLink } from '../../components/MyLink'
-import { ActeLegislatif } from '../../lib/acteLegislatif'
+import { ActeLegislatif } from '../../lib/types/acteLegislatif'
 import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
 import * as types from './DossierFiche.types'
 

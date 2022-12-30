@@ -46,6 +46,7 @@ export function Layout({ children }: Props) {
                 <BasicLink to="/sessions" label="Les sessions parlementaires" />
                 <BasicLink to="/seances" label="Les séances en hémicycle" />
                 <BasicLink to="/dossiers" label="Les dossiers législatifs" />
+                <BasicLink to="/scrutins" label="Les scrutins" />
               </div>
             </nav>
           </header>

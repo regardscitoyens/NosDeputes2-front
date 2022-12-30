@@ -1,4 +1,4 @@
-import { Dossier as FullDossier } from '../../lib/dossier'
+import { Dossier as FullDossier } from '../../lib/types/dossier'
 
 export type Props = {
   legislature: number

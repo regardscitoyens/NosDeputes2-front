@@ -25,7 +25,7 @@ export default async function sandbox(
 SELECT 
 uid,
 data
-FROM scrutins
+FROM dossiers
   `.execute(dbReleve)
   ).rows
 
@@ -58,20 +58,25 @@ FROM scrutins
     acc.push(a)
   }
 
-  function sortAndUniq(arr: string[]) {
-    return lo.sortBy(lo.uniq(arr), _ => _)
-  }
-
   rows.forEach(row => {
     const { data } = row
+    function handleActeLegislatif(_acte: any, level: number) {
+      const acte = removeBloat(_acte)
+      acte.actesLegislatifs?.forEach((child: any) => {
+        handleActeLegislatif(child, level + 1)
+      })
+    }
+    const { actesLegislatifs } = data
+    if (actesLegislatifs) {
+      actesLegislatifs.forEach((acte: any) => {
+        handleActeLegislatif(acte, 1)
+      })
+    }
 
-    count++
-    registerKeysOf(row.data.demandeur)
-    registerValue(
-      row.data.demandeur.texte,
-      //   '- ' +
-      // row.data.typeVote.typeMajorite,
-    )
+    if (row.data.initiateur) {
+      count++
+      registerKeysOf(row.data.initiateur ?? {})
+    }
   })
 
   console.log(`Nombre d'éléments`, count)
@@ -84,6 +89,10 @@ FROM scrutins
   console.log('Valeurs uniques', sortAndUniq(acc))
 
   res.status(200).json({ name: 'John Doe' })
+}
+
+function sortAndUniq(arr: string[]) {
+  return lo.sortBy(lo.uniq(arr), _ => _)
 }
 
 function exists(a: any): string {

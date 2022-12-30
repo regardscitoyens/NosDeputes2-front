@@ -1,4 +1,4 @@
-import { Dossier } from '../../lib/dossier'
+import { Dossier } from '../../lib/types/dossier'
 
 export type Props = {
   dossier: Dossier
