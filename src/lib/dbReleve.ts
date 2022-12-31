@@ -41,6 +41,10 @@ interface ReleveTables {
     uid: string
     data: unknown
   }
+  comptesrendus: {
+    uid: string
+    data: unknown
+  }
   nosdeputes_deputes: {
     uid: string
     slug: string

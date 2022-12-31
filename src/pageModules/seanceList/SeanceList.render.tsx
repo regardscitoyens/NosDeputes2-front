@@ -45,13 +45,19 @@ export function Page({
                         {seancesOfWeek.map(seance => {
                           const { uid, start_date } = seance
                           const isFuture = new Date(start_date) > new Date()
+
+                          const seanceTitle = `Séance ${
+                            isFuture ? 'prévue le' : 'du'
+                          } ${formatDateWithTimeAndWeekday(start_date)}`
                           return (
-                            <li
-                              key={uid}
-                              className={isFuture ? 'text-yellow-700' : ''}
-                            >
-                              Séance du{' '}
-                              {formatDateWithTimeAndWeekday(start_date)}
+                            <li key={uid}>
+                              {!isFuture ? (
+                                <MyLink href={`/seance/${uid}`} className="">
+                                  {seanceTitle}
+                                </MyLink>
+                              ) : (
+                                seanceTitle
+                              )}
                               <ul className="ml-8  text-slate-500">
                                 {seance.ordre_du_jour.map(point => {
                                   return (
@@ -119,8 +125,8 @@ function DossierLegislatifRef({
   if (dossierLegislatifRef) {
     return (
       <span>
-        <MyLink href={`/dossier/${dossierLegislatifRef}`} className="font-bold">
-          {dossierLegislatifRef}
+        <MyLink href={`/dossier/${dossierLegislatifRef}`} className="text-sm">
+          voir le dossier
         </MyLink>
       </span>
     )

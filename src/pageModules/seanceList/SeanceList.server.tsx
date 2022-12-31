@@ -13,8 +13,6 @@ type Query = {
   legislature?: string
 }
 
-// TODO on pourrait faire aussi les réunions de commission et les réunions à l'initiative des parlementaires, ptêt sur une autre page ?
-
 function transformOdj(
   ordre_du_jour: types.PointOdjRawFromDb[] | null,
 ): types.PointOdjFinal[] {
