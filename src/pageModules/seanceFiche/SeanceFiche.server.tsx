@@ -45,7 +45,22 @@ AND uid = ${uid}
     ordre_du_jour: transformSeanceOdj(seanceRaw.ordre_du_jour),
   }
 
-  const compteRendu = {}
+  const compteRendu =
+    (
+      await sql<{ uid: string; contenu: any }>`
+SELECT 
+uid,
+data->'contenu' AS contenu
+FROM comptesrendus
+WHERE data->>'seanceRef' = ${uid}
+`.execute(dbReleve)
+    ).rows[0] ?? null
+  if (!compteRendu) {
+    // pas sûr si ce cas est possible
+    return {
+      notFound: true,
+    }
+  }
 
   return {
     props: {

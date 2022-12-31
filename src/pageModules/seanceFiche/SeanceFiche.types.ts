@@ -10,4 +10,7 @@ export type Seance = {
   start_date: string
   ordre_du_jour: PointOdjFinal[] | null
 }
-export type CompteRendu = {}
+export type CompteRendu = {
+  uid: string
+  contenu: any
+}

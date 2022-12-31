@@ -12,9 +12,14 @@ export function Page(props: types.Props) {
       </h1>
       {seance.ordre_du_jour && (
         <div>
-          Ordre du jour :<p>{JSON.stringify(seance.ordre_du_jour)}</p>
+          Ordre du jour :
+          <pre>{JSON.stringify(seance.ordre_du_jour, null, 2)}</pre>
         </div>
       )}
+      <h2 className="my-4 text-center text-xl">Compte rendu</h2>
+      <div>
+        <pre>{JSON.stringify(compteRendu.contenu, null, 2)}</pre>
+      </div>
     </div>
   )
 }
