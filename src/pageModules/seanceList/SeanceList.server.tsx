@@ -7,30 +7,14 @@ import {
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import { querySessions } from '../../lib/querySessions'
+import {
+  PointOdjRawFromDb,
+  transformSeanceOdj,
+} from '../../lib/transformSeanceOdj'
 import * as types from './SeanceList.types'
 
 type Query = {
   legislature?: string
-}
-
-function transformOdj(
-  ordre_du_jour: types.PointOdjRawFromDb[] | null,
-): types.PointOdjFinal[] {
-  return (ordre_du_jour ?? [])
-    .filter(
-      _ => _.cycleDeVie.etat !== 'Annulé' && _.cycleDeVie.etat !== 'Supprimé',
-    )
-    .map(_ => {
-      return {
-        uid: _.uid,
-        typePointOdj: _.typePointOdj,
-        ...(_.procedure ? { procedure: _.procedure } : null),
-        objet: _.objet,
-        ...(_.dossiersLegislatifsRefs
-          ? { dossierLegislatifRef: _.dossiersLegislatifsRefs[0] }
-          : null),
-      }
-    })
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -70,7 +54,7 @@ export const getServerSideProps: GetServerSideProps<{
           uid: string
           session_ref: string
           start_date: string
-          ordre_du_jour: types.PointOdjRawFromDb[] | null
+          ordre_du_jour: PointOdjRawFromDb[] | null
         }>`
 SELECT 
   uid,
@@ -85,12 +69,9 @@ WHERE data->>'xsiType' = 'seance_type'
 ORDER BY start_date
       `.execute(dbReleve)
       ).rows.map(row => {
-        if (!row.ordre_du_jour) {
-          console.log(row.start_date)
-        }
         return {
           ...row,
-          ordre_du_jour: transformOdj(row.ordre_du_jour),
+          ordre_du_jour: transformSeanceOdj(row.ordre_du_jour),
         }
       })
 
