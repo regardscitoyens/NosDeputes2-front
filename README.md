@@ -9,10 +9,8 @@ Actuellement déployé sur https://nosdeputes-releve-front.vercel.app/ _C'est un
 - On ne sait pas quelles données seront affichées et comment. On explore les données, on affiche ce qu'il en sort, et on ajuste au fur et mesure
 - On ne sait pas si ce nouveau site prendra la place de www.nosdeputes.fr. Ce sera à négocier avec Regards Citoyens au fur et mesure que le projet prend forme
 - On sait qu'on veut reprendre telle quelles les URLs des députés et des circonscriptions, pour ne pas perturber trop le SEO. Le reste, on peut faire ce qu'on veut.
-- Cette app utilise exclusivement la DB préparée par https://github.com/regardscitoyens/NosDeputes2-data/tree/main/releve_db_cli (c'est-à-dire, pour l'instant, qu'on se base quasi uniquement sur l'open data de l'AN). __Ces deux repos sont donc fortement couplés__
+- Cette app utilise exclusivement la DB préparée par https://github.com/regardscitoyens/NosDeputes2-data/tree/main/releve_db_cli (c'est-à-dire, pour l'instant, qu'on se base quasi uniquement sur l'open data de l'AN). **Ces deux repos sont donc fortement couplés**
 - Contrairement au site www.nosdeputes.fr, dans celui-ci toutes les législatures sont sur le même site.
-
-
 
 # Stack
 
