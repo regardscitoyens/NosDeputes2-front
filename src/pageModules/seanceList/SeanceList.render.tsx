@@ -1,6 +1,7 @@
 import groupBy from 'lodash/groupBy'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import { MyLink } from '../../components/MyLink'
+import { PointOdjFinal } from '../../lib/transformSeanceOdj'
 import {
   formatDate,
   formatDateWithTimeAndWeekday,
@@ -83,7 +84,7 @@ export function Page({
   )
 }
 
-function PointOrdreDuJour({ point }: { point: types.PointOdjFinal }) {
+function PointOrdreDuJour({ point }: { point: PointOdjFinal }) {
   const kind =
     point.typePointOdj === 'Suite de la discussion'
       ? 'Discussion (suite)'
