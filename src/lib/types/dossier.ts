@@ -2,10 +2,10 @@
 // Types written manually. Some fields I left unknown
 // See also : https://data.tricoteuses.fr/doc/assemblee/actes/schemas.html#actelegislatif.json
 
-import { ActeLegislatif } from './acteLegislatif'
+import * as acteTypes from './acte'
 
 export type Dossier = {
-  actesLegislatifs?: ActeLegislatif[]
+  actesLegislatifs?: acteTypes.ActeLegislatif[]
   fusionDossier?: {
     cause: 'Dossier absorbé' | 'Examen commun'
     dossierAbsorbantRef: string

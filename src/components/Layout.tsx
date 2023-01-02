@@ -42,7 +42,7 @@ export function Layout({ children }: Props) {
                   </p>
                 </MyLink>
                 <BasicLink to="/deputes" label="Les députés" />
-                <BasicLink to="/circonscription" label="Les circonscription" />
+                <BasicLink to="/circonscription" label="Les circonscriptions" />
                 <BasicLink to="/sessions" label="Les sessions parlementaires" />
                 <BasicLink to="/seances" label="Les séances en hémicycle" />
                 <BasicLink to="/dossiers" label="Les dossiers législatifs" />

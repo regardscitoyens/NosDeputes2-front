@@ -1,7 +1,7 @@
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import * as types from './SessionList.types'
 import { formatDate } from '../../lib/utils'
-import { Session } from '../../lib/querySessions'
+import * as sessionTypes from '../../lib/types/session'
 
 export function Page({
   sessions,
@@ -30,7 +30,7 @@ export function Page({
   )
 }
 
-function computeNbDays(session: Session) {
+function computeNbDays(session: sessionTypes.Session) {
   const diffInMs =
     new Date(session.end_date).getTime() -
     new Date(session.start_date).getTime()

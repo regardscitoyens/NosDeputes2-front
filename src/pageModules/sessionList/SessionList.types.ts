@@ -1,7 +1,7 @@
-import { Session } from '../../lib/querySessions'
+import * as sessionTypes from '../../lib/types/session'
 
 export type Props = {
   legislature: number
   legislatureNavigationUrls: [number, string][]
-  sessions: Session[]
+  sessions: sessionTypes.Session[]
 }

@@ -7,11 +7,9 @@ import {
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import { querySessions } from '../../lib/querySessions'
-import {
-  PointOdjRawFromDb,
-  transformSeanceOdj,
-} from '../../lib/transformSeanceOdj'
+import { transformSeanceOdj } from '../../lib/transformSeanceOdj'
 import * as types from './SeanceList.types'
+import * as seanceTypes from '../../lib/types/seance'
 
 type Query = {
   legislature?: string
@@ -54,7 +52,7 @@ export const getServerSideProps: GetServerSideProps<{
           uid: string
           session_ref: string
           start_date: string
-          ordre_du_jour: PointOdjRawFromDb[] | null
+          ordre_du_jour: seanceTypes.PointOdjRawFromDb[] | null
         }>`
 SELECT 
   uid,

@@ -1,10 +1,4 @@
-import {
-  InterExtractionObj,
-  OneOrMany,
-  ParagrapheObj,
-  PointObj,
-  TexteObj,
-} from '../../lib/types/compterendu'
+import * as compteRenduTypes from '../../lib/types/compteRendu'
 import { formatDateWithTimeAndWeekday } from '../../lib/utils'
 import * as types from './SeanceFiche.types'
 
@@ -29,7 +23,7 @@ export function Page(props: types.Props) {
   )
 }
 
-function DisplayPoints({ points }: { points: PointObj[] }) {
+function DisplayPoints({ points }: { points: compteRenduTypes.PointObj[] }) {
   return (
     <>
       {points.map((point, idx) => {
@@ -39,7 +33,7 @@ function DisplayPoints({ points }: { points: PointObj[] }) {
   )
 }
 
-function DisplayPoint({ point }: { point: PointObj }) {
+function DisplayPoint({ point }: { point: compteRenduTypes.PointObj }) {
   const { texte, paragraphe, interExtraction, ...rest } = point
   return (
     <div className="m-2 border-2 border-solid border-slate-400 bg-slate-200 p-2 shadow-lg">
@@ -58,7 +52,11 @@ function DisplayPoint({ point }: { point: PointObj }) {
   )
 }
 
-function DisplayTexte({ texte }: { texte: PointObj['texte'] }) {
+function DisplayTexte({
+  texte,
+}: {
+  texte: compteRenduTypes.PointObj['texte']
+}) {
   if (!texte) return null
   return (
     <div>
@@ -67,7 +65,7 @@ function DisplayTexte({ texte }: { texte: PointObj['texte'] }) {
   )
 }
 
-function DisplayTexteObj({ texte }: { texte: TexteObj }) {
+function DisplayTexteObj({ texte }: { texte: compteRenduTypes.TexteObj }) {
   return (
     <div className="m-2 border-2 border-solid border-slate-400 bg-slate-200 p-2 shadow-lg">
       <p className="text-sm font-bold text-slate-400">texte object</p>
@@ -76,7 +74,11 @@ function DisplayTexteObj({ texte }: { texte: TexteObj }) {
   )
 }
 
-function DisplayParagraphes({ paragraphes }: { paragraphes: ParagrapheObj[] }) {
+function DisplayParagraphes({
+  paragraphes,
+}: {
+  paragraphes: compteRenduTypes.ParagrapheObj[]
+}) {
   return (
     <>
       {paragraphes.map((paragraphe, idx) => {
@@ -88,7 +90,11 @@ function DisplayParagraphes({ paragraphes }: { paragraphes: ParagrapheObj[] }) {
   )
 }
 
-function DisplayParagraphe({ paragraphe }: { paragraphe: ParagrapheObj }) {
+function DisplayParagraphe({
+  paragraphe,
+}: {
+  paragraphe: compteRenduTypes.ParagrapheObj
+}) {
   const { texte, ...rest } = paragraphe
   return (
     <div className="m-2 border-2 border-solid border-slate-400 bg-slate-200 p-2 shadow-lg">
@@ -102,7 +108,7 @@ function DisplayParagraphe({ paragraphe }: { paragraphe: ParagrapheObj }) {
 function DisplayInterextractions({
   interExtractions,
 }: {
-  interExtractions: InterExtractionObj[]
+  interExtractions: compteRenduTypes.InterExtractionObj[]
 }) {
   return (
     <>
@@ -121,7 +127,7 @@ function DisplayInterextractions({
 function DisplayInterextraction({
   interExtraction,
 }: {
-  interExtraction: InterExtractionObj
+  interExtraction: compteRenduTypes.InterExtractionObj
 }) {
   const { paragraphe, ...rest } = interExtraction
   return (
@@ -134,7 +140,7 @@ function DisplayInterextraction({
 }
 
 // Always present as an array, so that we can use it properly
-function forceArray<A>(oneOrMany: OneOrMany<A>): A[] {
+function forceArray<A>(oneOrMany: compteRenduTypes.OneOrMany<A>): A[] {
   if (Array.isArray(oneOrMany)) return oneOrMany
   return [oneOrMany]
 }

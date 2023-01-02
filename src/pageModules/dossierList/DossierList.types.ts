@@ -1,4 +1,4 @@
-import { Dossier as FullDossier } from '../../lib/types/dossier'
+import * as dossierTypes from '../../lib/types/dossier'
 
 export type Props = {
   legislature: number
@@ -8,6 +8,6 @@ export type Props = {
 
 export type Dossier = {
   uid: string
-  procedure: FullDossier['procedureParlementaire']['libelle']
+  procedure: dossierTypes.Dossier['procedureParlementaire']['libelle']
   title: string
 }

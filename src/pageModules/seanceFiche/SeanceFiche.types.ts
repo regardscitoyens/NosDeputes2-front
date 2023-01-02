@@ -1,13 +1,13 @@
-import { PointOdjFinal } from '../../lib/transformSeanceOdj'
-import { CompteRendu } from '../../lib/types/compterendu'
+import * as seanceTypes from '../../lib/types/seance'
+import * as compteRenduTypes from '../../lib/types/compteRendu'
 
 export type Props = {
   seance: Seance
-  compteRendu: CompteRendu
+  compteRendu: compteRenduTypes.CompteRendu
 }
 export type Seance = {
   uid: string
   session_ref: string
   start_date: string
-  ordre_du_jour: PointOdjFinal[] | null
+  ordre_du_jour: seanceTypes.PointOdjFinal[] | null
 }

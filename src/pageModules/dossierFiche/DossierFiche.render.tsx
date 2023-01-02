@@ -1,5 +1,5 @@
 import { MyLink } from '../../components/MyLink'
-import { ActeLegislatif } from '../../lib/types/acteLegislatif'
+import * as acteTypes from '../../lib/types/acte'
 import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
 import * as types from './DossierFiche.types'
 
@@ -131,7 +131,7 @@ function Acte({
   acte,
   organes,
 }: {
-  acte: ActeLegislatif
+  acte: acteTypes.ActeLegislatif
   organes: types.Organe[]
 }) {
   const { xsiType, organeRef, libelleActe, actesLegislatifs, texteAssocieRef } =

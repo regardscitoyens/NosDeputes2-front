@@ -1,7 +1,7 @@
 import groupBy from 'lodash/groupBy'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import { MyLink } from '../../components/MyLink'
-import { PointOdjFinal } from '../../lib/transformSeanceOdj'
+import * as seanceTypes from '../../lib/types/seance'
 import {
   formatDate,
   formatDateWithTimeAndWeekday,
@@ -21,7 +21,7 @@ export function Page({
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <h1 className="text-2xl">Séances, semaine par semaine</h1>
+      <h1 className="text-center text-2xl ">Séances en hémicycle</h1>
       <ul>
         {sessionsWithSeances.map(session => {
           const { uid, kind, start_date, end_date, seances } = session
@@ -33,14 +33,14 @@ export function Page({
 
           return (
             <li key={uid} className="py-2">
-              <h2 className="text-xl">
+              <h2 className="my-2 text-xl">
                 Session {kind} du {formatDate(start_date)} au{' '}
                 {formatDate(end_date)}
               </h2>
-              <ul className="pl-8">
+              <ul className="space-y-8 pl-8">
                 {Object.entries(seancesByWeek).map(([week, seancesOfWeek]) => {
                   return (
-                    <li key={week} className="my-8 bg-slate-200 p-2 shadow-lg ">
+                    <li key={week} className="bg-slate-200 p-2 shadow-lg ">
                       <h3 className="font-bold">Semaine {week} </h3>
                       <ul>
                         {seancesOfWeek.map(seance => {
@@ -84,7 +84,7 @@ export function Page({
   )
 }
 
-function PointOrdreDuJour({ point }: { point: PointOdjFinal }) {
+function PointOrdreDuJour({ point }: { point: seanceTypes.PointOdjFinal }) {
   const kind =
     point.typePointOdj === 'Suite de la discussion'
       ? 'Discussion (suite)'

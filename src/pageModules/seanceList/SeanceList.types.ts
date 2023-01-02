@@ -1,5 +1,5 @@
-import { Session } from '../../lib/querySessions'
-import { PointOdjFinal } from '../../lib/transformSeanceOdj'
+import * as sessionTypes from '../../lib/types/session'
+import * as seanceTypes from '../../lib/types/seance'
 
 export type Props = {
   legislature: number
@@ -7,11 +7,11 @@ export type Props = {
   sessionsWithSeances: SessionWithSeance[]
 }
 
-export type SessionWithSeance = Session & { seances: Seance[] }
+export type SessionWithSeance = sessionTypes.Session & { seances: Seance[] }
 
 export type Seance = {
   uid: string
   session_ref: string
   start_date: string
-  ordre_du_jour: PointOdjFinal[]
+  ordre_du_jour: seanceTypes.PointOdjFinal[]
 }

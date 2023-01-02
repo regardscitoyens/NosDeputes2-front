@@ -1,7 +1,7 @@
 import { GetServerSideProps } from 'next'
-import { ActeLegislatif } from '../../lib/types/acteLegislatif'
+import * as acteTypes from '../../lib/types/acte'
 import { dbReleve } from '../../lib/dbReleve'
-import { Dossier } from '../../lib/types/dossier'
+import * as dossierTypes from '../../lib/types/dossier'
 import * as types from './DossierFiche.types'
 import uniq from 'lodash/uniq'
 import { sql } from 'kysely'
@@ -49,21 +49,23 @@ function removeBloat(acte: any): any {
   }
 }
 
-function collectOrganeRefsFromDossier(dossier: Dossier): string[] {
+function collectOrganeRefsFromDossier(dossier: dossierTypes.Dossier): string[] {
   return [
     ...arrIfDefined(dossier.initiateur?.organeRef),
     ...(dossier.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []),
   ]
 }
 
-function collectActeursRefsFromDossier(dossier: Dossier): string[] {
+function collectActeursRefsFromDossier(
+  dossier: dossierTypes.Dossier,
+): string[] {
   return [
     ...(dossier.initiateur?.acteurs?.map(_ => _.acteurRef) ?? []),
     ...(dossier.actesLegislatifs?.flatMap(collectActeursRefsFromActe) ?? []),
   ]
 }
 
-function collectOrganeRefsFromActe(acte: ActeLegislatif): string[] {
+function collectOrganeRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
   const initiateurOrganeRef = arrIfDefined(
     acte.xsiType === 'CreationOrganeTemporaire_Type'
       ? acte.initiateur?.organeRef
@@ -75,7 +77,7 @@ function collectOrganeRefsFromActe(acte: ActeLegislatif): string[] {
   return [acte.organeRef, ...initiateurOrganeRef, ...childrenOrganeRef]
 }
 
-function collectActeursRefsFromActe(acte: ActeLegislatif): string[] {
+function collectActeursRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
   // TODO lire les acteurs refs
   const childrenActeurRef =
     acte.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
@@ -100,7 +102,7 @@ export const getServerSideProps: GetServerSideProps<{
     }
   }
   const data = dossierRaw.data as any
-  const dossier: Dossier = {
+  const dossier: dossierTypes.Dossier = {
     ...data,
     ...(data.actesLegislatifs
       ? {

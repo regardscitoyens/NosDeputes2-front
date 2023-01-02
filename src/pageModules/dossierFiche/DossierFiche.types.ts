@@ -1,7 +1,7 @@
-import { Dossier } from '../../lib/types/dossier'
+import * as dossierTypes from '../../lib/types/dossier'
 
 export type Props = {
-  dossier: Dossier
+  dossier: dossierTypes.Dossier
   organes: Organe[]
   acteurs: Acteur[]
 }

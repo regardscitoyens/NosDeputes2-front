@@ -1,7 +1,6 @@
 import { sql } from 'kysely'
 import lo from 'lodash'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { ActeLegislatif } from '../../lib/types/acteLegislatif'
 import { dbReleve } from '../../lib/dbReleve'
 
 function removeBloat(acte: any): any {

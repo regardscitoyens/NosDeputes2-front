@@ -1,11 +1,9 @@
 import { sql } from 'kysely'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
-import {
-  PointOdjRawFromDb,
-  transformSeanceOdj,
-} from '../../lib/transformSeanceOdj'
-import { CompteRendu } from '../../lib/types/compterendu'
+import { transformSeanceOdj } from '../../lib/transformSeanceOdj'
+import * as compteRenduTypes from '../../lib/types/compteRendu'
+import * as seanceTypes from '../../lib/types/seance'
 import * as types from './SeanceFiche.types'
 
 type Query = {
@@ -24,7 +22,7 @@ export const getServerSideProps: GetServerSideProps<{
         uid: string
         session_ref: string
         start_date: string
-        ordre_du_jour: PointOdjRawFromDb[] | null
+        ordre_du_jour: seanceTypes.PointOdjRawFromDb[] | null
       }>`
 SELECT 
 uid,
@@ -48,7 +46,7 @@ AND uid = ${uid}
 
   const compteRendu =
     (
-      await sql<{ data: CompteRendu }>`
+      await sql<{ data: compteRenduTypes.CompteRendu }>`
 SELECT 
 data
 FROM comptesrendus
