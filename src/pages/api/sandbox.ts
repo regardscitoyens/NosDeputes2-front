@@ -81,23 +81,18 @@ FROM comptesrendus
     handlePoint(point)
 
     allPoints.forEach(p => {
-      const { texte } = p
-      if (texte && typeof texte !== 'string') {
-        const { exposant } = texte
-        if (typ(exposant) === 'array') {
-          exposant.forEach(o => {
-            count++
-            registerValue(typ(o))
-          })
-        }
+      const { interExtraction } = p
+      if (interExtraction && typ(interExtraction) === 'object') {
+        registerKeysOf(interExtraction)
+        count++
+      }
+      if (interExtraction && typ(interExtraction) === 'array') {
+        interExtraction.forEach((it: any) => {
+          registerKeysOf(it)
+          count++
+        })
       }
     })
-    // registerValue(Array.isArray(point))
-    // registerValue(
-    //   row.data.demandeur.texte,
-    //   //   '- ' +
-    //   // row.data.typeVote.typeMajorite,
-    // )
   })
 
   console.log(`Nombre d'éléments`, count)

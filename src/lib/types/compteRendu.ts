@@ -19,8 +19,8 @@ export type PointObj = {
   texte?: string | TexteObj
   orateurs?: unknown
   point?: OneOrMany<PointObj>
-  paragraphe?: unknown
-  interExtraction?: unknown
+  paragraphe?: OneOrMany<ParagrapheObj>
+  interExtraction?: OneOrMany<InterExtractionObj>
   changementPresidence?: unknown
   vote?: unknown
 }
@@ -31,6 +31,16 @@ export type TexteObj = {
   exposant?: Exposant
   br?: Br
   indice?: number
+}
+
+export type ParagrapheObj = {
+  texte: string | TexteObj
+  orateurs: unknown
+}
+
+export type InterExtractionObj = {
+  paragraphe: OneOrMany<ParagrapheObj>
+  changementPresidence?: unknown
 }
 
 type Br = OneOrMany<string>
