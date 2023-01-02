@@ -49,7 +49,9 @@ SELECT
   data->'sort'->>'code' AS sort,
   data->'typeVote' AS type_vote,
   data->'demandeur'->>'texte' AS demandeur_texte,
-  data->>'dateScrutin' AS date_scrutin
+  data->>'dateScrutin' AS date_scrutin,
+  data->>'modePublicationDesVotes' AS mode_publication_des_votes,
+  data->'syntheseVote' AS synthese_vote
 FROM scrutins
 WHERE 
   data->>'legislature' = ${legislature.toString()}

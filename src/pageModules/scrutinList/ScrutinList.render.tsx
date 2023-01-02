@@ -68,6 +68,28 @@ function Scrutin({ scrutin }: { scrutin: types.Scrutin }) {
           </span>
         </>
       )}
+      {s.mode_publication_des_votes !== 'DecompteNominatif' && (
+        <>
+          {' '}
+          <span className="text-sm text-teal-600">
+            Mode de publication "{s.mode_publication_des_votes}"
+          </span>
+        </>
+      )}
+      <div>
+        {s.synthese_vote.decompte.pour} votes pour sur{' '}
+        {s.synthese_vote.suffragesExprimes} votes (majorité requise{' '}
+        {s.synthese_vote.nbrSuffragesRequis})
+      </div>
+      <div
+        style={{ width: s.synthese_vote.suffragesExprimes + 'px' }}
+        className="h-2 bg-slate-600"
+      >
+        <div
+          style={{ width: s.synthese_vote.decompte.pour + 'px' }}
+          className="h-full bg-green-600"
+        ></div>
+      </div>
     </div>
   )
 }

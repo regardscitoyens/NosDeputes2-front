@@ -2,6 +2,7 @@ import { sql } from 'kysely'
 import lo from 'lodash'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
+import { arrIfDefined } from '../../lib/utils'
 
 // Dummy api routes to quickly explore some queries
 export default async function sandbox(
@@ -16,7 +17,7 @@ export default async function sandbox(
 SELECT 
 uid,
 data
-FROM comptesrendus
+FROM scrutins
   `.execute(dbReleve)
   ).rows
 
@@ -62,37 +63,21 @@ FROM comptesrendus
   rows.forEach(row => {
     const { data } = row
 
-    const {
-      contenu: { point },
-    } = row.data
+    const { miseAuPoint } = row.data
+    if (miseAuPoint) {
+      const {
+        pour,
+        contre,
+        absentions,
+        nonVotants,
+        nonVotantsVolontaires,
+        dysfonctionnement,
+      } = miseAuPoint
 
-    const allPoints: any[] = []
-
-    function handlePoint(p: any) {
-      if (Array.isArray(p)) {
-        p.forEach(handlePoint)
-      } else {
-        allPoints.push(p)
-        if (p.point) {
-          handlePoint(p.point)
-        }
+      if (dysfonctionnement) {
+        registerValue(json(dysfonctionnement))
       }
     }
-    handlePoint(point)
-
-    allPoints.forEach(p => {
-      const { interExtraction } = p
-      if (interExtraction && typ(interExtraction) === 'object') {
-        registerKeysOf(interExtraction)
-        count++
-      }
-      if (interExtraction && typ(interExtraction) === 'array') {
-        interExtraction.forEach((it: any) => {
-          registerKeysOf(it)
-          count++
-        })
-      }
-    })
   })
 
   console.log(`Nombre d'éléments`, count)

@@ -28,4 +28,67 @@ export type Scrutin = {
   // plein de valeurs possibles, mais elles pourraient être un peu analysées et traitées sous forme plus gérable
   demandeur_texte: string
   date_scrutin: string
+  mode_publication_des_votes:
+    | 'DecompteNominatif'
+    | 'DecompteDissidentsPositionGroupe'
+  // pas encore requêté
+  // -------
+  synthese_vote: {
+    nombreVotants: string
+    suffragesExprimes: string
+    nbrSuffragesRequis: string
+    decompte: DecompteVoix
+  }
+  ventilationVotes: {
+    groupes: {
+      organeRef: string
+      nombreMembresGroupe: string
+      vote: {
+        decompteVoix: DecompteVoix
+        decompteNominatif: {
+          pour: SingleVote[]
+          contre: SingleVote[]
+          absentions: SingleVote[]
+          nonVotants: NonVotantVote[]
+        }
+        positionMajoritaire: 'pour' | 'contre' | 'abstention'
+      }
+    }[]
+  }
+  miseAuPoint?: {
+    pour: BaseSingleVote[]
+    contre: BaseSingleVote[]
+    abstentions: BaseSingleVote[]
+    nonVotants: BaseSingleVote[]
+    nonVotantsVolontaires: BaseSingleVote[]
+    dysfonctionnement?: {
+      pour: BaseSingleVote[]
+      contre: BaseSingleVote[]
+      abstentions: BaseSingleVote[]
+      nonVotants: BaseSingleVote[]
+      nonVotantsVolontaires: BaseSingleVote[]
+    }
+  }
+}
+
+type DecompteVoix = {
+  pour: '0'
+  contre: '0'
+  nonVotants: '1'
+  abstentions: '0'
+  nonVotantsVolontaires: '0'
+}
+
+type SingleVote = BaseSingleVote & {
+  parDelegation?: false | true // not sure what it means when undefined ? maybe check on the original file, maybe tricoteuses strips it for no reason
+}
+
+type NonVotantVote = BaseSingleVote & {
+  // Raison pour laquelle un acteur n’as pas voté malgré sa présence. MG pour membre du gouvernement, PAN pour président de l’Assemblée nationale, PSE pour président de séance.
+  causePositionVote: 'MG' | 'PAN' | 'PSE'
+}
+
+type BaseSingleVote = {
+  acteurRef: string
+  mandatRef: string
 }
