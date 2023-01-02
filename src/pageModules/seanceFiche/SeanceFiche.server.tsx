@@ -5,6 +5,7 @@ import {
   PointOdjRawFromDb,
   transformSeanceOdj,
 } from '../../lib/transformSeanceOdj'
+import { CompteRendu } from '../../lib/types/compterendu'
 import * as types from './SeanceFiche.types'
 
 type Query = {
@@ -47,14 +48,13 @@ AND uid = ${uid}
 
   const compteRendu =
     (
-      await sql<{ uid: string; contenu: any }>`
+      await sql<{ data: CompteRendu }>`
 SELECT 
-uid,
-data->'contenu' AS contenu
+data
 FROM comptesrendus
 WHERE data->>'seanceRef' = ${uid}
 `.execute(dbReleve)
-    ).rows[0] ?? null
+    ).rows[0]?.data ?? null
   if (!compteRendu) {
     // pas sûr si ce cas est possible
     return {

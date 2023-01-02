@@ -1,4 +1,5 @@
 import { PointOdjFinal } from '../../lib/transformSeanceOdj'
+import { CompteRendu } from '../../lib/types/compterendu'
 
 export type Props = {
   seance: Seance
@@ -9,8 +10,4 @@ export type Seance = {
   session_ref: string
   start_date: string
   ordre_du_jour: PointOdjFinal[] | null
-}
-export type CompteRendu = {
-  uid: string
-  contenu: any
 }

@@ -1,16 +1,7 @@
 import { sql } from 'kysely'
 import lo from 'lodash'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { ActeLegislatif } from '../../lib/types/acteLegislatif'
 import { dbReleve } from '../../lib/dbReleve'
-
-function removeBloat(acte: any): any {
-  const { libelleActe } = acte
-  return {
-    ...acte,
-    libelleActe: libelleActe.nomCanonique,
-  }
-}
 
 // Dummy api routes to quickly explore some queries
 export default async function sandbox(
@@ -25,7 +16,7 @@ export default async function sandbox(
 SELECT 
 uid,
 data
-FROM scrutins
+FROM comptesrendus
   `.execute(dbReleve)
   ).rows
 
@@ -41,6 +32,12 @@ FROM scrutins
 
   function json(a: any): string {
     return JSON.stringify(a)
+  }
+
+  function typ(a: any): string {
+    if (typeof a !== 'object') return typeof a
+    if (Array.isArray(a)) return 'array'
+    return 'object'
   }
 
   let count = 0
@@ -65,8 +62,37 @@ FROM scrutins
   rows.forEach(row => {
     const { data } = row
 
-    count++
-    registerKeysOf(row.data)
+    const {
+      contenu: { point },
+    } = row.data
+
+    const allPoints: any[] = []
+
+    function handlePoint(p: any) {
+      if (Array.isArray(p)) {
+        p.forEach(handlePoint)
+      } else {
+        allPoints.push(p)
+        if (p.point) {
+          handlePoint(p.point)
+        }
+      }
+    }
+    handlePoint(point)
+
+    allPoints.forEach(p => {
+      const { texte } = p
+      if (texte && typeof texte !== 'string') {
+        const { exposant } = texte
+        if (typ(exposant) === 'array') {
+          exposant.forEach(o => {
+            count++
+            registerValue(typ(o))
+          })
+        }
+      }
+    })
+    // registerValue(Array.isArray(point))
     // registerValue(
     //   row.data.demandeur.texte,
     //   //   '- ' +
@@ -75,15 +101,12 @@ FROM scrutins
   })
 
   console.log(`Nombre d'éléments`, count)
-
   console.log('Fréquence de chaque clé')
   console.log(
     Object.fromEntries(lo.sortBy(Object.entries(keysFrequencies), _ => -_[1])),
   )
-
   console.log('Valeurs uniques', sortAndUniq(acc))
-
-  res.status(200).json({ name: 'John Doe' })
+  res.status(200).json({ message: 'done' })
 }
 
 function exists(a: any): string {
