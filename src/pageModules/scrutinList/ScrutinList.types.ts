@@ -7,6 +7,8 @@ export type Props = {
 export type Scrutin = {
   uid: string
   title: string
+  numero: string
+  seance_ref: string
   sort: 'adopté' | 'rejeté'
   type_vote: {
     typeMajorite:

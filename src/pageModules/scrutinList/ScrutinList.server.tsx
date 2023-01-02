@@ -44,6 +44,8 @@ export const getServerSideProps: GetServerSideProps<{
 SELECT 
   uid,
   data->>'titre' AS title,
+  (data->>'numero')::int AS numero,
+  data->>'seanceRef' AS seance_ref,
   data->'sort'->>'code' AS sort,
   data->'typeVote' AS type_vote,
   data->'demandeur'->>'texte' AS demandeur_texte,
@@ -51,7 +53,7 @@ SELECT
 FROM scrutins
 WHERE 
   data->>'legislature' = ${legislature.toString()}
-ORDER BY date_scrutin DESC
+ORDER BY date_scrutin ASC, numero ASC
   `.execute(dbReleve)
   ).rows
 
