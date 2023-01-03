@@ -6,9 +6,9 @@ import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
 type Props = {
   depute: {
     fullName: string
-    circoDepartement: string
+    circo_departement: string
     slug: string | null
-    mandatOngoing: boolean
+    mandat_ongoing: boolean
     latestGroup: {
       acronym: string
       fonction: FonctionInGroupe
@@ -20,7 +20,7 @@ type Props = {
 }
 
 export function DeputeItem({
-  depute: { slug, latestGroup, fullName, circoDepartement, mandatOngoing },
+  depute: { slug, latestGroup, fullName, circo_departement: circoDepartement, mandat_ongoing: mandatOngoing },
   legislature,
   displayCirco,
 }: Props) {

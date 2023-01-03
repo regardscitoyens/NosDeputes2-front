@@ -25,7 +25,7 @@ export function Page({
   legislature,
   legislatureNavigationUrls,
 }: types.Props) {
-  const deputesEnCoursMandat = deputes.filter(_ => _.mandatOngoing)
+  const deputesEnCoursMandat = deputes.filter(_ => _.mandat_ongoing)
   const deputesByLetter = groupBy(deputes, _ => _.firstLetterLastName[0])
   // TODO fix le tri alphabétique et le groupement par lettre : attention aux accents
   return (

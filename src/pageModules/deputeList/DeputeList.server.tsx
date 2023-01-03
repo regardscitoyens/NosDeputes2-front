@@ -12,7 +12,7 @@ import {
   latestGroupIsNotNull,
 } from '../../lib/newAddLatestGroup'
 import { buildGroupesData } from '../../lib/buildGroupesData'
-import * as PageTypes from './DeputeList.types'
+import * as types from './DeputeList.types'
 import range from 'lodash/range'
 
 // two ways to access this page :
@@ -23,7 +23,7 @@ type Query = {
 }
 
 export const getServerSideProps: GetServerSideProps<{
-  data: PageTypes.Props
+  data: types.Props
 }> = async context => {
   const query = context.query as Query
   const legislatureInPath = query.legislature
@@ -49,58 +49,44 @@ export const getServerSideProps: GetServerSideProps<{
     return tuple
   })
 
-  const rows = await dbReleve
-    .selectFrom('acteurs')
-    .innerJoin('mandats', 'acteurs.uid', 'mandats.acteur_uid')
-    .innerJoin('organes', join =>
-      join.on('organes.uid', '=', sql`ANY(mandats.organes_uids)`),
-    )
-    // left join to be tolerant if the mapping to NosDeputes misses some data
-    .leftJoin('nosdeputes_deputes', 'nosdeputes_deputes.uid', 'acteurs.uid')
-    .where(sql`organes.data->>'codeType'`, '=', 'ASSEMBLEE')
-    .where(sql`organes.data->>'legislature'`, '=', legislature.toString())
-    .select('acteurs.uid')
-    .select('nosdeputes_deputes.slug')
-    .select(
-      sql<string>`acteurs.data->'etatCivil'->'ident'->>'prenom'`.as(
-        'firstName',
-      ),
-    )
-    .select(
-      sql<string>`acteurs.data->'etatCivil'->'ident'->>'nom'`.as('lastName'),
-    )
-    .select(
-      sql<string>`mandats.data->'election'->'lieu'->>'departement'`.as(
-        'circoDepartement',
-      ),
-    )
-    .select(sql<boolean>`mandats.data->>'dateFin' IS NULL`.as('mandatOngoing'))
-    // a depute can have several mandats in the same legislature
-    .distinctOn('acteur_uid')
-    .execute()
+  const deputesRaw = (
+    await sql<types.DeputeRawFromDb>`
+    SELECT DISTINCT ON (acteur_uid)
+    acteurs.uid,
+    nosdeputes_deputes.slug,
+    acteurs.data->'etatCivil'->'ident'->>'prenom' AS first_name,
+    acteurs.data->'etatCivil'->'ident'->>'nom' AS last_name,
+    mandats.data->'election'->'lieu'->>'departement' AS circo_departement,
+    mandats.data->>'dateFin' IS NULL AS mandat_ongoing
+  FROM acteurs
+  INNER JOIN mandats ON acteurs.uid = mandats.acteur_uid
+  INNER JOIN organes ON organes.uid = ANY(mandats.organes_uids)
+  LEFT JOIN nosdeputes_deputes ON nosdeputes_deputes.uid = acteurs.uid
+  WHERE
+    organes.data->>'codeType' = 'ASSEMBLEE'
+    AND organes.data->>'legislature' = ${legislature.toString()}
+  `.execute(dbReleve)
+  ).rows
 
-  const newdeputes: PageTypes.DeputeSimple[] = sortBy(
-    rows,
+  const deputes: types.DeputeSimple[] = sortBy(
+    deputesRaw,
     // this sort can't be done in the SQL
     // incompatible with our DISTINCT clause
-    _ => _.lastName,
+    _ => _.last_name,
   ).map(depute => {
-    const { firstName, lastName, ...rest } = depute
+    const { first_name, last_name, ...rest } = depute
     return {
-      fullName: `${firstName} ${lastName}`,
-      firstLetterLastName: lastName[0] ?? 'z',
+      fullName: `${first_name} ${last_name}`,
+      firstLetterLastName: last_name[0] ?? 'z',
       ...rest,
     }
   })
 
-  const newDeputesWithGroup = await addLatestGroupToDeputes(
-    newdeputes,
-    legislature,
-  )
+  const deputesWithGroup = await addLatestGroupToDeputes(deputes, legislature)
   const groupesData = sortGroupes(
     buildGroupesData(
-      newDeputesWithGroup
-        .filter(_ => _.mandatOngoing)
+      deputesWithGroup
+        .filter(_ => _.mandat_ongoing)
         .filter(latestGroupIsNotNull),
     ),
   )
@@ -109,7 +95,7 @@ export const getServerSideProps: GetServerSideProps<{
       data: {
         legislature,
         legislatureNavigationUrls,
-        deputes: newDeputesWithGroup,
+        deputes: deputesWithGroup,
         groupesData,
       },
     },

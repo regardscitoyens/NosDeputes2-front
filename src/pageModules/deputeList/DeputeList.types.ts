@@ -11,8 +11,17 @@ export type Depute = WithLatestGroupOrNull<DeputeSimple>
 export type DeputeSimple = {
   uid: string
   slug: string | null
+  circo_departement: string
+  mandat_ongoing: boolean
   fullName: string
-  circoDepartement: string
   firstLetterLastName: string
-  mandatOngoing: boolean
+}
+
+export type DeputeRawFromDb = {
+  uid: string
+  slug: string | null
+  first_name: string
+  last_name: string
+  circo_departement: string
+  mandat_ongoing: boolean
 }
