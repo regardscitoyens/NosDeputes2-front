@@ -1,0 +1,11 @@
+{
+  "name": "svg",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@svgdotjs/svg.js": "^3.1.2",
+    "svg-pathdata": "^6.0.3",
+    "svgdom": "^0.1.10"
+  }
+}
