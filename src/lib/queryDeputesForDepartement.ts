@@ -1,5 +1,3 @@
-import { db } from './db'
-
 export type DeputeInDepartement = {
   id: number
   sexe: 'H' | 'F'
@@ -15,25 +13,28 @@ export type DeputeInDepartement = {
 export async function queryDeputesForDepartement(
   slug: string,
 ): Promise<DeputeInDepartement[]> {
-  const rows = await db
-    .selectFrom('parlementaire')
-    .where('parlementaire.nom_circo', '=', slug)
-    .where(qb =>
-      qb
-        .where('parlementaire.fin_mandat', '>=', new Date())
-        .orWhere('parlementaire.fin_mandat', 'is', null),
-    )
-    .select('id')
-    .select('slug')
-    .select('sexe')
-    .select('id_an')
-    .select('nom')
-    .select('nom_de_famille')
-    .select('groupe_acronyme')
-    .select('nom_circo')
-    .select('num_circo')
-    .orderBy('num_circo')
-    .execute()
+  // TODO à refaire avec la nouvelle DB. S'inspirer probablement de DeputeList.server.ts (mutualiser ?)
+  return []
 
-  return rows
+  // const rows = await db
+  //   .selectFrom('parlementaire')
+  //   .where('parlementaire.nom_circo', '=', slug)
+  //   .where(qb =>
+  //     qb
+  //       .where('parlementaire.fin_mandat', '>=', new Date())
+  //       .orWhere('parlementaire.fin_mandat', 'is', null),
+  //   )
+  //   .select('id')
+  //   .select('slug')
+  //   .select('sexe')
+  //   .select('id_an')
+  //   .select('nom')
+  //   .select('nom_de_famille')
+  //   .select('groupe_acronyme')
+  //   .select('nom_circo')
+  //   .select('num_circo')
+  //   .orderBy('num_circo')
+  //   .execute()
+
+  // return rows
 }
