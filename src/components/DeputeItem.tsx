@@ -20,7 +20,13 @@ type Props = {
 }
 
 export function DeputeItem({
-  depute: { slug, latestGroup, fullName, circo_departement: circoDepartement, mandat_ongoing: mandatOngoing },
+  depute: {
+    slug,
+    latestGroup,
+    fullName,
+    circo_departement: circoDepartement,
+    mandat_ongoing: mandatOngoing,
+  },
   legislature,
   displayCirco,
 }: Props) {

@@ -188,7 +188,7 @@ export default function Page({
   }
   const onCirconscriptionClick = (circonscriptionId: string) => {
     const depute = deputes.find(
-      depute => depute.num_circo === parseInt(circonscriptionId),
+      depute => depute.circo_number === parseInt(circonscriptionId),
     )
     if (depute) {
       router.push(`/${depute.slug}`)
@@ -198,14 +198,14 @@ export default function Page({
     setCirconscription(null)
   }
 
-  const isCurrentCirconscription = (num_circo: number) => {
+  const isCurrentCirconscription = (circo_number: number) => {
     return (
       circonscription &&
-      num_circo === parseInt(circonscription.replace(/^id-\d+-(.*)/, '$1'))
+      circo_number === parseInt(circonscription.replace(/^id-\d+-(.*)/, '$1'))
     )
   }
   const onDeputeHover = (depute: DeputeInDepartement) => {
-    setCirconscription(depute.num_circo.toString())
+    setCirconscription(depute.circo_number.toString())
   }
   const onDeputeMouseOut = (depute: DeputeInDepartement) => {
     setCirconscription(null)
@@ -222,7 +222,7 @@ export default function Page({
         {deputes.map(depute => {
           return (
             <li
-              key={depute.id}
+              key={depute.uid}
               onMouseOver={e => onDeputeHover(depute)}
               onMouseOut={e => onDeputeMouseOut(depute)}
               style={{
@@ -231,7 +231,7 @@ export default function Page({
                 display: 'inline-block',
                 listStyleType: 'none',
                 padding: 5,
-                background: isCurrentCirconscription(depute.num_circo)
+                background: isCurrentCirconscription(depute.circo_number)
                   ? '#d1ea7499'
                   : 'initial',
               }}
@@ -239,8 +239,10 @@ export default function Page({
               <Image
                 width={40}
                 height={60}
-                alt={`Photo de ${depute.nom}`}
-                src={`/deputes/photos/${LATEST_LEGISLATURE}/${depute.id_an}.jpg`}
+                alt={`Photo de ${depute.full_name}`}
+                src={`/deputes/photos/${LATEST_LEGISLATURE}/${depute.uid.substring(
+                  2,
+                )}.jpg`}
                 style={{ display: 'inline-block', verticalAlign: 'top' }}
               />
               <div
@@ -253,13 +255,12 @@ export default function Page({
                   style={{ textDecoration: 'underline' }}
                   href={`/${depute.slug}`}
                 >
-                  {depute.nom}
+                  {depute.full_name}
                 </Link>{' '}
-                - {beautifyNumeroCirconsription(depute.num_circo)}{' '}
+                - {beautifyNumeroCirconsription(depute.circo_number)}{' '}
                 circonscription
                 <br />
-                député{(depute.sexe === 'F' && 'e') || null}{' '}
-                <GroupeBadge groupe={{ acronym: depute.groupe_acronyme }} />
+                député(e) <GroupeBadge groupe={depute.latestGroup} />
               </div>
             </li>
           )
