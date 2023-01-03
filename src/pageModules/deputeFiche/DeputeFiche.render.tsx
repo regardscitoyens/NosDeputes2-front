@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { GroupeBadge } from '../../components/GroupeBadge'
 import { Todo } from '../../components/Todo'
 import {
-  addPrefixToDepartement,
+  addPrefixToCirconscription,
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import { ContactBlock } from './lib/ContactsBlock'
@@ -39,7 +39,7 @@ export function Page(props: types.Props) {
         </span>
         député de la {depute.circo_number}
         <sup>{getOrdinalSuffixFeminine(depute.circo_number)}</sup>{' '}
-        circonscription {addPrefixToDepartement(depute.circo_departement)}
+        circonscription {addPrefixToCirconscription(depute.circo_departement)}
       </h1>
       <div className="col-span-2">
         <Image
