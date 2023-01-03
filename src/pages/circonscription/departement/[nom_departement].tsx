@@ -77,17 +77,20 @@ function MapDepartement({
     leaveDelay: 100,
   })
 
-  function onNodeOver(e) {
-    this.style.zIndex = 10
-    setTitre(this.querySelector('title').textContent)
-    setDescription(this.querySelector('desc').textContent)
-    onHover({ id: this.getAttribute('id').replace(/^.*-(\d+)/, '$1') })
+  function onNodeOver(e: Event) {
+    const path = e.target as SVGPathElement
+    path.style.zIndex = '10'
+    setTitre(path.querySelector('title')?.textContent ?? '')
+    setDescription(path.querySelector('desc')?.textContent ?? '')
+    onHover({ id: path.getAttribute('id')?.replace(/^.*-(\d+)/, '$1') })
   }
-  function onNodeOut(e) {
-    ouMouseOut(this.getAttribute('id').replace(/^.*-(\d+)/, '$1'))
+  function onNodeOut(e: Event) {
+    const path = e.target as SVGPathElement
+    ouMouseOut(path.getAttribute('id')?.replace(/^.*-(\d+)/, '$1'))
   }
-  function onNodeClick(e) {
-    onClick(this.getAttribute('id').replace(/^.*-(\d+)/, '$1'))
+  function onNodeClick(e: Event) {
+    const path = e.target as SVGPathElement
+    onClick(path.getAttribute('id')?.replace(/^.*-(\d+)/, '$1'))
   }
   const paddedCirconscription =
     circonscription && circonscription.length < 2
@@ -136,13 +139,14 @@ function MapDepartement({
           selector={'.circo'}
           fill="inherit"
           stroke="inherit"
-          onElementSelected={e => {
-            Array.from(e).map((node: any) => {
-              node.style.cursor = 'pointer'
+          onElementSelected={(e: any) => {
+            const paths = Array.from(e) as SVGPathElement[]
+            paths.map(path => {
+              path.style.cursor = 'pointer'
               // todo: remove all listeners
-              node.addEventListener('mouseover', onNodeOver)
-              node.addEventListener('mouseout', onNodeOut)
-              node.addEventListener('click', onNodeClick)
+              path.addEventListener('mouseover', onNodeOver)
+              path.addEventListener('mouseout', onNodeOut)
+              path.addEventListener('click', onNodeClick)
             })
           }}
         />
