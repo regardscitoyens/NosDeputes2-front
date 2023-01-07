@@ -1,7 +1,10 @@
 import { MyLink } from '../../../components/MyLink'
 import { GroupeBadge } from '../../../components/GroupeBadge'
 import { Todo } from '../../../components/Todo'
-import { isCommissionPermanente } from '../../../lib/hardcodedData'
+import {
+  addPrefixToCirconscription,
+  isCommissionPermanente,
+} from '../../../lib/hardcodedData'
 import { DeputeResponsabilite } from '../../../lib/queryDeputeResponsabilites'
 import { formatDate, getAge } from '../../../lib/utils'
 import * as types from '../DeputeFiche.types'
@@ -86,13 +89,25 @@ export function MandatsBlock({ depute }: { depute: types.Depute }) {
   )
 }
 
+function getOrdinalSuffixFeminine(n: number) {
+  return n === 1 ? 'ère' : `ème`
+}
+
 export function InformationsBlock(props: types.Props) {
   const { depute } = props
   const age = getAge(depute.date_of_birth)
   const dateNaissanceFormatted = formatDate(depute.date_of_birth)
   return (
     <div className="bg-slate-200  px-8 py-4 shadow-md">
-      <h2 className="font-bold">Informations</h2>
+      <h1 className="text-2xl">
+        <span className="font-bold">
+          {depute.full_name}
+          <GroupeBadge groupe={depute.latestGroup} />
+        </span>
+        Député de la {depute.circo_number}
+        <sup>{getOrdinalSuffixFeminine(depute.circo_number)}</sup>{' '}
+        circonscription {addPrefixToCirconscription(depute.circo_departement)}
+      </h1>{' '}
       <div className="py-4">
         <ul className="list-none">
           <li>

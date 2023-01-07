@@ -11,19 +11,20 @@ import * as types from './DeputeFiche.types'
 import {
   Amendements,
   InformationsBlock,
+  LegislaturesBlock,
+  MandatsBlock,
   Responsabilites,
   Votes,
 } from './lib/variousBlocks'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import { StatsGraph } from './lib/StatsGraph'
-
-function getOrdinalSuffixFeminine(n: number) {
-  return n === 1 ? 'ère' : `ème`
-}
+import { formatDate, getAge } from '../../lib/utils'
 
 export function Page(props: types.Props) {
   const { depute, legislature, legislatureNavigationUrls } = props
   console.log('@@@@ depute', depute)
+  const age = getAge(depute.date_of_birth)
+  const dateNaissanceFormatted = formatDate(depute.date_of_birth)
   return (
     <div className="grid grid-cols-12 gap-4">
       <div className="col-span-full">
@@ -32,15 +33,7 @@ export function Page(props: types.Props) {
           urlsByLegislature={legislatureNavigationUrls}
         />
       </div>
-      <h1 className="col-span-full  text-center text-2xl">
-        <span className="font-bold">
-          {depute.full_name}
-          <GroupeBadge groupe={depute.latestGroup} />
-        </span>
-        député de la {depute.circo_number}
-        <sup>{getOrdinalSuffixFeminine(depute.circo_number)}</sup>{' '}
-        circonscription {addPrefixToCirconscription(depute.circo_departement)}
-      </h1>
+
       <div className="col-span-2">
         <Image
           src={`/deputes/photos/${LATEST_LEGISLATURE}/${depute.uid.substring(
@@ -52,12 +45,16 @@ export function Page(props: types.Props) {
         />
       </div>
       <div className="col-span-10">
-        {depute.stats && <StatsGraph stats={depute.stats} />}
+        <InformationsBlock {...props} />
       </div>
-
+      {depute.stats && (
+        <div className="col-span-full my-4 h-36">
+          <h2 className="text-center text-xl font-bold">Présences</h2>
+          <StatsGraph stats={depute.stats} />
+        </div>
+      )}
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-8">
-          <InformationsBlock {...props} />
           <ContactBlock {...{ depute }} />
           <Responsabilites {...{ depute }} />
           <Todo>

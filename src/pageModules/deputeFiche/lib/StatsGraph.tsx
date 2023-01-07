@@ -47,7 +47,7 @@ export function StatsGraph({
         barGap={'-100%'}
         barCategoryGap={0}
       >
-        <CartesianGrid stroke="#999" />
+        <CartesianGrid stroke="#999" strokeDasharray="5 5" />
         <XAxis dataKey="name" />
         <YAxis domain={[0, 20]} />
         <Tooltip />
@@ -55,8 +55,7 @@ export function StatsGraph({
         <Bar
           dataKey="mediane"
           stroke="rgba(100, 100, 100, 1)"
-          //   strokeDasharray="5 5"
-          fill="rgba(100, 100, 100, 0.3)"
+          fill="rgba(200, 200, 200, 0.1)"
           isAnimationActive={false}
         />
         <Bar
