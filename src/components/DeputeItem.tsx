@@ -32,7 +32,7 @@ export function DeputeItem({
 }: Props) {
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
   return (
-    <div className={`my-2 rounded p-2 drop-shadow ${bg}`}>
+    <div className={`my-2 grow rounded p-2 drop-shadow ${bg}`}>
       <>
         {slug ? (
           <MyLink
