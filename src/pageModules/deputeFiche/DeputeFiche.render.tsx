@@ -11,11 +11,11 @@ import * as types from './DeputeFiche.types'
 import {
   Amendements,
   InformationsBlock,
-  MetricsBlock,
   Responsabilites,
   Votes,
 } from './lib/variousBlocks'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
+import { StatsGraph } from './lib/StatsGraph'
 
 function getOrdinalSuffixFeminine(n: number) {
   return n === 1 ? 'ère' : `ème`
@@ -52,7 +52,7 @@ export function Page(props: types.Props) {
         />
       </div>
       <div className="col-span-10">
-        <Todo>graph de présence et participation</Todo>
+        {depute.stats && <StatsGraph stats={depute.stats} />}
       </div>
 
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
