@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react'
 import {
   Bar,
   BarChart,
+  CartesianGrid,
   Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
+  YAxisProps,
 } from 'recharts'
 import * as types from '../DeputeFiche.types'
 
@@ -39,13 +41,32 @@ export function StatsGraph({
 
   return (
     <ResponsiveContainer>
-      <BarChart data={data}>
+      <BarChart
+        data={data}
+        margin={{ top: 10 }}
+        barGap={'-100%'}
+        barCategoryGap={0}
+      >
+        <CartesianGrid stroke="#999" />
         <XAxis dataKey="name" />
         <YAxis domain={[0, 20]} />
         <Tooltip />
-        <Legend />
-        <Bar dataKey="presences" fill="#8884d8" />
-        {/* <Bar dataKey="mediane" fill="gray" /> */}
+        {/* <Legend /> */}
+        <Bar
+          dataKey="mediane"
+          stroke="rgba(100, 100, 100, 1)"
+          //   strokeDasharray="5 5"
+          fill="rgba(100, 100, 100, 0.3)"
+          isAnimationActive={false}
+        />
+        <Bar
+          dataKey="presences"
+          stroke="rgb(0, 150, 0)"
+          strokeWidth="2"
+          //   strokeDasharray="5 5"
+          fill="rgba(0, 150, 0, 0.3)"
+          isAnimationActive={false}
+        />
       </BarChart>
     </ResponsiveContainer>
   )
