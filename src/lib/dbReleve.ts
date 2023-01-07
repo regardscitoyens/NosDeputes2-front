@@ -45,10 +45,6 @@ interface ReleveTables {
     uid: string
     data: unknown
   }
-  nosdeputes_deputes: {
-    uid: string
-    slug: string
-  }
   reunions: {
     uid: string
     data: unknown
@@ -61,5 +57,14 @@ interface ReleveTables {
     legislature: number
     start_date: Date
     end_date: Date
+  }
+  nosdeputes_deputes: {
+    uid: string
+    slug: string
+  }
+  nosdeputes_deputes_weekly_stats: {
+    uid: string
+    legislature: number
+    data: unknown
   }
 }

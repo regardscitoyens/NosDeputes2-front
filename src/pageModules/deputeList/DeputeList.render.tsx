@@ -1,12 +1,8 @@
-import groupBy from 'lodash/groupBy'
-import sortBy from 'lodash/sortBy'
-import { Todo } from '../../components/Todo'
 
-import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { DeputeItem } from '../../components/DeputeItem'
-import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
-import * as types from './DeputeList.types'
+import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
+import * as types from './DeputeList.types'
 
 export function Page({
   deputes,

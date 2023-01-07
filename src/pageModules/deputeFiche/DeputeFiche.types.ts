@@ -23,6 +23,7 @@ export type Depute = WithLatestGroupOrNull<{
   responsabilites: DeputeResponsabilites
   top: Metrics
   votes: DeputeVotes
+  stats: WeeklyStats<StatsFinal> | null
 }>
 export type Collaborateur = { full_name: string }
 export type Metrics = { [m in MetricName]: MetricValues }
@@ -77,4 +78,23 @@ export type Adresses = {
     intitule?: string | null
     complementAdresse?: string | null
   }[]
+}
+
+export type WeeklyStats<A> = { [weekMonday: string]: A }
+
+export type StatsRawFromDb = {
+  isVacances: boolean
+  nb_presences_hemicycle: number
+  nb_presences_commission: number
+  nb_participations_hemicycle: number
+  nb_participations_commission: number
+  mediane_presences_hemicycle: number
+  mediane_presences_commission: number
+  mediane_presences_total: number
+}
+
+export type StatsFinal = {
+  isVacances: boolean
+  presences: number
+  mediane_presences: number
 }

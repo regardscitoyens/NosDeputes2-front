@@ -1,10 +1,32 @@
 import { sql } from 'kysely'
+import mapValues from 'lodash/mapValues'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
 import * as types from './DeputeFiche.types'
-import range from 'lodash/range'
+
+async function queryStats(
+  uid: string,
+  legislature: number,
+): Promise<types.Depute['stats']> {
+  const row = await dbReleve
+    .selectFrom('nosdeputes_deputes_weekly_stats')
+    .where('uid', '=', uid)
+    .where('legislature', '=', legislature)
+    .select('data')
+    .executeTakeFirst()
+  const statsRaw =
+    (row?.data as types.WeeklyStats<types.StatsRawFromDb>) ?? null
+  if (statsRaw) {
+    return mapValues(statsRaw, raw => ({
+      isVacances: raw.isVacances,
+      presences: raw.nb_presences_commission + raw.nb_presences_hemicycle,
+      mediane_presences: raw.mediane_presences_total,
+    }))
+  }
+  return null
+}
 
 async function queryLegislatures(
   deputeUid: string,
@@ -164,6 +186,7 @@ WHERE
     ? await queryCollaborateursInMandat(lastMandat.uid)
     : []
 
+  const stats = await queryStats(depute.uid, legislature)
   // TODO requêter tous les champs que j'ai hardcodé ici temporairement
   const returnedDepute: types.Depute = {
     slug,
@@ -198,6 +221,7 @@ WHERE
       questions_orales: { value: 0, rank: 0, max_rank: 0 },
     },
     votes: [],
+    stats,
     ...deputeWithLatestGroup,
   }
 
