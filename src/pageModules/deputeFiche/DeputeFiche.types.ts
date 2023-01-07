@@ -21,17 +21,11 @@ export type Depute = WithLatestGroupOrNull<{
   adresses: Adresses
   amendements: AmendementsDeputeSummary
   responsabilites: DeputeResponsabilites
-  top: Metrics
   votes: DeputeVotes
   stats: WeeklyStats<StatsFinal> | null
 }>
 export type Collaborateur = { full_name: string }
-export type Metrics = { [m in MetricName]: MetricValues }
-export type MetricValues = {
-  value: number
-  rank: number
-  max_rank: number
-}
+
 export type Mandat = {
   uid: string
   cause_mandat: string
@@ -39,24 +33,6 @@ export type Mandat = {
   date_debut: string
   date_fin: string | null
 }
-
-export const metricNames = [
-  'semaines_presence',
-  'commission_presences',
-  'commission_interventions',
-  'hemicycle_presences',
-  'hemicycle_interventions',
-  'hemicycle_interventions_courtes',
-  'amendements_proposes',
-  'amendements_signes',
-  'amendements_adoptes',
-  'rapports',
-  'propositions_ecrites',
-  'propositions_signees',
-  'questions_ecrites',
-  'questions_orales',
-] as const
-export type MetricName = typeof metricNames[number]
 
 export type Adresses = {
   emails: string[]

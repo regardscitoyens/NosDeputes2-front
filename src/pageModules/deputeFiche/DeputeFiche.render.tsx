@@ -54,9 +54,6 @@ export function Page(props: types.Props) {
       <div className="col-span-10">
         <Todo>graph de présence et participation</Todo>
       </div>
-      <div className="col-span-full">
-        <MetricsBlock {...{ depute, currentLegislature: legislature }} />
-      </div>
 
       <div className="col-span-full grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-8">

@@ -110,34 +110,6 @@ export function InformationsBlock(props: types.Props) {
   )
 }
 
-export function MetricsBlock({ depute }: { depute: types.Depute }) {
-  const metricsToDisplay: types.MetricName[] = [
-    'semaines_presence',
-    'commission_presences',
-    'commission_interventions',
-    'hemicycle_presences',
-    'hemicycle_interventions',
-    'amendements_proposes',
-    'rapports',
-    'propositions_ecrites',
-    'propositions_signees',
-    'questions_ecrites',
-    'questions_orales',
-  ]
-  return (
-    <div className="flex  list-none flex-wrap bg-slate-200 px-8 py-4 shadow-md">
-      {metricsToDisplay.map(metricName => {
-        const value = depute.top[metricName]?.value ?? '?'
-        return (
-          <div key={metricName} className="m-2 block bg-slate-300">
-            {value} {metricName}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
 export function Amendements({ depute }: { depute: types.Depute }) {
   return (
     <div className="bg-slate-200 px-8 py-4 shadow-md">
