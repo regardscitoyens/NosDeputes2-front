@@ -34,6 +34,17 @@ export function formatDate(
   return str
 }
 
+export function formatDateWithJustMonthAndYear(dateIsoString: string) {
+  const str = new Date(dateIsoString).toLocaleString('fr-FR', {
+    timeZone: 'Europe/Paris',
+    // weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    // day: 'numeric',
+  })
+  return str
+}
+
 export function formatDateWithTimeAndWeekday(dateIsoString: string) {
   const d = new Date(dateIsoString)
   const weekday = d.toLocaleString('fr-FR', {
