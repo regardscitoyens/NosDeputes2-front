@@ -53,13 +53,15 @@ export function StatsGraph({
             }
             return (
               <div className="max-w-lg  bg-white p-4">
-                <p>Semaine du {formatDate(weekMonday)}</p>
+                <p className="mb-1 text-center font-bold text-slate-400">
+                  Semaine du {formatDate(weekMonday)}
+                </p>
                 {payload.map(item => {
                   if (item.name === 'isVacances') {
                     return (
-                      <p key={item.name}>
-                        Périodes de vacances pour l'Assemblée, ou période où ce
-                        député n'était pas encore en mandat
+                      <p key={item.name} className="italic">
+                        Périodes de vacances pour l'Assemblée, ou bien cette
+                        personne n'était pas encore député(e)
                       </p>
                     )
                   }
@@ -73,7 +75,8 @@ export function StatsGraph({
                       : 'rgba(0, 0, 255, 0.6)'
                   return (
                     <p key={item.name} style={{ color }}>
-                      {label}: <span className="font-bold">{item.value}</span>
+                      {label} :{' '}
+                      <span className="text-lg font-bold">{item.value}</span>
                     </p>
                   )
                 })}

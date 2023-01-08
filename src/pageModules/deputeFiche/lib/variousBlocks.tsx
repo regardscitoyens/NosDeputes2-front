@@ -98,13 +98,13 @@ export function InformationsBlock(props: types.Props) {
   const age = getAge(depute.date_of_birth)
   const dateNaissanceFormatted = formatDate(depute.date_of_birth)
   return (
-    <div className="bg-slate-200  px-8 py-4 shadow-md">
+    <div className="bg-slate-200 px-8 py-4 shadow-md">
       <h1 className="text-2xl">
         <span className="font-bold">
+          <GroupeBadge groupe={depute.latestGroup} marginLeft={false} />
           {depute.full_name}
-          <GroupeBadge groupe={depute.latestGroup} />
-        </span>
-        Député de la {depute.circo_number}
+        </span>{' '}
+        Député(e) de la {depute.circo_number}
         <sup>{getOrdinalSuffixFeminine(depute.circo_number)}</sup>{' '}
         circonscription {addPrefixToCirconscription(depute.circo_departement)}
       </h1>{' '}
@@ -115,7 +115,7 @@ export function InformationsBlock(props: types.Props) {
           </li>
           <li>
             Groupe
-            <GroupeBadge groupe={depute.latestGroup} />
+            <GroupeBadge groupe={depute.latestGroup} fullName bold />
           </li>
         </ul>
       </div>

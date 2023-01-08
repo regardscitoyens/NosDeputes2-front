@@ -2,14 +2,17 @@ import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
 import { FonctionInGroupe } from '../lib/newAddLatestGroup'
 import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
+import Image from 'next/image'
 
 type Props = {
   depute: {
+    uid: string
     fullName: string
     circo_departement: string
     slug: string | null
     mandat_ongoing: boolean
     latestGroup: {
+      nom: string
       acronym: string
       fonction: FonctionInGroupe
       color: string
@@ -21,6 +24,7 @@ type Props = {
 
 export function DeputeItem({
   depute: {
+    uid,
     slug,
     latestGroup,
     fullName,
@@ -33,6 +37,7 @@ export function DeputeItem({
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
   return (
     <div className={`my-2 grow rounded p-2 drop-shadow ${bg}`}>
+      <GroupeBadgeWithFonction groupe={latestGroup} marginLeft={false} />
       <>
         {slug ? (
           <MyLink
@@ -51,7 +56,6 @@ export function DeputeItem({
           fullName
         )}
       </>
-      <GroupeBadgeWithFonction groupe={latestGroup} />
       {displayCirco && (
         <span className="bg-blue ml-1 cursor-pointer text-slate-400">
           {circoDepartement}
