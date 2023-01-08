@@ -1,24 +1,19 @@
 import Image from 'next/image'
 
-import { GroupeBadge } from '../../components/GroupeBadge'
+import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import { Todo } from '../../components/Todo'
 import {
-  addPrefixToCirconscription,
-  LATEST_LEGISLATURE,
+  LATEST_LEGISLATURE
 } from '../../lib/hardcodedData'
-import { ContactBlock } from './lib/ContactsBlock'
+import { formatDate, getAge } from '../../lib/utils'
 import * as types from './DeputeFiche.types'
+import { ContactBlock } from './lib/ContactsBlock'
+import { StatsGraph } from './lib/StatsGraph'
 import {
   Amendements,
-  InformationsBlock,
-  LegislaturesBlock,
-  MandatsBlock,
-  Responsabilites,
-  Votes,
+  InformationsBlock, Responsabilites,
+  Votes
 } from './lib/variousBlocks'
-import { LegislatureNavigation } from '../../components/LegislatureNavigation'
-import { StatsGraph } from './lib/StatsGraph'
-import { formatDate, getAge } from '../../lib/utils'
 
 export function Page(props: types.Props) {
   const { depute, legislature, legislatureNavigationUrls } = props
@@ -33,9 +28,12 @@ export function Page(props: types.Props) {
           urlsByLegislature={legislatureNavigationUrls}
         />
       </div>
-
-      <div className="col-span-2">
+      <div
+        className="col-span-2 flex 
+    h-full items-center justify-center"
+      >
         <Image
+          className="shadow-lg"
           src={`/deputes/photos/${LATEST_LEGISLATURE}/${depute.uid.substring(
             2,
           )}.jpg`}
@@ -47,9 +45,12 @@ export function Page(props: types.Props) {
       <div className="col-span-10">
         <InformationsBlock {...props} />
       </div>
+
       {depute.stats && (
         <div className="col-span-full my-4 h-36">
-          <h2 className="text-center text-xl font-bold">Présences</h2>
+          <h2 className="text-center text-xl font-bold">
+            Présences à l'Assemblée
+          </h2>
           <StatsGraph stats={depute.stats} />
         </div>
       )}
