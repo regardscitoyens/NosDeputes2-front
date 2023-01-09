@@ -1,10 +1,55 @@
 import sortBy from 'lodash/sortBy'
 
-export const FIRST_LEGISLATURE = 12
 export const LATEST_LEGISLATURE = 16
+export const FIRST_LEGISLATURE_FOR_DEPUTES = 12
 export const FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS = 15
 export const FIRST_LEGISLATURE_FOR_SCRUTINS = 14
 export const FIRST_LEGISLATURE_FOR_DOSSIERS = 8
+
+export const legislaturesData = [
+  {
+    num: 16,
+    datesLabel: 'juin 2022 - juin 2025',
+    presidentLabel:
+      "Coïncide avec le second mandat de président d'Emmanuel Macron",
+  },
+  {
+    num: 15,
+    datesLabel: 'juin 2017 à juin 2022',
+    presidentLabel:
+      "Coïncide avec le premier mandat de président d'Emmanuel Macron",
+  },
+  {
+    num: 14,
+    datesLabel: 'juin 2012 - juin 2017',
+    presidentLabel: 'Coïncide avec la présidence de François Hollande',
+  },
+  {
+    num: 13,
+    datesLabel: 'juin 2007 - juin 2012',
+    presidentLabel: 'Coïncide avec la présidence de Nicolas Sarkozy',
+  },
+  {
+    num: 12,
+    datesLabel: 'juin 2002 - juin 2007',
+    presidentLabel:
+      'Coïncide avec le second mandat de président de Jacques Chirac',
+  },
+  {
+    num: 11,
+    datesLabel: 'juin 1997 - juin 2002',
+    presidentLabel:
+      'Coïncide avec la seconde partie du premier mandat de président de Jacques Chirac',
+  },
+  {
+    num: 10,
+    datesLabel: 'avril 1993 - avril 1997',
+  },
+  {
+    num: 9,
+    datesLabel: 'juin 1988 - avril 1993',
+  },
+]
 
 // Legislatures 14 and before didn't have colors
 // we hardcode them

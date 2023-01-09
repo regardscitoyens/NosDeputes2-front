@@ -27,7 +27,7 @@ export function Layout({ children }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="bg-slate-300">
-        <div className="container mx-auto flex min-h-screen flex-col  px-4 py-4">
+        <div className="container mx-auto flex min-h-screen  flex-col px-4">
           <header>
             <nav className="space-y-2 bg-slate-200 py-4 px-4">
               <div className="flex space-x-2 ">
@@ -50,7 +50,7 @@ export function Layout({ children }: Props) {
               </div>
             </nav>
           </header>
-          <main className="grow px-8 py-4 text-slate-800 ">{children}</main>
+          <main className="grow text-slate-800 ">{children}</main>
           <footer className="rounded bg-slate-200">
             <nav className="flex space-x-2  py-4 px-4">
               <BasicLink to="/faq" label="Questions fréquentes (FAQ)" />

@@ -1,4 +1,3 @@
-
 import { DeputeItem } from '../../components/DeputeItem'
 import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
@@ -15,6 +14,7 @@ export function Page({
   return (
     <div>
       <LegislatureNavigation
+        title="Tous les députés"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />

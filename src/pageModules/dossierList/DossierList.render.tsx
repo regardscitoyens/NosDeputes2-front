@@ -10,10 +10,10 @@ export function Page({
   return (
     <div>
       <LegislatureNavigation
+        title="Les dossiers législatifs"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <h1 className="text-2xl">Dossiers</h1>
       <ul>
         {dossiers.map(d => {
           return (

@@ -3,7 +3,7 @@ import sortBy from 'lodash/sortBy'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
 import {
-  FIRST_LEGISLATURE,
+  FIRST_LEGISLATURE_FOR_DEPUTES,
   LATEST_LEGISLATURE,
   sortGroupes,
 } from '../../lib/hardcodedData'
@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps<{
   }
   const legislature = legislatureInPath ?? LATEST_LEGISLATURE
   const legislatureNavigationUrls = range(
-    FIRST_LEGISLATURE,
+    FIRST_LEGISLATURE_FOR_DEPUTES,
     LATEST_LEGISLATURE + 1,
   ).map(l => {
     const tuple: [number, string] = [

@@ -2,28 +2,26 @@ import Image from 'next/image'
 
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import { Todo } from '../../components/Todo'
-import {
-  LATEST_LEGISLATURE
-} from '../../lib/hardcodedData'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 import { formatDate, getAge } from '../../lib/utils'
 import * as types from './DeputeFiche.types'
 import { ContactBlock } from './lib/ContactsBlock'
 import { StatsGraph } from './lib/StatsGraph'
 import {
   Amendements,
-  InformationsBlock, Responsabilites,
-  Votes
+  InformationsBlock,
+  Responsabilites,
+  Votes,
 } from './lib/variousBlocks'
 
 export function Page(props: types.Props) {
   const { depute, legislature, legislatureNavigationUrls } = props
   console.log('@@@@ depute', depute)
-  const age = getAge(depute.date_of_birth)
-  const dateNaissanceFormatted = formatDate(depute.date_of_birth)
   return (
     <div className="grid grid-cols-12 gap-4">
       <div className="col-span-full">
         <LegislatureNavigation
+          title={depute.full_name}
           currentLegislature={legislature}
           urlsByLegislature={legislatureNavigationUrls}
         />

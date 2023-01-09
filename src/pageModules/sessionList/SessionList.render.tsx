@@ -11,10 +11,10 @@ export function Page({
   return (
     <div>
       <LegislatureNavigation
+        title="Les sessions parlementaires"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <h1 className="text-2xl">Sessions</h1>
       <ul>
         {sessions.map(s => {
           const nbDays = computeNbDays(s)

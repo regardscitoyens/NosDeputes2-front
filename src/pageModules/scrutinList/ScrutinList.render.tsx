@@ -17,10 +17,10 @@ export function Page({
   return (
     <div>
       <LegislatureNavigation
+        title="Les scrutins"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <h1 className="my-4 text-2xl">Scrutins</h1>
 
       {Object.entries(scrutinsBySeanceRef).map(([seance_ref, scrutins]) => {
         return (

@@ -16,12 +16,12 @@ export function Page({
   legislatureNavigationUrls,
 }: types.Props) {
   return (
-    <div>
+    <div className="mt-4">
       <LegislatureNavigation
+        title="Séances en hémicycle"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <h1 className="text-center text-2xl ">Séances en hémicycle</h1>
       <ul>
         {sessionsWithSeances.map(session => {
           const { uid, kind, start_date, end_date, seances } = session
