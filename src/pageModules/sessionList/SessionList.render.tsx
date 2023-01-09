@@ -11,7 +11,7 @@ export function Page({
   return (
     <div>
       <LegislatureNavigation
-        title="Les sessions parlementaires"
+        title="Sessions parlementaires"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />

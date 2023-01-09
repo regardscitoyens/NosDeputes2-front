@@ -10,7 +10,7 @@ export function Page({
   return (
     <div>
       <LegislatureNavigation
-        title="Les dossiers législatifs"
+        title="Dossiers législatifs"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
