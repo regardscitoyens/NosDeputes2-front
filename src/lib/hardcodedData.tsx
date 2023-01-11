@@ -9,7 +9,7 @@ export const FIRST_LEGISLATURE_FOR_DOSSIERS = 8
 export const legislaturesData = [
   {
     num: 16,
-    datesLabel: "depuis juin 2022 jusqu'à juin 2025",
+    datesLabel: "depuis juin 2022 jusqu'à juin 2027",
     presidentLabel:
       "Coïncide avec le second mandat de président d'Emmanuel Macron",
   },
