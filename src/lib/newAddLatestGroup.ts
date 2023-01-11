@@ -9,6 +9,7 @@ export type LatestGroupForDepute = {
   acronym: string
   fonction: FonctionInGroupe
   color: string
+  position_politique: PositionPolitique | null
 }
 
 export type FonctionInGroupe =
@@ -16,6 +17,8 @@ export type FonctionInGroupe =
   | 'Membre apparenté'
   | 'Membre'
   | 'Député non-inscrit'
+
+export type PositionPolitique = 'Majoritaire' | 'Minoritaire' | 'Opposition'
 
 export type WithLatestGroupOrNull<D> = D & {
   latestGroup: LatestGroupForDepute | null
@@ -73,6 +76,7 @@ async function fetchLatestGroupsForDeputeIds(
     acronym: string | null
     nom: string
     color: string
+    position_politique: PositionPolitique | null
   }>`
 SELECT
 DISTINCT ON (acteurs.uid)
@@ -80,7 +84,8 @@ DISTINCT ON (acteurs.uid)
   mandats.data->'infosQualite'->>'codeQualite' as fonction,
   organes.data->>'libelleAbrev' as acronym,
   organes.data->>'libelle' as nom,
-  organes.data->>'couleurAssociee' as color
+  organes.data->>'couleurAssociee' as color,
+  organes.data->>'positionPolitique' as position_politique
 FROM acteurs
 LEFT JOIN mandats
   ON mandats.acteur_uid = acteurs.uid
@@ -98,13 +103,19 @@ ORDER BY
   const res = mapValues(
     groupBy(rows, _ => _.acteur_uid),
     ([row]) => {
-      const { fonction, acronym, nom, color } = row
+      const { fonction, acronym, nom, color, position_politique } = row
       if (fonction == null || acronym == null || nom == null) {
         return null
       }
       const colorWithFallback =
         color ?? colorsForGroupsOldLegislatures[acronym] ?? '#FFFFFF'
-      return { fonction, acronym, nom, color: colorWithFallback }
+      return {
+        fonction,
+        acronym,
+        nom,
+        position_politique,
+        color: colorWithFallback,
+      }
     },
   )
   return res

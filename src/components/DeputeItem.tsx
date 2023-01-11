@@ -24,7 +24,6 @@ type Props = {
 
 export function DeputeItem({
   depute: {
-    uid,
     slug,
     latestGroup,
     fullName,
@@ -36,7 +35,7 @@ export function DeputeItem({
 }: Props) {
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
   return (
-    <div className={`my-2 grow rounded p-2 drop-shadow ${bg}`}>
+    <div className={`grow rounded drop-shadow ${bg}`}>
       <GroupeBadgeWithFonction groupe={latestGroup} marginLeft={false} />
       <>
         {slug ? (
@@ -44,10 +43,8 @@ export function DeputeItem({
             href={`/${slug}${
               legislature !== LATEST_LEGISLATURE ? `/${legislature}` : ''
             }`}
-            className={
-              mandatOngoing
-                ? 'font-normal'
-                : 'font-normal text-slate-500 line-through'
+            textColorClassOverride={
+              mandatOngoing ? undefined : 'text-slate-500'
             }
           >
             {fullName}

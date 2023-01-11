@@ -63,7 +63,7 @@ function Legend({ groupesData }: { groupesData: LocalGroupData[] }) {
 
 export function GrapheRepartitionGroupes({ groupesData }: Props) {
   return (
-    <div className="space-y-2 bg-slate-100 py-4 px-4 ">
+    <div className="mb-4 space-y-2 bg-slate-100 py-4 px-4 ">
       <h2 className=" text-center text-lg text-slate-500">
         Groupes parlementaires
       </h2>
