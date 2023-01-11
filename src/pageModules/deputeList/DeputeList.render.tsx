@@ -4,6 +4,7 @@ import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import * as types from './DeputeList.types'
 import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
+import uniq from 'lodash/uniq'
 import { PositionPolitique } from '../../lib/newAddLatestGroup'
 
 function divideByGroup(deputes: types.Depute[]): types.Depute[][] {
@@ -15,19 +16,37 @@ function divideByGroup(deputes: types.Depute[]): types.Depute[][] {
 
 export function SubsetOfDeputes({
   title,
+  explanation,
   deputes,
   legislature,
 }: {
   title?: string
+  explanation?: string
   deputes: types.Depute[]
   legislature: number
 }) {
   if (deputes.length === 0) return null
+
+  const allInSameGroupe =
+    uniq(deputes.map(_ => _.latestGroup?.acronym)).length === 1
+  const deputesSorted = allInSameGroupe
+    ? sortBy(deputes, _ => {
+        const fonction = _.latestGroup?.fonction
+        const score =
+          fonction === 'Président' ? 100 : fonction === 'Membre' ? 50 : 10
+        return -score
+      })
+    : deputes
+
   return (
     <>
-      {title && <h2 className="text-2xl font-bold">{title}</h2>}
+      {title && <h2 className="text-center text-2xl font-bold">{title}</h2>}
+      {explanation && (
+        <p className="text-center text-slate-600">{explanation}</p>
+      )}
+
       <div className="my-4 flex flex-wrap gap-2">
-        {deputes.map(depute => {
+        {deputesSorted.map(depute => {
           return (
             <DeputeItem
               key={depute.uid}
@@ -62,7 +81,12 @@ function DeputesOfSamePositionPolitique({
   const label = `Groupe${plural ? 's' : ''} ${positionPolitiqueLabel}`
   return (
     <>
-      <h2 className="text-center text-4xl font-extrabold">{label}</h2>
+      <h2 className="text-center">
+        <span className="text-4xl font-extrabold">{label}</span>{' '}
+        <span className="text-4xl font-extrabold text-slate-400">
+          ({deputesFiltered.length} députés)
+        </span>
+      </h2>
       {deputesByGroup.map(deputesOfOneGroupe => {
         const acronym = deputesOfOneGroupe[0].latestGroup?.acronym ?? ''
         return (
@@ -122,7 +146,8 @@ export function Page({
             {...{ legislature }}
           />
           <SubsetOfDeputes
-            title="Députés non inscrits dans un groupe"
+            title={`Députés "non-inscrits"`}
+            explanation={`Ils ne peuvent pas ou ne souhaitent pas rejoindre un autre groupe, ou en ont été exclus.`}
             deputes={deputesCurrent.filter(
               _ => _.latestGroup?.acronym === 'NI',
             )}
@@ -130,11 +155,13 @@ export function Page({
           />
           <SubsetOfDeputes
             title="Députés sans groupe"
+            explanation={`Ils n'ont jamais été rattachés à un groupe, même pas le groupe des "Non-inscrits". En général c'est qu'ils ont été techniquement députés pendant très peu de temps (quelques heures)`}
             deputes={deputesCurrent.filter(_ => _.latestGroup === null)}
             {...{ legislature }}
           />
           <SubsetOfDeputes
             title="Anciens députés de cette législature"
+            explanation={`Ils sont devenus ministres, ou ont démissionné, etc.`}
             deputes={deputesFormer}
             {...{ legislature }}
           />
