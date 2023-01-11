@@ -14,6 +14,14 @@ export function arrIfDefined<A>(a: A | undefined): A[] {
   return [a]
 }
 
+export function formatYear(dateIsoString: string) {
+  const str = new Date(dateIsoString).toLocaleString('fr-FR', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric',
+  })
+  return str
+}
+
 export function formatDate(
   dateIsoString: string,
   style: 'normal' | 'precise' | 'precise_with_time' = 'precise',

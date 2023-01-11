@@ -51,7 +51,7 @@ export function Layout({ children }: Props) {
             </nav>
           </header>
           <main className="grow text-slate-800 ">{children}</main>
-          <footer className="rounded bg-slate-200">
+          <footer className="mt-4 rounded bg-slate-200">
             <nav className="flex space-x-2  py-4 px-4">
               <BasicLink to="/faq" label="Questions fréquentes (FAQ)" />
               <BasicLink to="/mentions-legales" label="Mention légales" />

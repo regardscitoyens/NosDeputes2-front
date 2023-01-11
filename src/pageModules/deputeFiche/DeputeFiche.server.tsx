@@ -125,9 +125,12 @@ export const getServerSideProps: GetServerSideProps<{
         uid: string
         full_name: string
         date_of_birth: string
+        gender: 'H' | 'F'
         adresses: types.Adresses
         circo_departement: string
         circo_number: number
+        legislature_date_debut: string
+        legislature_date_fin: string | null
       }>`
 SELECT
   acteurs.uid AS uid,
@@ -137,9 +140,15 @@ SELECT
   	acteurs.data->'etatCivil'->'ident'->>'nom'
   ) AS full_name,
   acteurs.data->'etatCivil'->'infoNaissance'->>'dateNais' AS date_of_birth,
+  CASE
+    WHEN acteurs.data->'etatCivil'->'ident'->>'civ' = 'M.' THEN 'H'
+    ELSE 'F'
+  END as gender,
   acteurs.adresses,
   mandats.data->'election'->'lieu'->>'departement' AS circo_departement,
-  (mandats.data->'election'->'lieu'->>'numCirco')::int AS circo_number
+  (mandats.data->'election'->'lieu'->>'numCirco')::int AS circo_number,
+  organes.data->'viMoDe'->>'dateDebut' AS legislature_date_debut,
+  organes.data->'viMoDe'->>'dateFin' AS legislature_date_fin
 FROM acteurs
 INNER JOIN nosdeputes_deputes
   ON nosdeputes_deputes.uid = acteurs.uid
@@ -159,8 +168,11 @@ WHERE
     }
   }
 
+  const { legislature_date_debut, legislature_date_fin, ...restOfDepute } =
+    depute
+
   const deputeWithLatestGroup = await addLatestGroupToDepute(
-    depute,
+    restOfDepute,
     legislature,
   )
 
@@ -209,12 +221,18 @@ WHERE
     ...deputeWithLatestGroup,
   }
 
+  const legislatureDates = {
+    date_debut: legislature_date_debut,
+    date_fin: legislature_date_fin,
+  }
+
   return {
     props: {
       data: {
         legislature,
         legislatureNavigationUrls,
         depute: returnedDepute,
+        legislatureDates,
       },
     },
   }

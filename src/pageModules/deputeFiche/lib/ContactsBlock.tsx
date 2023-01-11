@@ -26,7 +26,7 @@ export function ContactBlock({ depute }: { depute: types.Depute }) {
   } = depute.adresses
   // see marietta-karamanli for an example with multiple emails
   return (
-    <div className="bg-slate-200  px-8 py-4 shadow-md">
+    <div className="my-4 bg-slate-200 px-8 py-4 shadow-md">
       <h2 className="font-bold">Contact</h2>
       <div className="py-4">
         <ul className="list-none">

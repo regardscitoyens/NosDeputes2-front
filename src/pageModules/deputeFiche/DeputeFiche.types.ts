@@ -5,11 +5,16 @@ import { DeputeVotes } from '../../lib/queryDeputeVotes'
 
 export type Props = {
   depute: Depute
+  legislatureDates: {
+    date_debut: string
+    date_fin: string | null
+  }
   legislature: number
   legislatureNavigationUrls: [number, string][]
 }
 export type Depute = WithLatestGroupOrNull<{
   uid: string
+  gender: 'H' | 'F'
   slug: string
   full_name: string
   circo_departement: string

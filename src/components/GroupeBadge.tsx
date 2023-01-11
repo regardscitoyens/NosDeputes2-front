@@ -6,6 +6,7 @@ export function GroupeBadgeWithFonction({
   groupe,
   marginLeft,
   bold,
+  fullName,
 }: {
   groupe: {
     acronym: string
@@ -15,6 +16,7 @@ export function GroupeBadgeWithFonction({
   } | null
   marginLeft?: boolean
   bold?: boolean
+  fullName?: boolean
 }) {
   if (groupe)
     return (
@@ -23,7 +25,7 @@ export function GroupeBadgeWithFonction({
         nom={groupe.nom}
         fonction={groupe.fonction}
         color={groupe.color}
-        {...{ marginLeft, bold }}
+        {...{ marginLeft, bold, fullName }}
       />
     )
   else return null
