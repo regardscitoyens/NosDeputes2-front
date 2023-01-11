@@ -126,7 +126,7 @@ export function Page({
         urlsByLegislature={legislatureNavigationUrls}
       />
 
-      <GrapheRepartitionGroupes {...{ groupesData }} />
+      {/* <GrapheRepartitionGroupes {...{ groupesData }} /> */}
 
       {positionPolitiquesAreAvailable ? (
         <>

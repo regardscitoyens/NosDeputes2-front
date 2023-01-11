@@ -69,6 +69,12 @@ function BaseGroupeBadge({
   fullName?: boolean
   bold?: boolean
 }) {
+  const fonctionLabel =
+    fonction === 'Président'
+      ? 'Président du groupe'
+      : fonction === 'Membre apparenté'
+      ? 'apparenté'
+      : null
   return (
     <MyLink
       href={`/groupe/${acronym}`}
@@ -77,9 +83,16 @@ function BaseGroupeBadge({
       textColorClassOverride={pickTextColor(color)}
     >
       <span className={bold ? 'font-bold' : ''}>
-        {fullName ? nom : acronym}
+        {fullName ? nom : acronym === 'NI' ? 'Non-inscrit' : acronym}
       </span>
-      {fonction && fonction !== 'Membre' ? ` (${fonction})` : null}
+      {fonctionLabel ? (
+        <>
+          {' '}
+          <span className={`italic ${pickTextColor(color, true)}`}>
+            ({fonctionLabel})
+          </span>
+        </>
+      ) : null}
     </MyLink>
   )
 }

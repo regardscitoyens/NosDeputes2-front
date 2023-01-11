@@ -57,7 +57,12 @@ export const getServerSideProps: GetServerSideProps<{
     acteurs.data->'etatCivil'->'ident'->>'prenom' AS first_name,
     acteurs.data->'etatCivil'->'ident'->>'nom' AS last_name,
     mandats.data->'election'->'lieu'->>'departement' AS circo_departement,
-    mandats.data->>'dateFin' IS NULL AS mandat_ongoing
+    CASE
+    	WHEN mandats.data->>'dateFin' IS NULL THEN TRUE
+    	WHEN organes.data->'viMoDe'->>'dateFin' IS NULL THEN FALSE
+    	WHEN mandats.data->>'dateFin' < organes.data->'viMoDe'->>'dateFin' THEN FALSE
+      ELSE TRUE
+	  END AS mandat_ongoing
   FROM acteurs
   INNER JOIN mandats ON acteurs.uid = mandats.acteur_uid
   INNER JOIN organes ON organes.uid = ANY(mandats.organes_uids)
