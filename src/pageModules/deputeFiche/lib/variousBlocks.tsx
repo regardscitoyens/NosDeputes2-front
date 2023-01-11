@@ -118,7 +118,6 @@ export function MandatsBlock({
   const feminineE = feminine ? 'e' : ''
   // Note : pour voir un cas d'un député avec 3 mandats dans la même législature :
   // cf alain-vidalies dans la legislature 14
-  console.log('@@@', { date_debut, date_debut_legislature })
   return (
     <div className="">
       <p>
@@ -171,8 +170,7 @@ export function MandatsBlock({
       </Todo>
       <br />
       <Todo inline>
-        Débugguer les cas de remplacement par des suppléants, les dates semblent
-        étranges (se recouvrent pour Gerald Darmanin/Vincent Ledoux par exemple)
+        Afficher clairement quel est son suppléant ou de qui il est le suppléant
       </Todo>
     </div>
   )

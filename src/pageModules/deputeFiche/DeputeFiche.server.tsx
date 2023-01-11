@@ -58,7 +58,7 @@ SELECT
   mandats.uid,
   mandats.data->'election'->>'causeMandat' AS cause_mandat,
   mandats.data->'mandature'->>'causeFin' AS cause_fin,
-  mandats.data->>'dateDebut' AS date_debut,
+  mandats.data->'mandature'->>'datePriseFonction' AS date_debut,
   mandats.data->>'dateFin' AS date_fin
 FROM acteurs
 INNER JOIN mandats
