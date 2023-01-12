@@ -47,7 +47,7 @@ function Division({ children }: { children: ReactNode }) {
 function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
   return (
     <nav
-      className={`fixed flex  w-screen flex-col border-r border-slate-400 bg-slate-300 text-center lowercase  md:static md:w-72 md:uppercase ${
+      className={`fixed flex  w-screen flex-col border-r border-slate-400 bg-slate-300 text-center  md:static md:w-72 ${
         mobileMenuFolded ? 'hidden md:block' : ''
       }`}
     >
