@@ -14,10 +14,21 @@ export default async function sandbox(
       uid: string
       data: any
     }>`
-SELECT 
-uid,
-data
-FROM scrutins
+SELECT DISTINCT ON (acteur_uid)
+  acteurs.uid,
+  nosdeputes_deputes.slug,
+  CONCAT(acteurs.data->'etatCivil'->'ident'->>'prenom', ' ', acteurs.data->'etatCivil'->'ident'->>'nom') AS full_name,
+  CONCAT(mandats.data->'election'->'lieu'->>'departement', '-', mandats.data->'election'->'lieu'->>'numCirco') AS circo_name,
+  mandats.data->'election'->>'refCirconscription' AS circo_uid,
+  mandats.data->'election'->>'causeMandat' AS cause_mandat,
+  mandats.data->'election' AS election
+FROM acteurs
+INNER JOIN mandats ON acteurs.uid = mandats.acteur_uid
+INNER JOIN organes ON organes.uid = ANY(mandats.organes_uids)
+LEFT JOIN nosdeputes_deputes ON nosdeputes_deputes.uid = acteurs.uid
+WHERE
+  organes.data->>'codeType' = 'ASSEMBLEE'
+  AND organes.data->>'legislature' = '16'
   `.execute(dbReleve)
   ).rows
 
@@ -61,23 +72,7 @@ FROM scrutins
   }
 
   rows.forEach(row => {
-    const { data } = row
-
-    const { miseAuPoint } = row.data
-    if (miseAuPoint) {
-      const {
-        pour,
-        contre,
-        absentions,
-        nonVotants,
-        nonVotantsVolontaires,
-        dysfonctionnement,
-      } = miseAuPoint
-
-      if (dysfonctionnement) {
-        registerValue(json(dysfonctionnement))
-      }
-    }
+    
   })
 
   console.log(`Nombre d'éléments`, count)
