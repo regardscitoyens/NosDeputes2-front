@@ -80,7 +80,9 @@ function BaseGroupeBadge({
   return (
     <MyLink
       href={`/groupe/${acronym}`}
-      className={`${marginLeft ? 'ml-2 ' : ''} mr-2 inline-block py-1 px-2 `}
+      className={`${
+        marginLeft ? 'ml-2 ' : ''
+      } mr-2 inline-block rounded-l py-1 px-2 `}
       style={{ background: color }}
       textColorClassOverride={pickTextColor(color)}
     >
