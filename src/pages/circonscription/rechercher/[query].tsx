@@ -14,7 +14,9 @@ export const getServerSideProps: GetServerSideProps<{}> = async context => {
   if (!idDepartement || Array.isArray(idDepartement)) {
     throw new Error(`Mandatory ${idDepartement}`)
   }
-  const nomDepartement = getNomDepartement(idDepartement)
+  const nomDepartement = getNomDepartement(
+    idDepartement.replace(/^0+(.*)/, '$1'), // rm leading zeros
+  )
   return {
     redirect: {
       destination: `/circonscription/departement/${encodeURIComponent(
