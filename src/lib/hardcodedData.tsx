@@ -237,7 +237,7 @@ export function addPrefixToCirconscription(nomDepartement: string) {
   return `${prefix}${space}${nomDepartement}`
 }
 
-const departements = {
+export const departements = {
   Ain: '1',
   Aisne: '2',
   Allier: '3',

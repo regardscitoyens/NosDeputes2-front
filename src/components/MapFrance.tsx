@@ -1,15 +1,18 @@
 import useMouse from '@react-hook/mouse-position'
 import { SvgLoader, SvgProxy } from 'react-svgmt'
 import { useRef, useState } from 'react'
+import { departements } from '../lib/hardcodedData'
 
 export function MapFrance({
   onHover,
   onMouseOut,
   onClick,
+  selected,
 }: {
   onHover: Function
   onMouseOut: Function
   onClick: Function
+  selected?: string
 }) {
   const ref = useRef(null)
   const [titre, setTitre] = useState<null | string>(null)
@@ -22,7 +25,7 @@ export function MapFrance({
     const path = e.target as SVGPathElement
     path.style.zIndex = '10'
     setTitre(path.querySelector('title')?.textContent ?? '')
-    onHover({ id: path.getAttribute('id')?.replace(/^d(.*)/, '$1') })
+    onHover(path.getAttribute('id')?.replace(/^d(.*)/, '$1'))
   }
   function onNodeOut(e: Event) {
     const path = e.target as SVGPathElement
@@ -52,8 +55,8 @@ export function MapFrance({
         height="400"
         path={'/circonscriptions/2012/departements.svg'}
         style={{
-          width: '90%',
-          height: '90%',
+          width: '100%',
+          height: '100%',
           strokeWidth: 3,
           margin: '0 auto',
         }}
@@ -66,6 +69,8 @@ export function MapFrance({
         )}
         <SvgProxy
           selector={'path'}
+          fill="inherit"
+          stroke="inherit"
           onElementSelected={(e: any) => {
             const paths = Array.from(e) as SVGPathElement[]
             paths.map(path => {
@@ -77,6 +82,7 @@ export function MapFrance({
             })
           }}
         />
+        <SvgProxy selector={`path[id='d${selected}']`} fill="#D1EA74" />
       </SvgLoader>
     </div>
   )
