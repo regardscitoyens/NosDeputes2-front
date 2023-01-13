@@ -212,10 +212,15 @@ export default function Page({
   }
   return (
     <div className="grid grid-cols-12 gap-4">
-      <h1 className="col-span-full text-center text-2xl">
-        {nom} ({id})
-      </h1>
-      <div className="col-span-5 ">
+      <div className="col-span-full text-center">
+        <div className="mx-auto my-4 w-[52rem] rounded-xl bg-slate-200 p-5">
+          <h1 className="text-center text-4xl font-extrabold">
+            {nom} ({id})
+          </h1>
+        </div>
+      </div>
+
+      <div className="col-span-5 pl-10">
         <div>
           <b>{deputes.length} députés</b>
         </div>

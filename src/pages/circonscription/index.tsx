@@ -1,33 +1,23 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import Link from 'next/link'
-import { MyLink } from '../../components/MyLink'
-import { Todo } from '../../components/Todo'
 
-type Data = {}
+import { MapFrance } from '../../components/MapFrance'
 
-export const getServerSideProps: GetServerSideProps<{
-  data: Data
-}> = async context => {
-  return {
-    props: {
-      data: {},
-    },
-  }
-}
-
-export default function Page({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Page() {
   return (
-    <Todo>
-      Carte de tous les départements, avec lien vers chaque département (ex:{' '}
-      <MyLink
-        href="/circonscription/departement/Bouches-du-Rhône"
-        className="font-bold underline"
-      >
-        /circonscription/departement/Bouches-du-Rhône
-      </MyLink>
-      )
-    </Todo>
+    <>
+      <div className="mx-auto my-4 w-[52rem] rounded-xl bg-slate-200 p-5">
+        <h1 className="text-center text-4xl font-extrabold">
+          Toutes les circonscriptions par département
+        </h1>
+      </div>
+
+      <div className="mt-20">
+        <MapFrance
+          onHover={() => {}}
+          onMouseOut={() => {}}
+          onClick={() => {}}
+        />
+      </div>
+    </>
   )
 }
