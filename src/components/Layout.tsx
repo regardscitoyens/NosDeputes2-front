@@ -50,9 +50,17 @@ function LogoMobile() {
   )
 }
 
-function Division({ children }: { children: ReactNode }) {
+function Division({
+  classname,
+  children,
+}: {
+  classname?: string
+  children: ReactNode
+}) {
   return (
-    <div className="mx-4 border-b border-slate-400 last:border-b-0">
+    <div
+      className={`mx-4 border-b border-slate-400 last:border-b-0 ${classname}`}
+    >
       {children}
     </div>
   )
@@ -65,7 +73,7 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
         mobileMenuFolded ? 'hidden md:block' : ''
       }`}
     >
-      <Division>
+      <Division classname="hidden md:block">
         <Logo />
       </Division>
       <Division>
