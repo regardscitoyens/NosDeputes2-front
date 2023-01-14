@@ -29,9 +29,23 @@ function MenuLink({
 
 function Logo() {
   return (
-    <MyLink href={'/'} className={`block  px-2 py-4 text-center uppercase`}>
+    <MyLink href={'/'} className={`block items-center py-2  uppercase`}>
       <p className="text-2xl text-slate-700">NosDéputés.fr</p>{' '}
       <p className="text-md text-slate-500 ">(relève)</p>
+    </MyLink>
+  )
+}
+
+function LogoMobile() {
+  return (
+    <MyLink
+      href={'/'}
+      className={`flex items-center justify-center px-2 uppercase`}
+    >
+      <p>
+        <span className="text-xl text-slate-700">NosDéputés.fr</span>{' '}
+        <span className="text-slate-500 ">(relève)</span>
+      </p>
     </MyLink>
   )
 }
@@ -75,13 +89,14 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
 
 function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
   return (
-    <div className="fixed h-11 w-full bg-white md:hidden">
+    <div className="fixed flex h-11 w-full bg-white md:hidden">
       <button
         className="m-1 rounded bg-slate-300 p-1"
         onClick={toggleMobileMenu}
       >
         hamburger
       </button>
+      <LogoMobile />
     </div>
   )
 }
