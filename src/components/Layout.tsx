@@ -12,15 +12,19 @@ function MenuLink({
   to,
   label,
   className,
+  temporary = false,
 }: {
   to: string
   label?: string
   className?: string
+  temporary?: boolean
 }) {
   return (
     <MyLink
       href={to}
-      className={`block py-4 text-lg ${className}`}
+      className={`block py-4 text-lg ${
+        temporary ? 'text-sm' : ''
+      } ${className}`}
       textColorClassOverride="text-slate-700"
     >
       {label ?? to}
@@ -80,7 +84,6 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
       <Division>
         <MenuLink to="/deputes" label="Les députés" />
         <MenuLink to="/circonscription" label="Les circonscriptions" />
-        <MenuLink to="/sessions" label="Les sessions parlementaires" />
         <MenuLink to="/seances" label="Les séances en hémicycle" />
         <MenuLink to="/dossiers" label="Les dossiers législatifs" />
         <MenuLink to="/scrutins" label="Les scrutins" />
@@ -90,7 +93,12 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
         <MenuLink to="/mentions-legales" label="Mention légales" />
       </Division>
       <Division>
-        <MenuLink to="/long" label="Page avec beaucoup de contenu" />
+        <MenuLink
+          to="/sessions"
+          label="Les sessions parlementaires"
+          temporary
+        />
+        <MenuLink to="/long" label="Page avec beaucoup de contenu" temporary />
       </Division>
     </nav>
   )

@@ -15,6 +15,9 @@ export function Page({
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
+      <p className="m-8 text-center text-red-600">
+        cette page est juste un brouillon, pas sûr de ce qu'elle va devenir
+      </p>
       <ul>
         {sessions.map(s => {
           const nbDays = computeNbDays(s)

@@ -3,7 +3,7 @@ import type { NextPage } from 'next'
 const Home: NextPage = () => {
   return (
     <div className="text-center">
-      <p className="font-bold">Long content, to test the layout</p>
+      <p className="font-bold text-red-600">Long content, to test the layout</p>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lectus
         libero, maximus quis quam in, bibendum varius massa. In tempor tortor
