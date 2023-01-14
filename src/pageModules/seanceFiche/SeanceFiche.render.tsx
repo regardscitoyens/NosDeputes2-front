@@ -8,6 +8,9 @@ export function Page(props: types.Props) {
   console.log('@@@@ compteRendu', compteRendu)
   return (
     <div className="">
+      <p className="text-red-600">
+        cette page est juste un draft, pas sûr de ce que ça va devenir
+      </p>
       <h1 className=" text-center text-2xl">
         Fiche de la séance du {formatDateWithTimeAndWeekday(seance.start_date)}
       </h1>
