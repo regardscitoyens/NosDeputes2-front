@@ -106,12 +106,12 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
 
 function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
   return (
-    <div className="fixed flex h-11 w-full bg-white lg:hidden">
+    <div className="fixed z-50 flex h-11 w-full border-b-2 border-slate-400 bg-slate-300 lg:hidden">
       <button
-        className="m-1 rounded bg-slate-300 p-1"
+        className="m-1  rounded  bg-slate-600 px-1 text-slate-300"
         onClick={toggleMobileMenu}
       >
-        hamburger
+        menu
       </button>
       <LogoMobile />
     </div>
@@ -121,7 +121,7 @@ function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
 function RestOfPage({ children }: Props) {
   return (
     <div className="grow">
-      <main className="mx-auto flex w-full flex-col   pt-4 pb-6 sm:w-[640px] md:w-[768px] xl:w-[1030px] 2xl:w-[1286px]">
+      <main className="z-0 mx-auto flex w-full flex-col  pt-4 pb-6 sm:w-[640px] md:w-[768px] xl:w-[1030px] 2xl:w-[1286px]">
         {children}
       </main>
     </div>
