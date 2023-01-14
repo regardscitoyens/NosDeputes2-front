@@ -74,6 +74,31 @@ export function isCommissionPermanente(slug: string) {
   ].includes(slug)
 }
 
+export function simplifyCommissionName(commissionFullName: string) {
+  switch (commissionFullName) {
+    case `Commission des finances, de l'économie générale et du contrôle budgétaire`:
+      return 'Commission des finances'
+    case `Commission de la défense nationale et des forces armées`:
+      return 'Commission de la Défense'
+    case `Commission des affaires économiques, de l'environnement et du territoire`:
+    case `Commission des affaires économiques`:
+      return 'Commission des affaires économiques'
+    case `Commission des affaires culturelles, familiales et sociales`:
+    case `Commission des affaires culturelles et de l'éducation`:
+      return 'Commission des affaires culturelles'
+    case `Commission du développement durable et de l'aménagement du territoire`:
+      return 'Commission du développement durable'
+    case `Commission des lois constitutionnelles, de la législation et de l'administration générale de la République`:
+      return 'Commission des lois'
+    case `Commission des affaires sociales`:
+      return 'Commission des affaires sociales'
+    case `Commission des affaires étrangères`:
+      return 'Commission des affaires étrangères'
+    default:
+      return commissionFullName
+  }
+}
+
 const groupesDisplayOrder: string[] = [
   'LFI-NUPES',
   'GDR-NUPES',

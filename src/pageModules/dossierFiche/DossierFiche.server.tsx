@@ -117,10 +117,12 @@ export const getServerSideProps: GetServerSideProps<{
     await sql<{
       uid: string
       libelle: string
+      code_type: types.OrganeCodeType
     }>`
 SELECT
 	uid,
-	data->>'libelle' AS libelle
+	data->>'libelle' AS libelle,
+	data->>'codeType' AS code_type
 FROM organes
 WHERE uid IN (${sql.join(organeRefs)})
 `.execute(dbReleve)

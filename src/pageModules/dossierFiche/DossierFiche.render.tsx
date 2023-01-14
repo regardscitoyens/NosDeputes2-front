@@ -1,9 +1,21 @@
 import { MyLink } from '../../components/MyLink'
+import { simplifyCommissionName } from '../../lib/hardcodedData'
 import * as acteTypes from '../../lib/types/acte'
 import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
 import * as types from './DossierFiche.types'
 
 const f = formatDate
+
+// get directly the actes concret
+// preserve the original order
+function flattenActes(
+  acte: acteTypes.ActeLegislatif,
+): acteTypes.ActeLegislatifConcret[] {
+  if (acte.xsiType === 'Etape_Type') {
+    return (acte.actesLegislatifs ?? []).flatMap(flattenActes)
+  }
+  return [acte]
+}
 
 export function Page(props: types.Props) {
   const { dossier, organes, acteurs } = props
@@ -140,17 +152,22 @@ function Acte({
   const dateActe = acte.xsiType !== 'Etape_Type' && acte.dateActe
   const organe = findOrgane(organeRef, organes)
   const isLeaf = (actesLegislatifs || []).length === 0
+  console.log(organe)
   return (
     <div
-      className={`my-2 border-2  px-4 py-2 shadow-lg ${
-        isLeaf
-          ? 'border-slate-500 bg-slate-50 shadow-slate-400'
-          : 'border-slate-300 bg-slate-200'
+      className={`my-2 rounded-lg px-4 py-2  ${
+        isLeaf ? ' w-fit bg-slate-200 shadow shadow-slate-400' : ''
       }`}
     >
       <div className="flex space-x-2 ">
         {dateActe && <p className="font-bold">{f(dateActe)} </p>}
-        {organe && <p className=" text-slate-500">{organe.libelle}</p>}
+        {organe && (
+          <p className=" text-slate-500">
+            {organe.code_type === 'COMPER'
+              ? simplifyCommissionName(organe.libelle)
+              : organe.libelle}
+          </p>
+        )}
       </div>
       <p className="font-mono ">{capitalizeFirstLetter(libelleActe)}</p>
 
@@ -211,9 +228,21 @@ function Acte({
       )}
       <p className="text-xs italic text-slate-400">{xsiType}</p>
 
-      {actesLegislatifs?.map(childActe => {
-        return <Acte key={childActe.uid} acte={childActe} organes={organes} />
-      })}
+      <ul>
+        {actesLegislatifs?.map(childActe => {
+          return (
+            <li className="flex" key={childActe.uid}>
+              {childActe.xsiType === 'Etape_Type' ? (
+                <div className=" mx-2 mt-10 text-center">⇨</div>
+              ) : (
+                <div className=" mx-2 flex items-center justify-center">⮕</div>
+              )}
+
+              <Acte acte={childActe} organes={organes} />
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }
