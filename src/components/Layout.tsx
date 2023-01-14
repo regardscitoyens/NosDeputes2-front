@@ -75,7 +75,7 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
 
 function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
   return (
-    <div className="bg-white md:hidden">
+    <div className="fixed h-11 w-full bg-white md:hidden">
       <button
         className="m-1 rounded bg-slate-300 p-1"
         onClick={toggleMobileMenu}
@@ -88,7 +88,7 @@ function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
 
 function RestOfPage({ children }: Props) {
   return (
-    <div className="grow bg-slate-300 ">
+    <div className="grow bg-slate-300">
       <main className="container mx-auto flex  flex-col pt-4 pb-6">
         {children}
       </main>
@@ -116,7 +116,7 @@ export function Layout({ children }: Props) {
             setMobileMenuFolded(v => !v)
           }}
         />
-        <div className="flex grow">
+        <div className="mt-11 flex grow md:mt-0">
           <SideMenu {...{ mobileMenuFolded }} />
           <RestOfPage {...{ children }} />
         </div>
