@@ -71,9 +71,7 @@ WHERE
     return lo.sortBy(lo.uniq(arr), _ => _)
   }
 
-  rows.forEach(row => {
-    
-  })
+  rows.forEach(row => {})
 
   console.log(`Nombre d'éléments`, count)
   console.log('Fréquence de chaque clé')
