@@ -134,8 +134,10 @@ function Acte({
   acte: acteTypes.ActeLegislatif
   organes: types.Organe[]
 }) {
-  const { xsiType, organeRef, libelleActe, actesLegislatifs, texteAssocieRef } =
-    acte
+  const { xsiType, organeRef, libelleActe } = acte
+  const actesLegislatifs = acteTypes.getChildrenOfActe(acte)
+  const texteAssocieRef = acte.xsiType !== 'Etape_Type' && acte.texteAssocieRef
+  const dateActe = acte.xsiType !== 'Etape_Type' && acte.dateActe
   const organe = findOrgane(organeRef, organes)
   const isLeaf = (actesLegislatifs || []).length === 0
   return (
@@ -147,7 +149,7 @@ function Acte({
       }`}
     >
       <div className="flex space-x-2 ">
-        {acte.dateActe && <p className="font-bold">{f(acte.dateActe)} </p>}
+        {dateActe && <p className="font-bold">{f(dateActe)} </p>}
         {organe && <p className=" text-slate-500">{organe.libelle}</p>}
       </div>
       <p className="font-mono ">{capitalizeFirstLetter(libelleActe)}</p>

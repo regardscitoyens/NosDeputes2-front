@@ -1,5 +1,39 @@
-export type ActeLegislatif = {
+export type ActeLegislatif = ActeLegislatifEtape | ActeLegislatifConcret
+
+// les "étapes" servent juste à grouper des actes concrets
+export type ActeLegislatifEtape = {
+  xsiType: 'Etape_Type'
+  libelleActe:
+    | '1ère lecture (1ère assemblée saisie)'
+    | '1ère lecture (2ème assemblée saisie)'
+    | 'Commission Mixte Paritaire'
+    | "Commission d'enquête"
+    | 'Conseil constitutionnel'
+    | 'Discussion en séance publique'
+    | 'Débat'
+    | 'Instances communautaires'
+    | 'Lecture définitive'
+    | 'Lecture unique'
+    | 'Mise en application de la loi'
+    | "Mission d'information"
+    | 'Nouvelle Lecture'
+    | 'Promulgation de la loi'
+    | 'Renvoi préalable à la CAE'
+    | 'Travaux'
+    | "Travaux d'une commission saisie pour avis"
+    | "Travaux d'une délégation saisie pour avis"
+    | 'Travaux de la commission saisie au fond'
+    | 'Travaux des commissions'
+    | 'deuxième lecture'
+    | 'troisième lecture'
   actesLegislatifs?: ActeLegislatif[]
+  uid: string
+  codeActe: string
+  organeRef: string
+}
+
+// les actes concrets correspondent à des évenements du cycle de vie d'un dossier législatif
+export type ActeLegislatifConcret = {
   uid: string
   codeActe: string
   libelleActe: string
@@ -8,35 +42,9 @@ export type ActeLegislatif = {
   dateActe?: string
   // idem
   texteAssocieRef?: string
-} & SubtypeOfActe
+} & SubtypeOfActeConcret
 
-type SubtypeOfActe =
-  | {
-      xsiType: 'Etape_Type'
-      libelleActe:
-        | '1ère lecture (1ère assemblée saisie)'
-        | '1ère lecture (2ème assemblée saisie)'
-        | 'Commission Mixte Paritaire'
-        | "Commission d'enquête"
-        | 'Conseil constitutionnel'
-        | 'Discussion en séance publique'
-        | 'Débat'
-        | 'Instances communautaires'
-        | 'Lecture définitive'
-        | 'Lecture unique'
-        | 'Mise en application de la loi'
-        | "Mission d'information"
-        | 'Nouvelle Lecture'
-        | 'Promulgation de la loi'
-        | 'Renvoi préalable à la CAE'
-        | 'Travaux'
-        | "Travaux d'une commission saisie pour avis"
-        | "Travaux d'une délégation saisie pour avis"
-        | 'Travaux de la commission saisie au fond'
-        | 'Travaux des commissions'
-        | 'deuxième lecture'
-        | 'troisième lecture'
-    }
+type SubtypeOfActeConcret =
   | {
       xsiType: 'DepotInitiative_Type'
       libelleActe: "1er dépôt d'une initiative."
@@ -363,3 +371,7 @@ type SubtypeOfActe =
       decision: string
       formuleDecision: string
     }
+
+export function getChildrenOfActe(acte: ActeLegislatif): ActeLegislatif[] {
+  return acte.xsiType === 'Etape_Type' ? acte.actesLegislatifs ?? [] : []
+}

@@ -72,7 +72,7 @@ function collectOrganeRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
       : undefined,
   )
   const childrenOrganeRef =
-    acte.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
+    acteTypes.getChildrenOfActe(acte).flatMap(collectOrganeRefsFromActe) ?? []
 
   return [acte.organeRef, ...initiateurOrganeRef, ...childrenOrganeRef]
 }
@@ -80,7 +80,7 @@ function collectOrganeRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
 function collectActeursRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
   // TODO lire les acteurs refs
   const childrenActeurRef =
-    acte.actesLegislatifs?.flatMap(collectOrganeRefsFromActe) ?? []
+    acteTypes.getChildrenOfActe(acte).flatMap(collectOrganeRefsFromActe) ?? []
   return [...childrenActeurRef]
 }
 

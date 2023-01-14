@@ -64,17 +64,19 @@ FROM dossiers
       acte.actesLegislatifs?.forEach((child: any) => {
         handleActeLegislatif(child, level + 1)
       })
+
+      const { xsiType } = _acte
+      const nbActesLegislatifs = _acte.actesLegislatifs?.length
+
+      if (xsiType === 'Etape_Type') {
+        registerKeysOf(_acte)
+      }
     }
     const { actesLegislatifs } = data
     if (actesLegislatifs) {
       actesLegislatifs.forEach((acte: any) => {
         handleActeLegislatif(acte, 1)
       })
-    }
-
-    if (row.data.initiateur) {
-      count++
-      registerKeysOf(row.data.initiateur ?? {})
     }
   })
 
