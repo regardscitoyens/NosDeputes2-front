@@ -74,7 +74,7 @@ export function LegislatureNavigation({
   urlsByLegislature: [number, string][]
 }) {
   return (
-    <div className="mx-auto my-4 w-[52rem] rounded-xl bg-slate-200 pt-2 ">
+    <div className="mx-auto my-4 max-w-[52rem] rounded-xl bg-slate-200 pt-2 ">
       <h1 className="text-center text-4xl font-extrabold">{title}</h1>
       <div className="flex w-full">
         <div className="flex w-1/6 items-end justify-center  px-4 py-2 ">

@@ -70,11 +70,11 @@ function Division({
 function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
   return (
     <nav
-      className={`fixed flex min-h-full w-screen flex-col border-r border-slate-400 bg-amber-300 text-center  md:static md:w-72 ${
-        mobileMenuFolded ? 'hidden md:block' : ''
+      className={`fixed z-50 flex min-h-full w-screen flex-col border-r border-slate-400 bg-slate-300 text-center  lg:static lg:w-[250px] ${
+        mobileMenuFolded ? 'hidden lg:block' : ''
       }`}
     >
-      <Division classname="hidden md:block">
+      <Division classname="hidden lg:block">
         <Logo />
       </Division>
       <Division>
@@ -98,7 +98,7 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
 
 function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
   return (
-    <div className="fixed flex h-11 w-full bg-white md:hidden">
+    <div className="fixed flex h-11 w-full bg-white lg:hidden">
       <button
         className="m-1 rounded bg-slate-300 p-1"
         onClick={toggleMobileMenu}
@@ -112,8 +112,8 @@ function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
 
 function RestOfPage({ children }: Props) {
   return (
-    <div className="grow bg-slate-300">
-      <main className="container mx-auto flex  flex-col pt-4 pb-6">
+    <div className="grow">
+      <main className="mx-auto flex w-full flex-col   pt-4 pb-6 sm:w-[640px] md:w-[768px] xl:w-[1030px] 2xl:w-[1286px]">
         {children}
       </main>
     </div>
@@ -145,13 +145,13 @@ export function Layout({ children }: Props) {
         {/* favicon commenté pour le moment car il m'embrouille dans mes onglets */}
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
-      <div className="flex min-h-screen flex-col text-slate-800">
+      <div className="flex min-h-screen flex-col bg-slate-300 text-slate-800">
         <MobileTopBar
           toggleMobileMenu={() => {
             setMobileMenuFolded(v => !v)
           }}
         />
-        <div className="mt-11 flex grow md:mt-0">
+        <div className="mt-11 flex grow lg:mt-0">
           <SideMenu {...{ mobileMenuFolded }} />
           <RestOfPage {...{ children }} />
         </div>
