@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import { ReactNode, useState } from 'react'
+import { useRouter } from 'next/router'
+import { ReactNode, useEffect, useState } from 'react'
 import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
 import { MyLink } from './MyLink'
 
@@ -121,6 +122,17 @@ function RestOfPage({ children }: Props) {
 
 export function Layout({ children }: Props) {
   const [mobileMenuFolded, setMobileMenuFolded] = useState(true)
+  const router = useRouter()
+  useEffect(() => {
+    // fold menu when changing routes
+    const handleRouteChange = () => {
+      setMobileMenuFolded(true)
+    }
+    router.events.on('routeChangeComplete', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [router])
 
   return (
     <>
