@@ -6,17 +6,6 @@ import * as types from './DossierFiche.types'
 
 const f = formatDate
 
-// get directly the actes concret
-// preserve the original order
-function flattenActes(
-  acte: acteTypes.ActeLegislatif,
-): acteTypes.ActeLegislatifConcret[] {
-  if (acte.xsiType === 'Etape_Type') {
-    return (acte.actesLegislatifs ?? []).flatMap(flattenActes)
-  }
-  return [acte]
-}
-
 export function Page(props: types.Props) {
   const { dossier, organes, acteurs } = props
   console.log('@@@@ dossier', dossier)
@@ -55,7 +44,7 @@ export function Page(props: types.Props) {
             </>
           )}
         </p>
-        <Initiateur {...{ initiateur, organes }} />
+        <Initiateur {...{ initiateur, organes, acteurs }} />
       </div>
 
       <ActeLegislatifs {...{ actesLegislatifs, organes, acteurs }} />
@@ -66,9 +55,11 @@ export function Page(props: types.Props) {
 function Initiateur({
   initiateur,
   organes,
+  acteurs: allActeurs,
 }: {
   initiateur: types.Props['dossier']['initiateur']
   organes: types.Organe[]
+  acteurs: types.Acteur[]
 }) {
   if (initiateur) {
     const { organeRef, acteurs } = initiateur
@@ -80,10 +71,10 @@ function Initiateur({
         {acteurs && (
           <ul>
             {acteurs.map(acteur => {
+              const { acteurRef } = acteur
+              const foundActeur = findActeur(acteurRef, allActeurs)
               return (
-                <li key={acteur.acteurRef}>
-                  {acteur.acteurRef} avec mandat {acteur.mandatRef}
-                </li>
+                <li key={acteurRef}>{foundActeur?.full_name ?? acteurRef}</li>
               )
             })}
           </ul>
@@ -152,7 +143,6 @@ function Acte({
   const dateActe = acte.xsiType !== 'Etape_Type' && acte.dateActe
   const organe = findOrgane(organeRef, organes)
   const isLeaf = (actesLegislatifs || []).length === 0
-  console.log(organe)
   return (
     <div
       className={`my-2 rounded-lg px-4 py-2  ${
@@ -226,7 +216,9 @@ function Acte({
           )}
         </>
       )}
-      <p className="text-xs italic text-slate-400">{xsiType}</p>
+      {xsiType !== 'Etape_Type' && (
+        <p className="text-xs italic text-slate-400">{xsiType}</p>
+      )}
 
       <ul>
         {actesLegislatifs?.map(childActe => {

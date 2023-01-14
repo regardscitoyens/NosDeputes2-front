@@ -78,10 +78,26 @@ function collectOrganeRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
 }
 
 function collectActeursRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
-  // TODO lire les acteurs refs
   const childrenActeurRef =
     acteTypes.getChildrenOfActe(acte).flatMap(collectOrganeRefsFromActe) ?? []
-  return [...childrenActeurRef]
+  const rapporteursRef =
+    acte.xsiType === 'NominRapporteurs_Type'
+      ? acte.rapporteurs.map(_ => _.acteurRef)
+      : []
+  const initiateursRenvoiCmpRef =
+    acte.xsiType === 'RenvoiCMP_Type'
+      ? acte.initiateur.acteurs.map(_ => _.acteurRef)
+      : []
+  const initiateursSaisieCcRef =
+    acte.xsiType === 'SaisineConseilConstit_Type'
+      ? acte.initiateur?.acteurs.map(_ => _.acteurRef) ?? []
+      : []
+  return [
+    ...initiateursRenvoiCmpRef,
+    ...initiateursSaisieCcRef,
+    ...rapporteursRef,
+    ...childrenActeurRef,
+  ]
 }
 
 export const getServerSideProps: GetServerSideProps<{
