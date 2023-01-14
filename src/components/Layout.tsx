@@ -66,6 +66,9 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
         <MenuLink to="/faq" label="Questions fréquentes (FAQ)" />
         <MenuLink to="/mentions-legales" label="Mention légales" />
       </Division>
+      <Division>
+        <MenuLink to="/long" label="Page avec beaucoup de contenu" />
+      </Division>
     </nav>
   )
 }
