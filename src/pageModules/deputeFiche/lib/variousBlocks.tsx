@@ -161,17 +161,6 @@ export function MandatsBlock({
           </ul>
         </div>
       )}
-
-      <br />
-      <Todo inline>
-        Identifier les principales raisons de mandats fractionnés (départ au
-        gouvernement, remplacement par le suppléant, etc.) et les afficher
-        clairement avec wording dédié
-      </Todo>
-      <br />
-      <Todo inline>
-        Afficher clairement quel est son suppléant ou de qui il est le suppléant
-      </Todo>
     </div>
   )
 }
@@ -293,7 +282,6 @@ export function Votes({ depute }: { depute: types.Depute }) {
         </ul>
       )) ||
         null}
-      <Todo>Liens + lien vers tous ses votes</Todo>
     </div>
   )
 }

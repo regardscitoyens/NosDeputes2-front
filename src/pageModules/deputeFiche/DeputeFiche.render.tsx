@@ -56,7 +56,7 @@ export function Page(props: types.Props) {
         </div>
       )}
       <ContactBlock {...{ depute }} />
-      <Responsabilites {...{ depute }} />
+      {/* <Responsabilites {...{ depute }} /> */}
     </div>
   )
 }

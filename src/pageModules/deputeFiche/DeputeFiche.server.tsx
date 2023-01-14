@@ -97,7 +97,7 @@ FROM subquery
 // /nicolas-dupont-aignant
 // /nicolas-dupont-aignant/15
 type Query = {
-  slug_or_legislature: string // here it's actually the slug
+  slug: string // here it's actually the slug
   legislature?: string
 }
 
@@ -105,7 +105,7 @@ export const getServerSideProps: GetServerSideProps<{
   data: types.Props
 }> = async context => {
   const query = context.query as Query
-  const slug = query.slug_or_legislature
+  const slug = query.slug
   const legislatureInPath = query.legislature
     ? parseInt(query.legislature, 10)
     : null
