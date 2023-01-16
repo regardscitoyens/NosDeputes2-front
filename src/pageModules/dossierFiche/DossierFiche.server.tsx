@@ -6,6 +6,8 @@ import * as types from './DossierFiche.types'
 import uniq from 'lodash/uniq'
 import { sql } from 'kysely'
 import { arrIfDefined as arrIfDefined } from '../../lib/utils'
+import { addLatestGroupToDeputes } from '../../lib/newAddLatestGroup'
+import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 
 type Query = {
   id: string
@@ -79,7 +81,7 @@ function collectOrganeRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
 
 function collectActeursRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
   const childrenActeurRef =
-    acteTypes.getChildrenOfActe(acte).flatMap(collectOrganeRefsFromActe) ?? []
+    acteTypes.getChildrenOfActe(acte).flatMap(collectActeursRefsFromActe) ?? []
   const rapporteursRef =
     acte.xsiType === 'NominRapporteurs_Type'
       ? acte.rapporteurs.map(_ => _.acteurRef)
@@ -128,7 +130,9 @@ export const getServerSideProps: GetServerSideProps<{
   }
 
   const organeRefs = uniq(collectOrganeRefsFromDossier(dossier))
+  // TODO en fait je crois qu'il faudrait s'intéresser à la notion de mandatRef. Car sinon on confond les députés et les ministres (ex Elisabeth Borne qui dépose des lois en tant que ministre mais techniquement elle était aussi députée)
   const acteurRefs = uniq(collectActeursRefsFromDossier(dossier))
+  console.log('@@ acteursRefs found', acteurRefs)
   const organes = (
     await sql<{
       uid: string
@@ -161,12 +165,20 @@ WHERE uid IN (${sql.join(acteurRefs)})
 `.execute(dbReleve)
   ).rows
 
+  // Note: some acteurs here are not deputes and thus no group will be found. That's ok
+  const acteursWithGroupes = await addLatestGroupToDeputes(
+    acteurs,
+    // TODO is this correct ? we don't have a notion of legislature for a dossier
+    // maybe we should make a version of this query where we do not care about legislature, just take whatever was the latest group
+    LATEST_LEGISLATURE,
+  )
+
   return {
     props: {
       data: {
         dossier,
         organes,
-        acteurs,
+        acteurs: acteursWithGroupes,
       },
     },
   }

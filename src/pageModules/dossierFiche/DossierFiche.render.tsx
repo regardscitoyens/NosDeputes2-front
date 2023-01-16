@@ -1,5 +1,9 @@
+import { DeputeItem } from '../../components/DeputeItem'
 import { MyLink } from '../../components/MyLink'
-import { simplifyCommissionName } from '../../lib/hardcodedData'
+import {
+  LATEST_LEGISLATURE,
+  simplifyCommissionName,
+} from '../../lib/hardcodedData'
 import * as acteTypes from '../../lib/types/acte'
 import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
 import * as types from './DossierFiche.types'
@@ -8,8 +12,9 @@ const f = formatDate
 
 export function Page(props: types.Props) {
   const { dossier, organes, acteurs } = props
-  console.log('@@@@ dossier', dossier)
+  // console.log('@@@@ dossier', dossier)
   // console.log('@@@@ organes', organes)
+  // console.log('@@@@ acteurs', acteurs)
   const {
     xsiType,
     legislature,
@@ -52,6 +57,32 @@ export function Page(props: types.Props) {
   )
 }
 
+function Acteur({
+  acteurRef,
+  acteurs,
+}: {
+  acteurRef: string
+  acteurs: types.Acteur[]
+}) {
+  const foundActeur = findActeur(acteurRef, acteurs)
+  // TODO is this "legislature" correct ?
+  // TODO fix other fields
+  return foundActeur ? (
+    <DeputeItem
+      depute={{
+        ...foundActeur,
+        fullName: foundActeur.full_name,
+        circo_departement: '',
+        slug: '',
+        mandat_ongoing: true,
+      }}
+      legislature={LATEST_LEGISLATURE}
+    />
+  ) : (
+    <span>Acteur n°{acteurRef}</span>
+  )
+}
+
 function Initiateur({
   initiateur,
   organes,
@@ -72,9 +103,12 @@ function Initiateur({
           <ul>
             {acteurs.map(acteur => {
               const { acteurRef } = acteur
-              const foundActeur = findActeur(acteurRef, allActeurs)
               return (
-                <li key={acteurRef}>{foundActeur?.full_name ?? acteurRef}</li>
+                <Acteur
+                  key={acteurRef}
+                  {...{ acteurRef }}
+                  acteurs={allActeurs}
+                />
               )
             })}
           </ul>
@@ -114,15 +148,23 @@ function FusionDossier({
 function ActeLegislatifs({
   actesLegislatifs,
   organes,
+  acteurs,
 }: {
   actesLegislatifs: types.Props['dossier']['actesLegislatifs']
   organes: types.Organe[]
+  acteurs: types.Acteur[]
 }) {
   if (actesLegislatifs) {
     return (
       <div className="mt-8">
         {actesLegislatifs.map(childActe => {
-          return <Acte key={childActe.uid} acte={childActe} organes={organes} />
+          return (
+            <Acte
+              key={childActe.uid}
+              acte={childActe}
+              {...{ organes, acteurs }}
+            />
+          )
         })}
       </div>
     )
@@ -133,9 +175,11 @@ function ActeLegislatifs({
 function Acte({
   acte,
   organes,
+  acteurs,
 }: {
   acte: acteTypes.ActeLegislatif
   organes: types.Organe[]
+  acteurs: types.Acteur[]
 }) {
   const { xsiType, organeRef, libelleActe } = acte
   const actesLegislatifs = acteTypes.getChildrenOfActe(acte)
@@ -184,9 +228,10 @@ function Acte({
       {acte.xsiType === 'NominRapporteurs_Type' && (
         <ul>
           {acte.rapporteurs.map(rapporteur => {
+            const { acteurRef, typeRapporteur } = rapporteur
             return (
-              <li key={rapporteur.acteurRef}>
-                {rapporteur.typeRapporteur} {rapporteur.acteurRef}
+              <li key={acteurRef}>
+                {typeRapporteur} <Acteur {...{ acteurRef, acteurs }} />
               </li>
             )
           })}
@@ -230,7 +275,7 @@ function Acte({
                 <div className=" mx-2 flex items-center justify-center">⮕</div>
               )}
 
-              <Acte acte={childActe} organes={organes} />
+              <Acte acte={childActe} {...{ organes, acteurs }} />
             </li>
           )
         })}

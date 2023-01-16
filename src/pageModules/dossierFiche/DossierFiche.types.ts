@@ -1,3 +1,4 @@
+import { WithLatestGroupOrNull } from '../../lib/newAddLatestGroup'
 import * as dossierTypes from '../../lib/types/dossier'
 
 export type Props = {
@@ -12,10 +13,10 @@ export type Organe = {
   code_type: OrganeCodeType
 }
 
-export type Acteur = {
+export type Acteur = WithLatestGroupOrNull<{
   uid: string
   full_name: string
-}
+}>
 
 export type OrganeCodeType =
   | 'GA'

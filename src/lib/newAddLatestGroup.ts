@@ -40,6 +40,7 @@ export async function addLatestGroupToDeputes<D extends { uid: string }>(
   deputes: D[],
   legislature: number,
 ): Promise<WithLatestGroupOrNull<D>[]> {
+  if (deputes.length === 0) return []
   const latestGroupsMap = await fetchLatestGroupsForDeputeIds(
     deputes.map(_ => _.uid),
     legislature,
