@@ -96,10 +96,15 @@ function AllDeputesOfMajoriteOrOpposition({
       <BigTitle
         label={
           kind === 'majorite'
-            ? 'Députés de la majorité (et ses alliés)'
+            ? 'Députés de la majorité'
             : "Députés de l'opposition"
         }
         secondLabel={`(${deputes.length} députés)`}
+        heading={
+          kind === 'majorite'
+            ? "C'est le groupe avec le plus de députés, et les autres groupes qui ne se sont pas déclarés dans l'opposition."
+            : `Leurs groupes se sont déclarés comme faisant partie de l'opposition.`
+        }
       />
       <DeputesByGroup deputes={deputes} {...{ legislature }} />
     </>
@@ -109,15 +114,22 @@ function AllDeputesOfMajoriteOrOpposition({
 function BigTitle({
   label,
   secondLabel,
+  heading,
 }: {
   label: string
   secondLabel: string
+  heading?: string
 }) {
   return (
-    <h2 className="mt-12 text-center text-4xl font-extrabold">
-      <span className="">{label}</span>{' '}
-      <span className=" text-slate-400">{secondLabel}</span>
-    </h2>
+    <>
+      <h2 className="mt-12 mb-0 text-center text-4xl font-extrabold">
+        <span className="">{label}</span>{' '}
+        <span className=" text-slate-400">{secondLabel}</span>
+      </h2>
+      {heading && (
+        <p className="text-center text-lg  text-slate-600">{heading}</p>
+      )}
+    </>
   )
 }
 
