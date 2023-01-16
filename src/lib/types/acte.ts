@@ -314,6 +314,7 @@ type SubtypeOfActeConcret =
       libelleActe: "Dépôt d'une déclaration du gouvernement"
       dateActe: string
       texteAssocieRef: string
+      // TODO fix type, sur http://localhost:3000/dossier/DLR5L16N45988 on voit que c'est un objet avec un libelle et un codeFam
       typeDeclaration: "Déclaration engageant la responsabilité du Gouvernement devant l'Assemblée nationale sur le vote d'un texte"
     }
   | {

@@ -256,6 +256,9 @@ function Acte({
           })}
         </ul>
       )}{' '}
+      {acte.xsiType === 'DeclarationGouvernement_Type' && (
+        <p>{JSON.stringify(acte.typeDeclaration)}</p>
+      )}
       {acte.xsiType === 'DiscussionSeancePublique_Type' && (
         <p>
           <LinkToSeance reunionRef={acte.reunionRef} />
