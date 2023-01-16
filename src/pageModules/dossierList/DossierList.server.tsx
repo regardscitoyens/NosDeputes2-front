@@ -8,9 +8,21 @@ import {
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import * as types from './DossierList.types'
+import sum from 'lodash/sum'
+import sortBy from 'lodash/sortBy'
+import * as dossierTypes from '../../lib/types/dossier'
 
 type Query = {
   legislature?: string
+}
+
+function countActes(actes: any[] | null) {
+  function inner(acte: any) {
+    const children = acte.actesLegislatifs ?? []
+    const isLeaf = children.length === 0
+    return isLeaf ? 1 : sum(children.map(inner))
+  }
+  return sum((actes ?? []).map(inner))
 }
 
 export const getServerSideProps: GetServerSideProps<{
@@ -40,18 +52,35 @@ export const getServerSideProps: GetServerSideProps<{
     return tuple
   })
 
-  const dossiers = (
-    await sql<types.Dossier>`
+  const dossiersWithActes = (
+    await sql<{
+      uid: string
+      procedure: dossierTypes.Dossier['procedureParlementaire']['libelle']
+      title: string
+      actes: any[]
+    }>`
 SELECT 
   uid,
   data->'titreDossier'->>'titre' AS title,
-  data->'procedureParlementaire'->>'libelle' AS procedure
+  data->'procedureParlementaire'->>'libelle' AS procedure,
+  data->'actesLegislatifs' AS actes
 FROM dossiers
 WHERE 
   data->>'legislature' = ${legislature.toString()}
 ORDER BY title
   `.execute(dbReleve)
   ).rows
+
+  // we count the nb of actes, this is probably temporary
+  // just to get a quick idea of how big and important a dossier is
+  const dossiers = sortBy(
+    dossiersWithActes.map(d => {
+      const { actes, ...rest } = d
+      return { ...rest, nbActes: countActes(actes) }
+    }),
+    _ => -_.nbActes,
+  )
+
   return {
     props: {
       data: {
