@@ -102,7 +102,7 @@ function AllDeputesOfMajoriteOrOpposition({
         secondLabel={`(${deputes.length} députés)`}
         heading={
           kind === 'majorite'
-            ? "C'est le groupe avec le plus de députés, et les autres groupes qui ne se sont pas déclarés dans l'opposition."
+            ? "C'est le groupe majoritaire (en nombre de députés), et ses groupes alliés (ils ne se sont pas déclarés dans l'opposition)."
             : `Leurs groupes se sont déclarés comme faisant partie de l'opposition.`
         }
       />
