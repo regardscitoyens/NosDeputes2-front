@@ -205,7 +205,6 @@ function Acte({
         )}
       </div>
       <p className="font-mono ">{capitalizeFirstLetter(libelleActe)}</p>
-
       {texteAssocieRef && (
         <p className="italic">
           <MyLink
@@ -231,13 +230,31 @@ function Acte({
           {acte.rapporteurs.map(rapporteur => {
             const { acteurRef, typeRapporteur } = rapporteur
             return (
-              <li key={acteurRef}>
-                {typeRapporteur} <Acteur {...{ acteurRef, acteurs }} />
+              <li key={acteurRef} className="flex space-x-2">
+                <p>{typeRapporteur}</p> <Acteur {...{ acteurRef, acteurs }} />
               </li>
             )
           })}
         </ul>
+      )}{' '}
+      {acte.xsiType === 'DiscussionSeancePublique_Type' && (
+        <p>
+          reunionRef <code>{acte.reunionRef}</code>
+        </p>
       )}
+      {acte.xsiType === 'DiscussionCommission_Type' && (
+        <p>
+          reunionRef <code>{acte.reunionRef}</code>
+        </p>
+      )}
+      {acte.xsiType === 'DepotRapport_Type' &&
+        (acte.libelleActe === 'Dépôt de rapport' ||
+          acte.libelleActe === "Dépôt du rapport d'une CMP") &&
+        acte.texteAdopteRef && (
+          <p>
+            texteAdopteRef <code>{acte.texteAdopteRef}</code>
+          </p>
+        )}
       {acte.xsiType === 'Promulgation_Type' && (
         <>
           <p className="">"{acte.titreLoi}"</p>
@@ -272,17 +289,39 @@ function Acte({
               </span>
             </p>
           )}
-          {acte.libelleActe === 'Décision' && acte.textesAssocies && (
-            <p>
-              Textes associés<code>{JSON.stringify(acte.textesAssocies)}</code>
-            </p>
+          {acte.libelleActe === 'Décision' && (
+            <>
+              {acte.textesAssocies?.map(texteAssocie => {
+                const { texteAssocieRef, typeTexte } = texteAssocie
+                return (
+                  <p key={texteAssocieRef} className="italic">
+                    Texte associé{' '}
+                    <MyLink
+                      href={`https://www.assemblee-nationale.fr/dyn/docs/${texteAssocieRef}.raw`}
+                    >
+                      {texteAssocieRef}
+                    </MyLink>{' '}
+                    <span className="text-slate-400">(type "{typeTexte}")</span>
+                  </p>
+                )
+              })}
+              {acte.reunionRef && (
+                <p>
+                  reunionRef <code>{acte.reunionRef}</code>
+                </p>
+              )}
+              {acte.voteRefs && (
+                <p>
+                  voteRefs <code>{JSON.stringify(acte.voteRefs)}</code>
+                </p>
+              )}
+            </>
           )}
         </>
       )}
       {xsiType !== 'Etape_Type' && (
         <p className="text-xs italic text-slate-400">{xsiType}</p>
       )}
-
       <ul>
         {actesLegislatifs?.map(childActe => {
           return (
