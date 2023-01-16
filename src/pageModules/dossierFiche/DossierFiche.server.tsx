@@ -132,7 +132,6 @@ export const getServerSideProps: GetServerSideProps<{
   const organeRefs = uniq(collectOrganeRefsFromDossier(dossier))
   // TODO en fait je crois qu'il faudrait s'intéresser à la notion de mandatRef. Car sinon on confond les députés et les ministres (ex Elisabeth Borne qui dépose des lois en tant que ministre mais techniquement elle était aussi députée)
   const acteurRefs = uniq(collectActeursRefsFromDossier(dossier))
-  console.log('@@ acteursRefs found', acteurRefs)
   const organes = (
     await sql<{
       uid: string

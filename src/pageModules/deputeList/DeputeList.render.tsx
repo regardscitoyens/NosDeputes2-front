@@ -1,11 +1,9 @@
-import { DeputeItem } from '../../components/DeputeItem'
-import { GrapheRepartitionGroupes } from '../../components/GrapheRepartitionGroupes'
-import { LegislatureNavigation } from '../../components/LegislatureNavigation'
-import * as types from './DeputeList.types'
 import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import uniq from 'lodash/uniq'
-import { PositionPolitique } from '../../lib/newAddLatestGroup'
+import { DeputeItem } from '../../components/DeputeItem'
+import { LegislatureNavigation } from '../../components/LegislatureNavigation'
+import * as types from './DeputeList.types'
 
 function divideByGroup(deputes: types.Depute[]): types.Depute[][] {
   return sortBy(
@@ -14,7 +12,7 @@ function divideByGroup(deputes: types.Depute[]): types.Depute[][] {
   )
 }
 
-export function SubsetOfDeputes({
+export function ChunkOfDeputes({
   title,
   explanation,
   deputes,
@@ -40,11 +38,9 @@ export function SubsetOfDeputes({
 
   return (
     <>
-      {title && <h2 className="text-center text-2xl font-bold">{title}</h2>}
-      {explanation && (
-        <p className="text-center text-slate-600">{explanation}</p>
+      {title && explanation && (
+        <SmallTitle label={title} secondLabel={explanation} />
       )}
-
       <div className="my-4 flex flex-wrap gap-2">
         {deputesSorted.map(depute => {
           return (
@@ -60,37 +56,22 @@ export function SubsetOfDeputes({
   )
 }
 
-function DeputesOfSamePositionPolitique({
+export function DeputesByGroup({
   deputes,
-  position_politique,
   legislature,
 }: {
   deputes: types.Depute[]
-  position_politique: PositionPolitique
   legislature: number
 }) {
-  const deputesFiltered = deputes.filter(
-    _ => _.latestGroup?.position_politique === position_politique,
-  )
-  const deputesByGroup = divideByGroup(deputesFiltered)
-  const plural = deputesByGroup.length > 1
-  const positionPolitiqueLabel =
-    position_politique === 'Opposition'
-      ? `d'opposition`
-      : `${position_politique.toLowerCase()}${plural ? 's' : ''}`
-  const label = `Groupe${plural ? 's' : ''} ${positionPolitiqueLabel}`
+  if (deputes.length === 0) return null
+  const deputesByGroup = divideByGroup(deputes)
+
   return (
     <>
-      <h2 className="text-center">
-        <span className="text-4xl font-extrabold">{label}</span>{' '}
-        <span className="text-4xl font-extrabold text-slate-400">
-          ({deputesFiltered.length} députés)
-        </span>
-      </h2>
       {deputesByGroup.map(deputesOfOneGroupe => {
         const acronym = deputesOfOneGroupe[0].latestGroup?.acronym ?? ''
         return (
-          <SubsetOfDeputes
+          <ChunkOfDeputes
             key={acronym}
             deputes={deputesOfOneGroupe}
             {...{ legislature }}
@@ -101,9 +82,157 @@ function DeputesOfSamePositionPolitique({
   )
 }
 
+function AllDeputesOfMajoriteOrOpposition({
+  deputes,
+  kind,
+  legislature,
+}: {
+  deputes: types.Depute[]
+  kind: 'majorite' | 'opposition'
+  legislature: number
+}) {
+  return (
+    <>
+      <BigTitle
+        label={
+          kind === 'majorite'
+            ? 'Députés de la majorité (et ses alliés)'
+            : "Députés de l'opposition"
+        }
+        secondLabel={`(${deputes.length} députés)`}
+      />
+      <DeputesByGroup deputes={deputes} {...{ legislature }} />
+    </>
+  )
+}
+
+function BigTitle({
+  label,
+  secondLabel,
+}: {
+  label: string
+  secondLabel: string
+}) {
+  return (
+    <h2 className="mt-12 text-center text-4xl font-extrabold">
+      <span className="">{label}</span>{' '}
+      <span className=" text-slate-400">{secondLabel}</span>
+    </h2>
+  )
+}
+
+function SmallTitle({
+  label,
+  secondLabel,
+}: {
+  label: string
+  secondLabel: string
+}) {
+  return (
+    <>
+      <h2 className="text-center text-2xl font-bold">{label}</h2>
+      <p className="text-center text-slate-600">{secondLabel}</p>
+    </>
+  )
+}
+
+function DeputesLeftOver({
+  deputesCurrent,
+  deputesFormer,
+  legislature,
+}: {
+  deputesCurrent: types.Depute[]
+  deputesFormer: types.Depute[]
+  legislature: number
+}) {
+  return (
+    <>
+      <ChunkOfDeputes
+        title={`Députés "non-inscrits"`}
+        explanation={`Ils ne peuvent pas ou ne souhaitent pas rejoindre un autre groupe, ou en ont été exclus.`}
+        deputes={deputesCurrent.filter(_ => _.latestGroup?.acronym === 'NI')}
+        {...{ legislature }}
+      />
+      <ChunkOfDeputes
+        title="Anciens députés sans groupe"
+        explanation={`Ils n'ont jamais été rattachés à un groupe, même pas le groupe des "Non-inscrits". En général c'est qu'ils ont été techniquement députés pendant très peu de temps (quelques heures)`}
+        deputes={deputesFormer.filter(_ => _.latestGroup === null)}
+        {...{ legislature }}
+      />
+      <ChunkOfDeputes
+        title="Anciens députés de cette législature"
+        explanation={`Ils sont devenus ministres, ou ont démissionné, etc.`}
+        deputes={deputesFormer}
+        {...{ legislature }}
+      />
+    </>
+  )
+}
+
+function DeputeListIfPositionPolitiqueAvailable({
+  deputesCurrent,
+  deputesFormer,
+  legislature,
+}: {
+  deputesCurrent: types.Depute[]
+  deputesFormer: types.Depute[]
+  legislature: number
+}) {
+  const deputesMajoritaire = deputesCurrent.filter(
+    _ => _.latestGroup?.position_politique === 'Majoritaire',
+  )
+  const deputesMinoritaire = deputesCurrent.filter(
+    _ => _.latestGroup?.position_politique === 'Minoritaire',
+  )
+  const deputesOpposition = deputesCurrent.filter(
+    _ => _.latestGroup?.position_politique === 'Opposition',
+  )
+
+  return (
+    <>
+      <AllDeputesOfMajoriteOrOpposition
+        deputes={[...deputesMajoritaire, ...deputesMinoritaire]}
+        kind="majorite"
+        {...{ legislature }}
+      />
+      <AllDeputesOfMajoriteOrOpposition
+        deputes={deputesOpposition}
+        kind="opposition"
+        {...{ legislature }}
+      />
+      <DeputesLeftOver {...{ deputesCurrent, deputesFormer, legislature }} />
+    </>
+  )
+}
+
+function DeputeListIfPositionPolitiqueNotAvailable({
+  deputesCurrent,
+  deputesFormer,
+  legislature,
+}: {
+  deputesCurrent: types.Depute[]
+  deputesFormer: types.Depute[]
+  legislature: number
+}) {
+  const deputesCurrentWithGroup = deputesCurrent.filter(
+    _ => _.latestGroup !== null && _.latestGroup.acronym !== 'NI',
+  )
+  return (
+    <>
+      <SmallTitle
+        label="Députés par groupe"
+        secondLabel="Dans cette législature, les groupes ne déclaraient pas encore un statut
+        officiel de «majorité» ou d'«opposition»."
+      />
+
+      <DeputesByGroup deputes={deputesCurrentWithGroup} {...{ legislature }} />
+      <DeputesLeftOver {...{ deputesCurrent, deputesFormer, legislature }} />
+    </>
+  )
+}
+
 export function Page({
   deputes,
-  groupesData,
   legislature,
   legislatureNavigationUrls,
 }: types.Props) {
@@ -129,59 +258,14 @@ export function Page({
       {/* <GrapheRepartitionGroupes {...{ groupesData }} /> */}
 
       {positionPolitiquesAreAvailable ? (
-        <>
-          <DeputesOfSamePositionPolitique
-            position_politique="Majoritaire"
-            deputes={deputesCurrent}
-            {...{ legislature }}
-          />
-          <DeputesOfSamePositionPolitique
-            position_politique="Minoritaire"
-            deputes={deputesCurrent}
-            {...{ legislature }}
-          />
-          <DeputesOfSamePositionPolitique
-            position_politique="Opposition"
-            deputes={deputesCurrent}
-            {...{ legislature }}
-          />
-          <SubsetOfDeputes
-            title={`Députés "non-inscrits"`}
-            explanation={`Ils ne peuvent pas ou ne souhaitent pas rejoindre un autre groupe, ou en ont été exclus.`}
-            deputes={deputesCurrent.filter(
-              _ => _.latestGroup?.acronym === 'NI',
-            )}
-            {...{ legislature }}
-          />
-          <SubsetOfDeputes
-            title="Députés sans groupe"
-            explanation={`Ils n'ont jamais été rattachés à un groupe, même pas le groupe des "Non-inscrits". En général c'est qu'ils ont été techniquement députés pendant très peu de temps (quelques heures)`}
-            deputes={deputesCurrent.filter(_ => _.latestGroup === null)}
-            {...{ legislature }}
-          />
-          <SubsetOfDeputes
-            title="Anciens députés de cette législature"
-            explanation={`Ils sont devenus ministres, ou ont démissionné, etc.`}
-            deputes={deputesFormer}
-            {...{ legislature }}
-          />
-        </>
+        <DeputeListIfPositionPolitiqueAvailable
+          {...{ deputesCurrent, deputesFormer, legislature }}
+        />
       ) : (
-        <SubsetOfDeputes
-          title="Tous les députés"
-          deputes={deputes}
-          {...{ legislature }}
+        <DeputeListIfPositionPolitiqueNotAvailable
+          {...{ deputesCurrent, deputesFormer, legislature }}
         />
       )}
-
-      {/* <div className="my-4 text-center">
-        <h2 className="text-2xl">
-          {deputesFormer.length} député(s) ont quitté leur mandat{' '}
-        </h2>
-        <p className="italic text-slate-700">
-          Ils ont été nommés ministres, ou ont démissionné, etc.
-        </p>
-      </div> */}
     </div>
   )
 }
