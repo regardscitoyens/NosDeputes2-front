@@ -29,17 +29,18 @@ export function Page(props: types.Props) {
 
   return (
     <div>
-      <div className="">
-        <div className="text-center italic">
-          <p>{dossier.procedureParlementaire.libelle}</p>
-          <p className="font-serif text-2xl italic">«{titre}»</p>
+      <div className="my-4 bg-slate-200 p-4 shadow">
+        <div className="text-center">
+          <p className="font-serif text-4xl font-bold italic">«{titre}»</p>
+          <p className="">{dossier.procedureParlementaire.libelle}</p>
         </div>
         <p className="text-xs italic text-slate-400">{xsiType}</p>
-        <FusionDossier {...{ fusionDossier }} />
         <p>
           <MyLink href={urlAn} targetBlank>
             Voir ce dossier sur le site de l'Assemblée Nationale
           </MyLink>
+        </p>
+        <p>
           {senatChemin && (
             <>
               {' '}
@@ -50,6 +51,7 @@ export function Page(props: types.Props) {
             </>
           )}
         </p>
+        <FusionDossier {...{ fusionDossier }} />
         <Initiateur {...{ initiateur, organes, acteurs }} />
       </div>
 
@@ -98,7 +100,7 @@ function Initiateur({
     const organe = organeRef ? findOrgane(organeRef, organes) : null
     return (
       <>
-        <p className="font-bold">Initiateur: </p>
+        <p className="font-bold">Initiateur(s) :</p>
         {organe && <p>{organe.libelle}</p>}
         {acteurs && (
           <ul>

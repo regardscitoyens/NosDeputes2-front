@@ -167,7 +167,7 @@ function DeputesLeftOver({
       />
       <ChunkOfDeputes
         title="Anciens députés sans groupe"
-        explanation={`Ils n'ont jamais été rattachés à un groupe, même pas le groupe des "Non-inscrits". En général c'est qu'ils ont été techniquement députés pendant très peu de temps (quelques heures)`}
+        explanation={`Ils n'ont jamais été rattachés à un groupe, même pas le groupe des «Non-inscrits». En général c'est qu'ils ont été techniquement députés pendant très peu de temps (quelques heures)`}
         deputes={deputesFormer.filter(_ => _.latestGroup === null)}
         {...{ legislature }}
       />
