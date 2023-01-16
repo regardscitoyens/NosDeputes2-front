@@ -120,6 +120,21 @@ function Initiateur({
   return null
 }
 
+function LinkToSeance({ reunionRef }: { reunionRef: string }) {
+  const regex = /^RUANR5L(\d+)S/
+  const matches = reunionRef.match(regex)
+  const legislatureStr = matches && matches[1]
+  if (!legislatureStr) {
+    throw new Error(`Couldn't parse ${reunionRef} as a seance uid`)
+  }
+  const legislature = parseInt(legislatureStr, 10)
+  return (
+    <MyLink targetBlank href={`/seances/${legislatureStr}#${reunionRef}`}>
+      voir la séance
+    </MyLink>
+  )
+}
+
 function FusionDossier({
   fusionDossier,
 }: {
@@ -239,7 +254,7 @@ function Acte({
       )}{' '}
       {acte.xsiType === 'DiscussionSeancePublique_Type' && (
         <p>
-          reunionRef <code>{acte.reunionRef}</code>
+          <LinkToSeance reunionRef={acte.reunionRef} />
         </p>
       )}
       {acte.xsiType === 'DiscussionCommission_Type' && (

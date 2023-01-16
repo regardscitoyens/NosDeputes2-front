@@ -46,12 +46,11 @@ export function Page({
                         {seancesOfWeek.map(seance => {
                           const { uid, start_date } = seance
                           const isFuture = new Date(start_date) > new Date()
-
                           const seanceTitle = `Séance ${
                             isFuture ? 'prévue le' : 'du'
                           } ${formatDateWithTimeAndWeekday(start_date)}`
                           return (
-                            <li key={uid}>
+                            <li key={uid} id={uid}>
                               {!isFuture ? (
                                 <MyLink href={`/seance/${uid}`} className="">
                                   {seanceTitle}
