@@ -121,6 +121,10 @@ function Initiateur({
 }
 
 function LinkToSeance({ reunionRef }: { reunionRef: string }) {
+  if (reunionRef.startsWith('RUSN')) {
+    return <span>Réunion du sénat {reunionRef}</span>
+  }
+
   const regex = /^RUANR5L(\d+)S/
   const matches = reunionRef.match(regex)
   const legislatureStr = matches && matches[1]
