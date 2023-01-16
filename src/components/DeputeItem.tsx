@@ -35,7 +35,7 @@ export function DeputeItem({
 }: Props) {
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
   return (
-    <div className={`grow rounded drop-shadow ${bg}`}>
+    <div className={`grow rounded drop-shadow ${bg} pr-2`}>
       <GroupeBadgeWithFonction groupe={latestGroup} marginLeft={false} />
       <>
         {slug ? (
@@ -54,7 +54,8 @@ export function DeputeItem({
         )}
       </>
       {displayCirco && (
-        <span className="bg-blue ml-1 cursor-pointer text-slate-400">
+        <span className="bg-blue cursor-pointer text-slate-400">
+          {' '}
           {circoDepartement}
         </span>
       )}

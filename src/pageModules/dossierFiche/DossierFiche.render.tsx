@@ -23,6 +23,7 @@ export function Page(props: types.Props) {
     initiateur,
     fusionDossier,
     actesLegislatifs,
+    plf,
   } = dossier
   const { titre, senatChemin, titreChemin } = titreDossier
   const urlAn = `http://www.assemblee-nationale.fr/dyn/${legislature}/dossiers/${titreChemin}`
@@ -53,6 +54,13 @@ export function Page(props: types.Props) {
         </p>
         <FusionDossier {...{ fusionDossier }} />
         <Initiateur {...{ initiateur, organes, acteurs }} />
+        {/* TODO process all this plf object, bunch of stuff */}
+        {/* {plf && (
+          <div>
+            PLF :{' '}
+            <code>{JSON.stringify(plf, null, 2).slice(0, 100) + '...'}</code>
+          </div>
+        )} */}
       </div>
 
       <ActeLegislatifs {...{ actesLegislatifs, organes, acteurs }} />
@@ -247,16 +255,19 @@ function Acte({
         </p>
       )}
       {acte.xsiType === 'NominRapporteurs_Type' && (
-        <ul>
+        <div className="flex flex-wrap gap-2">
           {acte.rapporteurs.map(rapporteur => {
             const { acteurRef, typeRapporteur } = rapporteur
+            // TODO voir comment afficher les typeRapporteur là dedans. Est-ce que c'est pas toujours le même typeRapporteur pour tous les rapporteurs ? ptêt grouper les rapporteur par type.
+            // TODO trier les acteurs par groupe politique
             return (
-              <li key={acteurRef} className="flex space-x-2">
-                <p>{typeRapporteur}</p> <Acteur {...{ acteurRef, acteurs }} />
-              </li>
+              <div key={acteurRef} className="flex grow space-x-2">
+                {/* <p>{typeRapporteur}</p>{' '} */}
+                <Acteur {...{ acteurRef, acteurs }} />
+              </div>
             )
           })}
-        </ul>
+        </div>
       )}{' '}
       {acte.xsiType === 'DeclarationGouvernement_Type' && (
         <p>{JSON.stringify(acte.typeDeclaration)}</p>
