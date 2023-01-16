@@ -1,3 +1,4 @@
+import { json } from 'stream/consumers'
 import { DeputeItem } from '../../components/DeputeItem'
 import { MyLink } from '../../components/MyLink'
 import {
@@ -258,6 +259,23 @@ function Acte({
           )}
           {acte.referenceNor && (
             <p className="">referenceNor : {acte.referenceNor}</p>
+          )}
+        </>
+      )}
+      {acte.xsiType === 'Decision_Type' && (
+        <>
+          {acte.statutConclusion && (
+            <p>
+              <span className="font-bold">{acte.statutConclusion.libelle}</span>{' '}
+              <span className="font-mono text-sm">
+                {acte.statutConclusion.famCode}
+              </span>
+            </p>
+          )}
+          {acte.libelleActe === 'Décision' && acte.textesAssocies && (
+            <p>
+              Textes associés<code>{JSON.stringify(acte.textesAssocies)}</code>
+            </p>
           )}
         </>
       )}
