@@ -1,7 +1,7 @@
 import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import uniqBy from 'lodash/uniqBy'
-import { Fragment } from 'react'
+import { Fragment, ReactNode, useState } from 'react'
 import { DeputeItem } from '../../components/DeputeItem'
 import { MyLink } from '../../components/MyLink'
 import {
@@ -278,6 +278,21 @@ function Rapporteurs({
   return null
 }
 
+function Foldable({ children }: { children: ReactNode }) {
+  const [folded, setFolded] = useState<boolean>(true)
+  return (
+    <div>
+      <button
+        className="rounded bg-slate-400 px-2 text-slate-200"
+        onClick={() => setFolded(_ => !_)}
+      >
+        {folded ? '(...) déplier' : 'replier'}
+      </button>
+      {folded ? null : children}
+    </div>
+  )
+}
+
 function Acte({
   acte,
   organes,
@@ -421,21 +436,27 @@ function Acte({
       {xsiType !== 'Etape_Type' && (
         <p className="text-xs italic text-slate-400">{xsiType}</p>
       )}
-      <ul>
-        {actesLegislatifs?.map(childActe => {
-          return (
-            <li className="flex" key={childActe.uid}>
-              {childActe.xsiType === 'Etape_Type' ? (
-                <div className=" mx-2 mt-10 text-center">⇨</div>
-              ) : (
-                <div className=" mx-2 flex items-center justify-center">⮕</div>
-              )}
+      {actesLegislatifs && actesLegislatifs.length > 0 && (
+        <Foldable>
+          <ul>
+            {actesLegislatifs.map(childActe => {
+              return (
+                <li className="flex" key={childActe.uid}>
+                  {childActe.xsiType === 'Etape_Type' ? (
+                    <div className=" mx-2 mt-10 text-center">⇨</div>
+                  ) : (
+                    <div className=" mx-2 flex items-center justify-center">
+                      ⮕
+                    </div>
+                  )}
 
-              <Acte acte={childActe} {...{ organes, acteurs }} />
-            </li>
-          )
-        })}
-      </ul>
+                  <Acte acte={childActe} {...{ organes, acteurs }} />
+                </li>
+              )
+            })}
+          </ul>
+        </Foldable>
+      )}
     </div>
   )
 }
