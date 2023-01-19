@@ -14,6 +14,8 @@ import {
 import * as types from './DossierFiche.types'
 import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
+import uniqBy from 'lodash/uniqBy'
+import { Fragment } from 'react'
 
 const f = formatDate
 
@@ -118,7 +120,7 @@ function Initiateur({
         {organe && <p>{organe.libelle}</p>}
         {acteurs && (
           <ul>
-            {acteurs.map(acteur => {
+            {uniqBy(acteurs, _ => _.acteurRef).map(acteur => {
               const { acteurRef } = acteur
               return (
                 <Acteur
@@ -244,14 +246,13 @@ function Rapporteurs({
             _ => -_.length,
           ).flat()
           return (
-            <>
+            <Fragment key={typeRapporteur}>
               <p>{typeRapporteur}</p>
               <div className="flex flex-wrap gap-2">
                 {rapporteursReorganized.map(rapporteur => {
                   const { acteurRef, etudePlfRef, acteur } = rapporteur
                   // TODO handle etudePlfRef
-
-                  // TODO is this "legislature" correct ?
+                  // TODO is this "legislature" correct ? NO, we should query the group at the given date
                   // TODO fix other fields
                   return (
                     <div key={acteurRef} className="grow">
@@ -273,7 +274,7 @@ function Rapporteurs({
                   )
                 })}
               </div>
-            </>
+            </Fragment>
           )
         })}
       </div>
