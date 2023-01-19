@@ -27,7 +27,8 @@ export function Page({
                   <span className="text-md font-serif">«{d.title}»</span>
                 </MyLink>{' '}
               </div>
-              <p className=" text-sm text-slate-500">{d.nbActes} étapes</p>
+              <p className=" px-2 text-sm font-bold">{d.status}</p>
+              <p className=" text-sm text-slate-500">{d.nbReunions} réunions</p>
             </li>
           )
         })}

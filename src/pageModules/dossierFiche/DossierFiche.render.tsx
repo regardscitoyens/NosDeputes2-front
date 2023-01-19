@@ -1,4 +1,7 @@
-import { json } from 'stream/consumers'
+import groupBy from 'lodash/groupBy'
+import sortBy from 'lodash/sortBy'
+import uniqBy from 'lodash/uniqBy'
+import { Fragment } from 'react'
 import { DeputeItem } from '../../components/DeputeItem'
 import { MyLink } from '../../components/MyLink'
 import {
@@ -6,16 +9,8 @@ import {
   simplifyCommissionName,
 } from '../../lib/hardcodedData'
 import * as acteTypes from '../../lib/types/acte'
-import {
-  capitalizeFirstLetter,
-  formatDate,
-  partitionDeputesByGroup,
-} from '../../lib/utils'
+import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
 import * as types from './DossierFiche.types'
-import groupBy from 'lodash/groupBy'
-import sortBy from 'lodash/sortBy'
-import uniqBy from 'lodash/uniqBy'
-import { Fragment } from 'react'
 
 const f = formatDate
 

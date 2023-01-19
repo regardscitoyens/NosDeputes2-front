@@ -11,12 +11,50 @@ import * as types from './DossierList.types'
 import sum from 'lodash/sum'
 import sortBy from 'lodash/sortBy'
 import * as dossierTypes from '../../lib/types/dossier'
+import * as acteTypes from '../../lib/types/acte'
 
 type Query = {
   legislature?: string
 }
 
-function countActes(actes: any[] | null) {
+function extractActesConcret(
+  actes: acteTypes.ActeLegislatif[] | null,
+): acteTypes.ActeLegislatifConcret[] {
+  function inner(
+    acte: acteTypes.ActeLegislatif,
+  ): acteTypes.ActeLegislatifConcret[] {
+    if (acte.xsiType === 'Etape_Type') {
+      return (acte.actesLegislatifs ?? []).flatMap(inner)
+    }
+
+    return [acte]
+  }
+  return (actes ?? []).flatMap(inner)
+}
+
+function determineCurrentStatus(
+  actes: acteTypes.ActeLegislatif[] | null,
+): string {
+  const actesConcret = extractActesConcret(actes)
+  if (actesConcret.some(_ => _.xsiType === 'Promulgation_Type')) {
+    return 'Promulgué'
+  }
+  if (actesConcret.some(_ => _.xsiType === 'RetraitInitiative_Type')) {
+    return 'Retiré'
+  }
+  if (
+    actesConcret.some(
+      _ =>
+        _.xsiType === 'Decision_Type' &&
+        _.statutConclusion?.famCode === 'TSORTF13',
+    )
+  ) {
+    return 'Rejeté'
+  }
+  return '???'
+}
+
+function countActes(actes: acteTypes.ActeLegislatif[] | null) {
   function inner(acte: any) {
     const children = acte.actesLegislatifs ?? []
     const isLeaf = children.length === 0
@@ -76,9 +114,21 @@ ORDER BY title
   const dossiers = sortBy(
     dossiersWithActes.map(d => {
       const { actes, ...rest } = d
-      return { ...rest, nbActes: countActes(actes) }
+      return {
+        ...rest,
+        nbReunions: extractActesConcret(
+          actes as acteTypes.ActeLegislatif[] | null,
+        ).filter(
+          _ =>
+            _.xsiType === 'DiscussionCommission_Type' ||
+            _.xsiType === 'DiscussionSeancePublique_Type',
+        ).length,
+        status: determineCurrentStatus(
+          actes as acteTypes.ActeLegislatif[] | null,
+        ),
+      }
     }),
-    _ => -_.nbActes,
+    _ => -_.nbReunions,
   )
 
   return {

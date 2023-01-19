@@ -10,5 +10,6 @@ export type Dossier = {
   uid: string
   procedure: dossierTypes.Dossier['procedureParlementaire']['libelle']
   title: string
-  nbActes: number
+  nbReunions: number
+  status: string
 }
