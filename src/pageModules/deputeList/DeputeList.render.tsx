@@ -3,14 +3,8 @@ import sortBy from 'lodash/sortBy'
 import uniq from 'lodash/uniq'
 import { DeputeItem } from '../../components/DeputeItem'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
+import { partitionDeputesByGroup } from '../../lib/utils'
 import * as types from './DeputeList.types'
-
-function divideByGroup(deputes: types.Depute[]): types.Depute[][] {
-  return sortBy(
-    Object.values(groupBy(deputes, _ => _.latestGroup?.acronym)),
-    _ => -_.length,
-  )
-}
 
 export function ChunkOfDeputes({
   title,
@@ -64,7 +58,7 @@ export function DeputesByGroup({
   legislature: number
 }) {
   if (deputes.length === 0) return null
-  const deputesByGroup = divideByGroup(deputes)
+  const deputesByGroup = partitionDeputesByGroup(deputes)
 
   return (
     <>

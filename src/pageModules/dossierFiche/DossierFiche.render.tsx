@@ -6,9 +6,14 @@ import {
   simplifyCommissionName,
 } from '../../lib/hardcodedData'
 import * as acteTypes from '../../lib/types/acte'
-import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
+import {
+  capitalizeFirstLetter,
+  formatDate,
+  partitionDeputesByGroup,
+} from '../../lib/utils'
 import * as types from './DossierFiche.types'
 import groupBy from 'lodash/groupBy'
+import sortBy from 'lodash/sortBy'
 
 const f = formatDate
 
@@ -223,16 +228,47 @@ function Rapporteurs({
         {Object.entries(
           groupBy(rapporteursTypedBetter, _ => _.typeRapporteur),
         ).map(([typeRapporteur, rapporteurs]) => {
+          const rapporteursWithActeurs = rapporteurs.map(_ => {
+            return {
+              ..._,
+              acteur: findActeur(_.acteurRef, acteurs),
+            }
+          })
+          const rapporteursReorganized = sortBy(
+            Object.values(
+              groupBy(
+                rapporteursWithActeurs,
+                _ => _.acteur?.latestGroup?.acronym,
+              ),
+            ),
+            _ => -_.length,
+          ).flat()
           return (
             <>
               <p>{typeRapporteur}</p>
               <div className="flex flex-wrap gap-2">
-                {rapporteurs.map(rapporteur => {
-                  const { acteurRef, etudePlfRef } = rapporteur
+                {rapporteursReorganized.map(rapporteur => {
+                  const { acteurRef, etudePlfRef, acteur } = rapporteur
                   // TODO handle etudePlfRef
+
+                  // TODO is this "legislature" correct ?
+                  // TODO fix other fields
                   return (
                     <div key={acteurRef} className="grow">
-                      <Acteur {...{ acteurRef, acteurs }} />
+                      {acteur ? (
+                        <DeputeItem
+                          depute={{
+                            ...acteur,
+                            fullName: acteur.full_name,
+                            circo_departement: '',
+                            slug: '',
+                            mandat_ongoing: true,
+                          }}
+                          legislature={LATEST_LEGISLATURE}
+                        />
+                      ) : (
+                        <span>Acteur n°{acteurRef}</span>
+                      )}
                     </div>
                   )
                 })}

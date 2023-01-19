@@ -1,4 +1,6 @@
 import groupBy from 'lodash/groupBy'
+import { WithLatestGroupOrNull } from './newAddLatestGroup'
+import sortBy from 'lodash/sortBy'
 
 export function getAge(date_naissance: string) {
   const dNaissance = new Date(date_naissance)
@@ -172,4 +174,14 @@ export function pickTextColor(
 export function capitalizeFirstLetter(s: string): string {
   if (s.length > 0) return s.charAt(0).toUpperCase() + s.slice(1)
   return s
+}
+
+// Parition a bunch of deputes by their group. Groups with most members are returned first.
+export function partitionDeputesByGroup<D>(
+  deputes: WithLatestGroupOrNull<D>[],
+): WithLatestGroupOrNull<D>[][] {
+  return sortBy(
+    Object.values(groupBy(deputes, _ => _.latestGroup?.acronym)),
+    _ => -_.length,
+  )
 }
