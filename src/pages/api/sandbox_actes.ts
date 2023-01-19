@@ -68,8 +68,8 @@ FROM dossiers
       const { xsiType } = _acte
       const nbActesLegislatifs = _acte.actesLegislatifs?.length
 
-      if (xsiType === 'Etape_Type') {
-        registerKeysOf(_acte)
+      if (xsiType === 'NominRapporteurs_Type') {
+        //...
       }
     }
     const { actesLegislatifs } = data

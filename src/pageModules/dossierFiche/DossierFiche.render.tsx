@@ -8,6 +8,7 @@ import {
 import * as acteTypes from '../../lib/types/acte'
 import { capitalizeFirstLetter, formatDate } from '../../lib/utils'
 import * as types from './DossierFiche.types'
+import groupBy from 'lodash/groupBy'
 
 const f = formatDate
 
@@ -202,6 +203,49 @@ function ActeLegislatifs({
   return null
 }
 
+function Rapporteurs({
+  acte,
+  acteurs,
+}: {
+  acte: acteTypes.ActeLegislatifConcret & { xsiType: 'NominRapporteurs_Type' }
+  acteurs: types.Acteur[]
+}) {
+  const { rapporteurs } = acte
+  if (rapporteurs && rapporteurs.length) {
+    // here we have to reformulate the type in a different way, otherwise the groupBy method is confused
+    const rapporteursTypedBetter: {
+      typeRapporteur: string
+      acteurRef: string
+      etudePlfRef?: string
+    }[] = rapporteurs
+    return (
+      <div>
+        {Object.entries(
+          groupBy(rapporteursTypedBetter, _ => _.typeRapporteur),
+        ).map(([typeRapporteur, rapporteurs]) => {
+          return (
+            <>
+              <p>{typeRapporteur}</p>
+              <div className="flex flex-wrap gap-2">
+                {rapporteurs.map(rapporteur => {
+                  const { acteurRef, etudePlfRef } = rapporteur
+                  // TODO handle etudePlfRef
+                  return (
+                    <div key={acteurRef} className="grow">
+                      <Acteur {...{ acteurRef, acteurs }} />
+                    </div>
+                  )
+                })}
+              </div>
+            </>
+          )
+        })}
+      </div>
+    )
+  }
+  return null
+}
+
 function Acte({
   acte,
   organes,
@@ -255,20 +299,8 @@ function Acte({
         </p>
       )}
       {acte.xsiType === 'NominRapporteurs_Type' && (
-        <div className="flex flex-wrap gap-2">
-          {acte.rapporteurs.map(rapporteur => {
-            const { acteurRef, typeRapporteur } = rapporteur
-            // TODO voir comment afficher les typeRapporteur là dedans. Est-ce que c'est pas toujours le même typeRapporteur pour tous les rapporteurs ? ptêt grouper les rapporteur par type.
-            // TODO trier les acteurs par groupe politique
-            return (
-              <div key={acteurRef} className="flex grow space-x-2">
-                {/* <p>{typeRapporteur}</p>{' '} */}
-                <Acteur {...{ acteurRef, acteurs }} />
-              </div>
-            )
-          })}
-        </div>
-      )}{' '}
+        <Rapporteurs {...{ acteurs, acte }} />
+      )}
       {acte.xsiType === 'DeclarationGouvernement_Type' && (
         <p>{JSON.stringify(acte.typeDeclaration)}</p>
       )}
