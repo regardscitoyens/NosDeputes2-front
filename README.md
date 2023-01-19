@@ -48,7 +48,7 @@ Quand tout est prêt :
 
 # Contribuer
 
-Vous êtes le bienvenu.
+Vous êtes le bienvenu. La TODO list des choses à faire est ici https://pad.regardscitoyens.org/p/todo_dev
 
 N'hésitez pas à faire signe si vous commencez à bosser sur un truc, pour qu'on ne fasse pas deux fois la même chose
 
