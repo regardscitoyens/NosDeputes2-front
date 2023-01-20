@@ -94,6 +94,11 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
       </Division>
       <Division>
         <MenuLink
+          to="/mandats-par-circonscription"
+          label="Changements de député"
+          temporary
+        />
+        <MenuLink
           to="/sessions"
           label="Les sessions parlementaires"
           temporary

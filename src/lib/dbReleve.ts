@@ -17,7 +17,7 @@ export const dbReleve = new Kysely<ReleveTables>({
   // log: ['query'],
 })
 
-interface ReleveTables {
+export interface ReleveTables {
   acteurs: {
     uid: string
     data: unknown
@@ -65,6 +65,12 @@ interface ReleveTables {
   nosdeputes_deputes_weekly_stats: {
     uid: string
     legislature: number
+    data: unknown
+  }
+  derived_deputes_mandats: {
+    legislature: number
+    circo_uid: string
+    nb_mandats: number
     data: unknown
   }
 }
