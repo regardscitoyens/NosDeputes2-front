@@ -8,13 +8,43 @@ import {
 } from '../../lib/utils'
 import * as types from './MandatsParCirco.types'
 
+export function CauseChangement({ cause }: { cause: types.CauseChangement }) {
+  function buildLabel(): string | null {
+    switch (cause.kind) {
+      case 'elections_generales':
+        return null
+      case 'remplacement': {
+        switch (cause.details) {
+          case 'decede':
+            return 'Il(elle) est remplacé(e) suite à son décès'
+          case 'demission_incompatibilite_mandats':
+            return `Il(elle) est remplacé(e) suite à sa démission pour incompatibilité avec un autre mandat`
+          case 'mission_longue':
+            return `Il(elle) est remplacé(e) car il(elle) est nommé à une mission temporaire» de plus de 6 mois`
+          case 'nomme_cc':
+            return `Il(elle) est remplacé(e) car nommé(e) au Conseil Constitutionnel`
+          case 'nomme_gvt':
+            return `Il(elle) est remplacé(e) car nommé(e) au gouvernement`
+        }
+      }
+      case 'elections_partielles':
+        return 'todo'
+      case 'retour':
+        return 'todo'
+    }
+    return null
+  }
+
+  return <p className="text-center italic text-slate-500">{buildLabel()}</p>
+}
+
 export function Page({
   legislature,
   legislatureNavigationUrls,
   dataByCirco,
 }: types.Props) {
   return (
-    <div>
+    <div className="">
       <LegislatureNavigation
         title="Changements de député"
         currentLegislature={legislature}
@@ -72,7 +102,7 @@ export function Page({
                         </span>
                       </p>
                     )}
-                    {mandatsSameElection.map(mandat => {
+                    {mandatsSameElection.map((mandat, idxInElection) => {
                       const {
                         depute,
                         date_debut_mandat,
@@ -80,6 +110,7 @@ export function Page({
                         cause_fin,
                         is_suppleant,
                       } = mandat
+                      const elected = idxInElection === 0
                       const f = formatDateWithoutWeekday
                       const nbDays = dateDiffInDays(
                         date_debut_mandat,
@@ -88,39 +119,42 @@ export function Page({
                       const zeroDays = nbDays == 0
                       return (
                         <Fragment key={date_debut_mandat}>
-                          <div className="my-2 flex gap-2">
+                          <div className="my-2 flex flex-wrap gap-2">
                             <DeputeItem
                               depute={depute}
                               legislature={legislature}
                               className={'border border-slate-400'}
                             />
-                            {is_suppleant ? '(son suppléant) ' : null}
-                            {zeroDays ? (
-                              <>
-                                est techniquement député(e) pendant quelques
-                                heures le {f(date_debut_mandat)}
-                              </>
-                            ) : (
-                              <>
-                                est député(e){' '}
-                                {date_fin_mandat ? 'du' : 'depuis le'}{' '}
-                                {f(date_debut_mandat)}
-                                {date_fin_mandat && (
-                                  <> au {f(date_fin_mandat)}</>
-                                )}{' '}
-                                {nbDays < 50 ? (
-                                  <>(pendant seulement {nbDays} jours)</>
+                            <div className="flex items-center">
+                              <span>
+                                {is_suppleant ? (
+                                  <span className="">(son suppléant) </span>
                                 ) : null}
-                              </>
-                            )}
+                                {zeroDays ? (
+                                  <>
+                                    est techniquement député(e) pendant quelques
+                                    heures le {f(date_debut_mandat)}
+                                  </>
+                                ) : (
+                                  <>
+                                    {elected ? 'est élu(e)' : 'est devenu(e)'}{' '}
+                                    député(e){' '}
+                                    {date_fin_mandat ? 'du' : 'depuis le'}{' '}
+                                    <span className="font-bold">
+                                      {f(date_debut_mandat)}
+                                    </span>
+                                    {date_fin_mandat && (
+                                      <> au {f(date_fin_mandat)}</>
+                                    )}{' '}
+                                    {nbDays < 50 ? (
+                                      <>(pendant seulement {nbDays} jours)</>
+                                    ) : null}
+                                  </>
+                                )}
+                              </span>
+                            </div>
                           </div>
-                          {cause_fin && (
-                            <p className="text-sm italic text-slate-500">
-                              {cause_fin.kind}{' '}
-                              {cause_fin.kind !== 'elections_generales' &&
-                                cause_fin.details}
-                            </p>
-                          )}
+                          {cause_fin && <CauseChangement cause={cause_fin} />}
                         </Fragment>
                       )
                     })}
