@@ -24,6 +24,15 @@ export function formatYear(dateIsoString: string) {
   return str
 }
 
+export function formatDateWithoutWeekday(dateIsoString: string) {
+  const str = new Date(dateIsoString).toLocaleString('fr-FR', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+  return str
+}
 export function formatDate(
   dateIsoString: string,
   style: 'normal' | 'precise' | 'precise_with_time' = 'precise',
@@ -183,5 +192,12 @@ export function partitionDeputesByGroup<D>(
   return sortBy(
     Object.values(groupBy(deputes, _ => _.latestGroup?.acronym)),
     _ => -_.length,
+  )
+}
+
+export function dateDiffInDays(first: string, second: string) {
+  return Math.round(
+    (new Date(second).getTime() - new Date(first).getTime()) /
+      (1000 * 60 * 60 * 24),
   )
 }

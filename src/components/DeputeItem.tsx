@@ -19,6 +19,7 @@ type Props = {
   }
   legislature: number
   displayCirco?: boolean
+  className?: string
 }
 
 export function DeputeItem({
@@ -31,10 +32,11 @@ export function DeputeItem({
   },
   legislature,
   displayCirco,
+  className,
 }: Props) {
   const bg = mandatOngoing ? 'bg-slate-100' : 'bg-slate-200'
   return (
-    <div className={`grow rounded drop-shadow ${bg} pr-2`}>
+    <div className={`rounded drop-shadow ${bg} pr-2 ${className}`}>
       <GroupeBadgeWithFonction groupe={latestGroup} marginLeft={false} />
       <>
         {slug ? (

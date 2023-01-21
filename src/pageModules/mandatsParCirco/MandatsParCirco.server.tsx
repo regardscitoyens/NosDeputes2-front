@@ -110,7 +110,7 @@ WHERE uid IN (${sql.join(deputesIds)})
               ...depute,
               circo_departement: circo.name_dpt,
               slug: 'TODO_do_the_slug',
-              mandat_ongoing: !date_fin_mandat, // TODO compare with end of legislature
+              mandat_ongoing: true, // pas besoin d'afficher cette notion ici
             },
             ...(cause_fin ? { cause_fin } : null),
             date_debut_mandat,
@@ -124,8 +124,7 @@ WHERE uid IN (${sql.join(deputesIds)})
 
   const rowsFinalSorted = sortBy(
     rowsFinal,
-    _ =>
-      `${_.circo.region_type} - ${_.circo.region} - ${_.circo.num_dpt} - ${_.circo.num_circo}`,
+    _ => `${_.circo.num_dpt} - ${_.circo.num_circo}`,
   )
 
   return {

@@ -91,6 +91,7 @@ function Acteur({
         mandat_ongoing: true,
       }}
       legislature={LATEST_LEGISLATURE}
+      className="grow"
     />
   ) : (
     <span>Acteur n°{acteurRef}</span>
@@ -261,6 +262,7 @@ function Rapporteurs({
                             mandat_ongoing: true,
                           }}
                           legislature={LATEST_LEGISLATURE}
+                          className="grow"
                         />
                       ) : (
                         <span>Acteur n°{acteurRef}</span>

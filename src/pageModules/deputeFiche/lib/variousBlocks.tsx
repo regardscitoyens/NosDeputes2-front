@@ -11,7 +11,6 @@ import {
 import { DeputeResponsabilite } from '../../../lib/queryDeputeResponsabilites'
 import { formatDate, getAge } from '../../../lib/utils'
 import * as types from '../DeputeFiche.types'
-import { DeputeItem } from '../../../components/DeputeItem'
 
 const f = formatDate
 

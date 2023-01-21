@@ -42,6 +42,7 @@ export function ChunkOfDeputes({
               key={depute.uid}
               {...{ depute, legislature }}
               displayCirco
+              className="grow"
             />
           )
         })}
