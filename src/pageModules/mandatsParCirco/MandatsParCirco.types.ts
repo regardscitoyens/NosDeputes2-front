@@ -1,10 +1,29 @@
+import { WithLatestGroupOrNull } from '../../lib/newAddLatestGroup'
+
 export type Props = {
   legislature: number
   legislatureNavigationUrls: [number, string][]
-  dataByCirco: DerivedDeputesMandats[]
+  dataByCirco: DerivedDeputesMandatsFinal[]
 }
 
-export type DerivedDeputesMandats = {
+export type DerivedDeputesMandatsFinal = {
+  circo: DerivedDeputesMandatsRawFromDb['circo']
+  mandats: {
+    depute: WithLatestGroupOrNull<{
+      uid: string
+      fullName: string
+      circo_departement: string
+      slug: string | null
+      mandat_ongoing: boolean
+    }>
+    cause_fin?: CauseChangement
+    date_debut_mandat: string
+    date_fin_mandat: string | null
+    is_suppleant: boolean
+  }[][]
+}
+
+export type DerivedDeputesMandatsRawFromDb = {
   legislature: number
   circo: {
     region_type: string

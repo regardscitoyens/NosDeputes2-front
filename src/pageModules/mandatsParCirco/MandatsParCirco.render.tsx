@@ -1,3 +1,4 @@
+import { DeputeItem } from '../../components/DeputeItem'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import { formatDate } from '../../lib/utils'
 import * as types from './MandatsParCirco.types'
@@ -51,23 +52,24 @@ export function Page({
                   )}
                   {mandatsSameElection.map(mandat => {
                     const {
-                      acteur_uid,
+                      depute,
                       date_debut_mandat,
                       date_fin_mandat,
-                      full_name,
-                      suppleant_ref,
                       cause_fin,
-                      cause_debut,
+                      is_suppleant,
                     } = mandat
                     return (
                       <div
                         key={date_debut_mandat}
                         className="m-4 rounded bg-slate-100 p-2 shadow-lg"
                       >
-                        {full_name} {acteur_uid} {formatDate(date_debut_mandat)}
+                        <DeputeItem depute={depute} legislature={legislature} />
+                        {is_suppleant ? (
+                          <span className="">(Suppléant)</span>
+                        ) : null}
+                        {formatDate(date_debut_mandat)}
                         {' => '}
                         {date_fin_mandat && formatDate(date_fin_mandat)}{' '}
-                        {suppleant_ref}{' '}
                         {cause_fin && (
                           <span className="text-sm italic text-slate-500">
                             {cause_fin.kind}{' '}

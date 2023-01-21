@@ -2,7 +2,6 @@ import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
 import { FonctionInGroupe } from '../lib/newAddLatestGroup'
 import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
-import Image from 'next/image'
 
 type Props = {
   depute: {
