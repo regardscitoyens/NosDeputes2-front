@@ -61,6 +61,12 @@ export function latestComPermIsNotNull<D>(
   return depute.latestComPerm !== null
 }
 
+export function latestComPermIsNull<D>(
+  depute: WithLatestComPermOrNull<D>,
+): depute is D & { latestComPerm: null } {
+  return depute.latestComPerm === null
+}
+
 async function fetchLatestComPermForDeputeIds(
   deputeUids: string[],
   legislature: number,

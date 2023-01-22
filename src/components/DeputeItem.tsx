@@ -17,7 +17,7 @@ type Props = {
       fonction: FonctionInGroupe
       color: string
     } | null
-    latestComPerm: {
+    latestComPerm?: {
       fonction: FonctionInCom
       name_short: string
       name_long: string
@@ -32,6 +32,7 @@ export function DeputeItem({
   depute: {
     slug,
     latestGroup,
+    latestComPerm,
     fullName,
     circo_departement: circoDepartement,
     mandat_ongoing: mandatOngoing,
@@ -60,6 +61,12 @@ export function DeputeItem({
           fullName
         )}
       </>
+      {latestComPerm && latestComPerm.fonction !== 'Membre' && (
+        <span className="font-extrabold uppercase italic">
+          {' '}
+          {latestComPerm.fonction}
+        </span>
+      )}
       {displayCirco && (
         <span className="bg-blue cursor-pointer text-slate-400">
           {' '}

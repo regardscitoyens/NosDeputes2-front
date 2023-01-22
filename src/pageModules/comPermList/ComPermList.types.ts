@@ -7,8 +7,13 @@ export type Props = {
   legislature: number
   legislatureNavigationUrls: [number, string][]
 }
-export type DeputeWithCom = WithLatestComPerm<DeputeWithoutCom>
-export type DeputeWithoutCom = WithLatestGroupOrNull<DeputeSimple>
+export type DeputeWithCom = WithLatestComPerm<
+  WithLatestGroupOrNull<DeputeSimple>
+>
+export type DeputeWithoutCom = WithLatestGroupOrNull<DeputeSimple> & {
+  // we add the field just ease the JSX
+  latestComPerm: null
+}
 
 export type DeputeSimple = {
   uid: string

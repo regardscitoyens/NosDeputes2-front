@@ -4,6 +4,7 @@ import { GetServerSideProps } from 'next'
 import {
   addLatestComPermToDeputes,
   latestComPermIsNotNull,
+  latestComPermIsNull,
 } from '../../lib/addLatestComPerm'
 import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
 import { dbReleve } from '../../lib/dbReleve'
@@ -12,6 +13,7 @@ import {
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import * as types from './ComPermList.types'
+import filterNot from 'lodash/filter'
 
 type Query = {
   legislature?: string
@@ -94,9 +96,8 @@ WHERE
   const deputesWithCom = deputesWithGroupAndComPerm.filter(
     latestComPermIsNotNull,
   )
-  const deputesWithoutCom = deputesWithGroupAndComPerm.filter(
-    _ => !latestComPermIsNotNull(_),
-  )
+  const deputesWithoutCom =
+    deputesWithGroupAndComPerm.filter(latestComPermIsNull)
 
   return {
     props: {

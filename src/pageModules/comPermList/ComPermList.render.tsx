@@ -3,33 +3,32 @@ import sortBy from 'lodash/sortBy'
 import { Fragment } from 'react'
 import { DeputeItem } from '../../components/DeputeItem'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
-import { latestComPermIsNotNull } from '../../lib/addLatestComPerm'
 import * as types from './ComPermList.types'
 
 export function ChunkOfDeputes({
   deputes,
   legislature,
 }: {
-  deputes: types.Depute[]
+  deputes: (types.DeputeWithCom | types.DeputeWithoutCom)[]
   legislature: number
 }) {
   if (deputes.length === 0) return null
 
   const deputesSorted = sortBy(deputes, _ => {
-    const fonction = _.latestComPerm?.fonction
+    const fonction = _.latestComPerm !== null && _.latestComPerm.fonction
     const score =
       fonction === 'Président'
-        ? 100
+        ? 1
         : fonction === 'Vice-Président'
-        ? 80
+        ? 2
         : fonction === 'Rapporteur général'
-        ? 70
+        ? 3
         : fonction === 'Secrétaire'
-        ? 60
+        ? 4
         : fonction === 'Membre'
-        ? 50
+        ? 5
         : 10
-    return -score
+    return `${score}_${_.latestGroup?.acronym}`
   })
 
   return (
@@ -41,7 +40,6 @@ export function ChunkOfDeputes({
               key={depute.uid}
               depute={{ ...depute, mandat_ongoing: true }}
               {...{ legislature }}
-              // displayCirco
               className="grow"
             />
           )
