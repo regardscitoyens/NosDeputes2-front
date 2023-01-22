@@ -8,7 +8,15 @@ import {
 } from '../../lib/utils'
 import * as types from './MandatsParCirco.types'
 
-export function CauseChangement({ cause }: { cause: types.CauseChangement }) {
+export function CauseChangement({
+  cause,
+  fem,
+}: {
+  cause: types.CauseChangement
+  fem: boolean
+}) {
+  const femE = fem ? 'e' : ''
+  const ilElle = fem ? 'Elle' : 'Il'
   function buildLabel(): string | null {
     const errMsg = `Unknown cause ${JSON.stringify(cause)}`
     switch (cause.kind) {
@@ -17,25 +25,43 @@ export function CauseChangement({ cause }: { cause: types.CauseChangement }) {
       case 'remplacement': {
         switch (cause.details) {
           case 'decede':
-            return 'Il(elle) est remplacé(e) suite à son décès'
+            return `${ilElle} est remplacé${femE} suite à son décès`
           case 'demission_incompatibilite_mandats':
-            return `Il(elle) est remplacé(e) suite à sa démission pour incompatibilité avec un autre mandat`
+            return `${ilElle} est remplacé${femE} suite à sa démission pour incompatibilité avec un autre mandat`
           case 'mission_longue':
-            return `Il(elle) est remplacé(e) car il(elle) est nommé à une mission temporaire» de plus de 6 mois`
+            return `${ilElle} est remplacé${femE} car ${ilElle} est nommé${femE} à une mission temporaire» de plus de 6 mois`
           case 'nomme_cc':
-            return `Il(elle) est remplacé(e) car nommé(e) au Conseil Constitutionnel`
+            return `${ilElle} est remplacé${femE} car nommé${femE} au Conseil Constitutionnel`
           case 'nomme_gvt':
-            return `Il(elle) est remplacé(e) car nommé(e) au gouvernement`
+            return `${ilElle} est remplacé${femE} car nommé${femE} au gouvernement`
           default:
             throw new Error(errMsg)
         }
       }
-      case 'elections_partielles':
-        return null
+      case 'elections_partielles': {
+        switch (cause.details) {
+          case 'annulation_election':
+            return `L'élection a été annulée par le Conseil Constitutionnel`
+          case 'dechu':
+            return `${ilElle} a été déchu${femE} de son mandat` // TODO what ?
+          case 'demission':
+            return `${ilElle} a démissionné`
+          case 'demission_incompatibilite':
+            return `${ilElle} a démissioné pour incompatibilité avec un autre mandat`
+          case 'elu_parlement_europeen':
+            return `${ilElle} est remplacé${femE} car élu${femE} au parlement européen`
+          case 'elu_senat':
+            return `${ilElle} est remplacé${femE} car élu${femE} au Sénat`
+          case 'decede_sans_suppleant':
+            return `${ilElle} est décédé${femE} sans suppléant`
+          case undefined:
+            return null
+        }
+      }
       case 'retour': {
         switch (cause.details) {
           case 'retour_gvt':
-            return `Il(elle) est remplacé car son précédesseur a quitté le gouvernement`
+            return `${ilElle} est remplacé${femE} par son précédesseur qui est revenu du gouvernement`
           default:
             throw new Error(errMsg)
         }
@@ -53,41 +79,17 @@ function PartialElection({
 }: {
   cause: types.CauseChangement | undefined
 }) {
-  function getLabel() {
-    if (!cause || cause.kind !== 'elections_partielles') {
-      throw new Error(
-        `Expected cause was elections_partielles, got ${JSON.stringify(cause)}`,
-      )
-    }
-    switch (cause.details) {
-      case 'annulation_election':
-        return `L'élection précédente a été annulée`
-      case 'dechu':
-        return `Le député a été déchu de son mandat` // TODO what ?
-      case 'demission':
-        return `Le député a démissioné`
-      case 'demission_incompatibilite':
-        return `Le député a démissioné pour incompatibilité avec un autre mandat`
-      case 'elu_parlement_europeen':
-        return `Le député a été élu au parlement européen`
-      case 'elu_senat':
-        return `Le député a été élu au Sénat`
-      case 'decede_sans_suppleant':
-        return `Le député est décédé sans suppléant`
-      case undefined:
-        return null
-    }
-  }
-
   return (
     <div className="flex items-center justify-center">
-      <div className="mb-4 mt-2 max-w-sm p-4 text-center">
+      <div className="mb-4 mt-2 max-w-lg p-4 text-center">
         <p className="text-lg">
           <span className="font-bold">Une nouvelle élection</span> a eu lieu
           dans cette circonscription{' '}
-          <span className="italic text-slate-500">(«élection partielle»)</span>
+          <span className="italic text-slate-500">
+            C'est ce qu'on appelle une «élection partielle».
+          </span>
         </p>
-        <p className="italic text-slate-500">{getLabel()}</p>
+        {/* <p className="italic text-slate-500">{getLabel()}</p> */}
       </div>
     </div>
   )
@@ -98,6 +100,7 @@ export function Page({
   legislatureNavigationUrls,
   dataByCirco,
 }: types.Props) {
+  console.log('@@', dataByCirco)
   return (
     <div className="">
       <LegislatureNavigation
@@ -167,6 +170,8 @@ export function Page({
                         date_debut_mandat,
                         date_fin_mandat ?? new Date().toISOString(),
                       )
+                      const fem = depute.gender === 'F'
+                      const femE = fem ? 'e' : ''
                       const zeroDays = nbDays == 0
                       return (
                         <Fragment key={date_debut_mandat}>
@@ -179,17 +184,21 @@ export function Page({
                             <div className="flex items-center">
                               <span>
                                 {is_suppleant ? (
-                                  <span className="">(son suppléant) </span>
+                                  <span className="">
+                                    ({fem ? 'sa suppléante' : 'son suppléant'}){' '}
+                                  </span>
                                 ) : null}
                                 {zeroDays ? (
                                   <>
-                                    est techniquement député(e) pendant quelques
-                                    heures le {f(date_debut_mandat)}
+                                    est techniquement député{femE} pendant
+                                    quelques heures le {f(date_debut_mandat)}
                                   </>
                                 ) : (
                                   <>
-                                    {elected ? 'est élu(e)' : 'est devenu(e)'}{' '}
-                                    député(e){' '}
+                                    {elected
+                                      ? `est élu${femE}`
+                                      : `est devenu${femE}`}{' '}
+                                    député{femE}{' '}
                                     {date_fin_mandat ? 'du' : 'depuis le'}{' '}
                                     <span className="font-bold">
                                       {f(date_debut_mandat)}
@@ -205,7 +214,9 @@ export function Page({
                               </span>
                             </div>
                           </div>
-                          {cause_fin && <CauseChangement cause={cause_fin} />}
+                          {cause_fin && (
+                            <CauseChangement cause={cause_fin} {...{ fem }} />
+                          )}
                         </Fragment>
                       )
                     })}
