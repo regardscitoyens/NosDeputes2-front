@@ -2,6 +2,7 @@ import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
 import { FonctionInGroupe } from '../lib/addLatestGroup'
 import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
+import { FonctionInCom } from '../lib/addLatestComPerm'
 
 type Props = {
   depute: {
@@ -15,6 +16,11 @@ type Props = {
       acronym: string
       fonction: FonctionInGroupe
       color: string
+    } | null
+    latestComPerm: {
+      fonction: FonctionInCom
+      name_short: string
+      name_long: string
     } | null
   }
   legislature: number

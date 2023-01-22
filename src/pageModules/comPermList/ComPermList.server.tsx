@@ -1,7 +1,10 @@
 import { sql } from 'kysely'
 import range from 'lodash/range'
 import { GetServerSideProps } from 'next'
-import { addLatestComPermToDeputes } from '../../lib/addLatestComPerm'
+import {
+  addLatestComPermToDeputes,
+  latestComPermIsNotNull,
+} from '../../lib/addLatestComPerm'
 import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
 import { dbReleve } from '../../lib/dbReleve'
 import {
@@ -77,9 +80,22 @@ WHERE
 
   const deputesWithGroup = await addLatestGroupToDeputes(deputes, legislature)
 
-  const deputesWithGroupAndComPerm = await addLatestComPermToDeputes(
-    deputesWithGroup,
-    legislature,
+  const deputesWithGroupAndComPerm = (
+    await addLatestComPermToDeputes(deputesWithGroup, legislature)
+  ).map(_ => {
+    const { latestComPerm, ...rest } = _
+    return {
+      ...rest,
+      // on ne s'intéresse pas aux anciennes commissions
+      latestComPerm: latestComPerm?.ongoing ? latestComPerm : null,
+    }
+  })
+
+  const deputesWithCom = deputesWithGroupAndComPerm.filter(
+    latestComPermIsNotNull,
+  )
+  const deputesWithoutCom = deputesWithGroupAndComPerm.filter(
+    _ => !latestComPermIsNotNull(_),
   )
 
   return {
@@ -87,7 +103,8 @@ WHERE
       data: {
         legislature,
         legislatureNavigationUrls,
-        deputes: deputesWithGroupAndComPerm,
+        deputesWithCom,
+        deputesWithoutCom,
       },
     },
   }

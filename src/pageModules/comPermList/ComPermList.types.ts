@@ -1,14 +1,15 @@
-import { WithLatestComPermOrNull } from '../../lib/addLatestComPerm'
+import { WithLatestComPerm } from '../../lib/addLatestComPerm'
 import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 
 export type Props = {
-  deputes: Depute[]
+  deputesWithCom: DeputeWithCom[]
+  deputesWithoutCom: DeputeWithoutCom[]
   legislature: number
   legislatureNavigationUrls: [number, string][]
 }
-export type Depute = WithLatestComPermOrNull<
-  WithLatestGroupOrNull<DeputeSimple>
->
+export type DeputeWithCom = WithLatestComPerm<DeputeWithoutCom>
+export type DeputeWithoutCom = WithLatestGroupOrNull<DeputeSimple>
+
 export type DeputeSimple = {
   uid: string
   slug: string | null

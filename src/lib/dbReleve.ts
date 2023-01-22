@@ -14,7 +14,7 @@ export const dbReleve = new Kysely<ReleveTables>({
       database: readFromEnv('DB_RELEVE_NAME'),
     }),
   }),
-  // log: ['query'],
+  log: ['query'],
 })
 
 export interface ReleveTables {

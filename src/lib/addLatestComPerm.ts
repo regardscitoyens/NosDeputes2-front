@@ -88,7 +88,7 @@ INNER JOIN organes
   ON organes.uid = ANY(mandats.organes_uids)
 WHERE
   organes.data->>'codeType' = 'COMPER'
-  AND organes.data->>'legislature' = ${legislature.toString()}
+  AND mandats.data->>'legislature' = ${legislature.toString()}
   AND acteurs.uid IN (${sql.join(deputeUids)})
 ORDER BY
   acteurs.uid, mandats.data->>'dateFin' DESC NULLS FIRST, mandats.data->>'preseance'
