@@ -1,15 +1,14 @@
+import { sql } from 'kysely'
 import range from 'lodash/range'
+import sortBy from 'lodash/sortBy'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
 import {
   FIRST_LEGISLATURE_FOR_DEPUTES,
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
-import * as types from './MandatsParCirco.types'
-import sortBy from 'lodash/sortBy'
-import { sql } from 'kysely'
 import { addLatestGroupToDeputes } from '../../lib/newAddLatestGroup'
-import { map } from 'lodash'
+import * as types from './MandatsParCirco.types'
 
 type Query = {
   legislature?: string
@@ -65,6 +64,7 @@ export const getServerSideProps: GetServerSideProps<{
           await sql<{
             uid: string
             full_name: string
+            gender: 'M' | 'F'
           }>`
 SELECT
   uid, 
@@ -72,13 +72,23 @@ SELECT
     data->'etatCivil'->'ident'->>'prenom',
     ' ',
     data->'etatCivil'->'ident'->>'nom'
-  ) AS full_name
+  ) AS full_name,
+  CASE
+    WHEN acteurs.data->'etatCivil'->'ident'->>'civ' = 'M.' THEN 'H'
+    ELSE 'F'
+  END as gender
 FROM acteurs
 WHERE uid IN (${sql.join(deputesIds)})
 `.execute(dbReleve)
         ).rows
       : []
-  ).map(_ => ({ uid: _.uid, fullName: _.full_name }))
+  ).map(_ => {
+    const { full_name, ...rest } = _
+    return {
+      ...rest,
+      fullName: full_name,
+    }
+  })
 
   const deputesWithLatestGroup = await addLatestGroupToDeputes(
     deputes,

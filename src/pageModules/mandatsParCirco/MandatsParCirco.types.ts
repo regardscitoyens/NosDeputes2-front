@@ -15,6 +15,7 @@ export type DerivedDeputesMandatsFinal = {
       circo_departement: string
       slug: string | null
       mandat_ongoing: boolean
+      gender: 'F' | 'M'
     }>
     cause_fin?: CauseChangement
     date_debut_mandat: string
