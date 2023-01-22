@@ -1,4 +1,4 @@
-import { WithLatestGroupOrNull } from '../../lib/newAddLatestGroup'
+import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 import * as dossierTypes from '../../lib/types/dossier'
 
 export type Props = {

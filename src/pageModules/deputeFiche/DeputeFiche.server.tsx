@@ -3,7 +3,7 @@ import mapValues from 'lodash/mapValues'
 import { GetServerSideProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
-import { addLatestGroupToDepute } from '../../lib/newAddLatestGroup'
+import { addLatestGroupToDepute } from '../../lib/addLatestGroup'
 import * as types from './DeputeFiche.types'
 
 async function queryStats(

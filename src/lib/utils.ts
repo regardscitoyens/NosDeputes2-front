@@ -1,5 +1,5 @@
 import groupBy from 'lodash/groupBy'
-import { WithLatestGroupOrNull } from './newAddLatestGroup'
+import { WithLatestGroupOrNull } from './addLatestGroup'
 import sortBy from 'lodash/sortBy'
 
 export function getAge(date_naissance: string) {

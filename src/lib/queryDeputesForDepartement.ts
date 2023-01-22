@@ -4,7 +4,7 @@ import { LATEST_LEGISLATURE } from './hardcodedData'
 import {
   addLatestGroupToDeputes,
   WithLatestGroupOrNull,
-} from './newAddLatestGroup'
+} from './addLatestGroup'
 
 export type DeputeInDepartement = WithLatestGroupOrNull<{
   uid: string

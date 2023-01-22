@@ -1,6 +1,6 @@
 import { GroupeBadgeWithFonction } from './GroupeBadge'
 import { MyLink } from './MyLink'
-import { FonctionInGroupe } from '../lib/newAddLatestGroup'
+import { FonctionInGroupe } from '../lib/addLatestGroup'
 import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
 
 type Props = {

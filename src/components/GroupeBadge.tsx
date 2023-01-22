@@ -1,4 +1,4 @@
-import { FonctionInGroupe } from '../lib/newAddLatestGroup'
+import { FonctionInGroupe } from '../lib/addLatestGroup'
 import { pickTextColor } from '../lib/utils'
 import { MyLink } from './MyLink'
 

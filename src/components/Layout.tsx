@@ -84,6 +84,10 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
       <Division>
         <MenuLink to="/deputes" label="Les députés" />
         <MenuLink to="/circonscription" label="Les circonscriptions" />
+        <MenuLink
+          to="/commissions-permanentes"
+          label="Les commissions permanentes"
+        />
         <MenuLink to="/seances" label="Les séances en hémicycle" />
         <MenuLink to="/dossiers" label="Les dossiers législatifs" />
         <MenuLink to="/scrutins" label="Les scrutins" />

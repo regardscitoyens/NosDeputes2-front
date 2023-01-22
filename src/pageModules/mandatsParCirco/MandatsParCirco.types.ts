@@ -1,4 +1,4 @@
-import { WithLatestGroupOrNull } from '../../lib/newAddLatestGroup'
+import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 
 export type Props = {
   legislature: number

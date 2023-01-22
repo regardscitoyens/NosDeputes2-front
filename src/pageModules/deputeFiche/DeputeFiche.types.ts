@@ -1,4 +1,4 @@
-import { WithLatestGroupOrNull } from '../../lib/newAddLatestGroup'
+import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 import { AmendementsDeputeSummary } from '../../lib/queryDeputeAmendementsSummary'
 import { DeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 import { DeputeVotes } from '../../lib/queryDeputeVotes'

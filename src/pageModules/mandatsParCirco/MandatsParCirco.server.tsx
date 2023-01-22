@@ -7,7 +7,7 @@ import {
   FIRST_LEGISLATURE_FOR_DEPUTES,
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
-import { addLatestGroupToDeputes } from '../../lib/newAddLatestGroup'
+import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
 import * as types from './MandatsParCirco.types'
 
 type Query = {

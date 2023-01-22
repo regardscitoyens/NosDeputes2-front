@@ -10,7 +10,7 @@ import {
 import {
   addLatestGroupToDeputes,
   latestGroupIsNotNull,
-} from '../../lib/newAddLatestGroup'
+} from '../../lib/addLatestGroup'
 import { buildGroupesData } from '../../lib/buildGroupesData'
 import * as types from './DeputeList.types'
 import range from 'lodash/range'

@@ -6,7 +6,7 @@ import * as types from './DossierFiche.types'
 import uniq from 'lodash/uniq'
 import { sql } from 'kysely'
 import { arrIfDefined as arrIfDefined } from '../../lib/utils'
-import { addLatestGroupToDeputes } from '../../lib/newAddLatestGroup'
+import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
 
 type Query = {
