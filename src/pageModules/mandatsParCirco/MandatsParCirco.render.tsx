@@ -1,15 +1,12 @@
 import { Fragment } from 'react'
 import { DeputeItem } from '../../components/DeputeItem'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
-import {
-  dateDiffInDays,
-  formatDate,
-  formatDateWithoutWeekday,
-} from '../../lib/utils'
+import { dateDiffInDays, formatDateWithoutWeekday } from '../../lib/utils'
 import * as types from './MandatsParCirco.types'
 
 export function CauseChangement({ cause }: { cause: types.CauseChangement }) {
   function buildLabel(): string | null {
+    const errMsg = `Unknown cause ${JSON.stringify(cause)}`
     switch (cause.kind) {
       case 'elections_generales':
         return null
@@ -25,17 +22,26 @@ export function CauseChangement({ cause }: { cause: types.CauseChangement }) {
             return `Il(elle) est remplacé(e) car nommé(e) au Conseil Constitutionnel`
           case 'nomme_gvt':
             return `Il(elle) est remplacé(e) car nommé(e) au gouvernement`
+          default:
+            throw new Error(errMsg)
         }
       }
       case 'elections_partielles':
-        return 'todo'
-      case 'retour':
-        return 'todo'
+        return null
+      case 'retour': {
+        switch (cause.details) {
+          case 'retour_gvt':
+            return `Il(elle) est remplacé car son précédesseur a quitté le gouvernement`
+          default:
+            throw new Error(errMsg)
+        }
+      }
+      default:
+        throw new Error(errMsg)
     }
-    return null
   }
 
-  return <p className="text-center italic text-slate-500">{buildLabel()}</p>
+  return <p className="text-left italic text-slate-500">{buildLabel()}</p>
 }
 
 export function Page({
