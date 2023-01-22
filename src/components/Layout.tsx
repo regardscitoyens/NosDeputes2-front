@@ -95,7 +95,7 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
       <Division>
         <MenuLink
           to="/mandats-par-circonscription"
-          label="Changements de député"
+          label="Historique des départs et remplacements"
           temporary
         />
         <MenuLink

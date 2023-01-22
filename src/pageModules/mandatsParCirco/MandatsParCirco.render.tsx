@@ -104,16 +104,17 @@ export function Page({
   return (
     <div className="">
       <LegislatureNavigation
-        title="Changements de député"
+        title="Historique des remplacements de députés"
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <p className="m-4 text-slate-800">
-        Cette page recense tous les changements de députés en cours de
-        législature : députés partis au gouvernement, démissions, élections
-        partielles etc.
-      </p>
-
+      <div className="flex w-full items-center justify-center">
+        <p className="m-8 max-w-lg text-slate-600">
+          Cette page recense tous les changements de députés en cours de
+          législature : députés partis au gouvernement, démissions, élections
+          partielles etc.
+        </p>
+      </div>
       {dataByCirco.map(circoData => {
         const {
           circo: {
@@ -128,7 +129,7 @@ export function Page({
         } = circoData
 
         return (
-          <div className="items-left my-4 flex flex-col p-2" key={ref_circo}>
+          <div className="my-4 flex flex-col items-center p-2" key={ref_circo}>
             <p className="mb-2  ">
               <span className="text-4xl font-extrabold">
                 {name_dpt}
