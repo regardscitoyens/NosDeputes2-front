@@ -1,7 +1,11 @@
 import { Fragment } from 'react'
 import { DeputeItem } from '../../components/DeputeItem'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
-import { dateDiffInDays, formatDateWithoutWeekday } from '../../lib/utils'
+import {
+  dateDiffInDays,
+  formatDateWithoutWeekday,
+  lastOfArray,
+} from '../../lib/utils'
 import * as types from './MandatsParCirco.types'
 
 export function CauseChangement({ cause }: { cause: types.CauseChangement }) {
@@ -44,6 +48,51 @@ export function CauseChangement({ cause }: { cause: types.CauseChangement }) {
   return <p className="text-left italic text-slate-500">{buildLabel()}</p>
 }
 
+function PartialElection({
+  cause,
+}: {
+  cause: types.CauseChangement | undefined
+}) {
+  function getLabel() {
+    if (!cause || cause.kind !== 'elections_partielles') {
+      throw new Error(
+        `Expected cause was elections_partielles, got ${JSON.stringify(cause)}`,
+      )
+    }
+    switch (cause.details) {
+      case 'annulation_election':
+        return `L'élection précédente a été annulée`
+      case 'dechu':
+        return `Le député a été déchu de son mandat` // TODO what ?
+      case 'demission':
+        return `Le député a démissioné`
+      case 'demission_incompatibilite':
+        return `Le député a démissioné pour incompatibilité avec un autre mandat`
+      case 'elu_parlement_europeen':
+        return `Le député a été élu au parlement européen`
+      case 'elu_senat':
+        return `Le député a été élu au Sénat`
+      case 'decede_sans_suppleant':
+        return `Le député est décédé sans suppléant`
+      case undefined:
+        return null
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-center">
+      <div className="mb-4 mt-2 max-w-sm p-4 text-center">
+        <p className="text-lg">
+          <span className="font-bold">Une nouvelle élection</span> a eu lieu
+          dans cette circonscription{' '}
+          <span className="italic text-slate-500">(«élection partielle»)</span>
+        </p>
+        <p className="italic text-slate-500">{getLabel()}</p>
+      </div>
+    </div>
+  )
+}
+
 export function Page({
   legislature,
   legislatureNavigationUrls,
@@ -76,8 +125,8 @@ export function Page({
         } = circoData
 
         return (
-          <div className="my-4 p-2" key={ref_circo}>
-            <p className="mb-2 text-center ">
+          <div className="items-left my-4 flex flex-col p-2" key={ref_circo}>
+            <p className="mb-2  ">
               <span className="text-4xl font-extrabold">
                 {name_dpt}
                 {name_dpt !== 'Français établis hors de France' && (
@@ -91,22 +140,18 @@ export function Page({
                 </span>
               </span>
             </p>
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex w-fit flex-col items-center justify-center gap-6">
               {mandats.map((mandatsSameElection, idx) => {
                 const isPartialElections = idx !== 0
                 return (
                   <div
                     key={idx}
-                    className={` w-fit rounded-xl bg-slate-200 py-2 px-4 shadow-lg `}
+                    className={`w-full rounded-xl bg-slate-200 py-2 px-4 shadow-lg `}
                   >
                     {isPartialElections && (
-                      <p className="mb-4 text-center text-lg">
-                        <span className="font-bold">Une nouvelle élection</span>{' '}
-                        a eu lieu dans cette circonscription{' '}
-                        <span className="italic text-slate-500">
-                          («élection partielle»)
-                        </span>
-                      </p>
+                      <PartialElection
+                        cause={lastOfArray(mandats[idx - 1]).cause_fin}
+                      />
                     )}
                     {mandatsSameElection.map((mandat, idxInElection) => {
                       const {

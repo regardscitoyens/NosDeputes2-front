@@ -201,3 +201,7 @@ export function dateDiffInDays(first: string, second: string) {
       (1000 * 60 * 60 * 24),
   )
 }
+
+export function lastOfArray<A>(arr: A[]): A {
+  return arr[arr.length - 1]
+}
