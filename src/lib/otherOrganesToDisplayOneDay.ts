@@ -24,6 +24,13 @@ ORDER BY cpt desc, organes.data->>'codeType'
 
 /*
 
+
+CONFPT - Conférence des présidents
+=> tres important. 28 membres actuellement ?
+
+il manque le Bureau ??
+
+
 ----NE PAS AFFICHER
 ASSEMBLEE - Assemblée nationale
 COMSENAT - Commissions sénatoriales
@@ -52,9 +59,6 @@ MISINFOCOM - Missions d’information communes
 MISINFOPRE - Missions d’information de la conférence des Présidents
 OFFPAR - Office parlementaire ou délégation mixte
 
-
-CONFPT - Conférence des présidents
-=> tres important. 28 membres actuellement ?
 
 GA - Groupe d’amitié 
 => il y en a plein plein, plein de groupes et de membres ds chaque groupe => page dédiée
