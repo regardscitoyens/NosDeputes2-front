@@ -123,7 +123,7 @@ function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
 function RestOfPage({ children }: Props) {
   return (
     <div className="grow">
-      <main className="z-0 mx-auto flex h-full w-full flex-col  pt-4 pb-6 sm:w-[640px] md:w-[768px] xl:w-[1030px] 2xl:w-[1286px]">
+      <main className="z-0 mx-auto flex h-full w-full flex-col pt-2  pb-6 sm:w-[640px] md:w-[768px] xl:w-[1030px] 2xl:w-[1286px]">
         {children}
       </main>
     </div>

@@ -9,37 +9,37 @@ export const FIRST_LEGISLATURE_FOR_DOSSIERS = 8
 export const legislaturesData = [
   {
     num: 16,
-    datesLabel: "depuis juin 2022 jusqu'à juin 2027",
+    datesLabel: 'depuis juin 2022',
     presidentLabel:
-      "Coïncide avec le second mandat de président d'Emmanuel Macron",
+      "Cela correspond au second mandat de président d'Emmanuel Macron",
   },
   {
     num: 15,
     datesLabel: 'de juin 2017 à juin 2022',
     presidentLabel:
-      "Coïncidait avec le premier mandat de président d'Emmanuel Macron",
+      "Cela correspondait au premier mandat de président d'Emmanuel Macron",
   },
   {
     num: 14,
     datesLabel: 'de juin 2012 à juin 2017',
-    presidentLabel: 'Coïncidait avec la présidence de François Hollande',
+    presidentLabel: 'Cela correspondait à la présidence de François Hollande',
   },
   {
     num: 13,
     datesLabel: 'de juin 2007 à juin 2012',
-    presidentLabel: 'Coïncidait avec la présidence de Nicolas Sarkozy',
+    presidentLabel: 'Cela correspondait à la présidence de Nicolas Sarkozy',
   },
   {
     num: 12,
     datesLabel: 'de juin 2002 à juin 2007',
     presidentLabel:
-      'Coïncidait avec le second mandat de président de Jacques Chirac',
+      'Cela correspondait au second mandat de président de Jacques Chirac',
   },
   {
     num: 11,
     datesLabel: 'de juin 1997 à juin 2002',
     presidentLabel:
-      'Coïncidait avec la seconde partie du premier mandat de président de Jacques Chirac',
+      'Cela correspondait à la seconde partie du premier mandat de président de Jacques Chirac',
   },
   {
     num: 10,

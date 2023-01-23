@@ -25,7 +25,7 @@ function CurrentLegislature({
         className="
        text-slate-500"
       >
-        {true
+        {isPast
           ? `${legislature}ème législature de l'Assemblée Nationale`
           : `Législature actuelle (la ${legislature}ème) de l'Assemblée Nationale`}
         {isPast && (
@@ -37,7 +37,7 @@ function CurrentLegislature({
           </>
         )}
       </p>
-      <p className="italic text-slate-500">{data.presidentLabel}</p>
+      <span className="italic text-slate-500">{data.presidentLabel}</span>
     </>
   )
 }
@@ -56,8 +56,8 @@ function LegislatureLink({
   if (url) {
     return (
       <MyLink href={url}>
-        {kind === 'previous' && '← législature précédente'}
-        {kind === 'next' && 'législature suivante →'}
+        {kind === 'previous' && '← voir la législature précédente'}
+        {kind === 'next' && 'voir la législature suivante →'}
       </MyLink>
     )
   }
@@ -74,23 +74,25 @@ export function LegislatureNavigation({
   urlsByLegislature: [number, string][]
 }) {
   return (
-    <div className="mx-auto my-4 max-w-[52rem] rounded-xl bg-slate-200 pt-2 ">
-      <h1 className="text-center text-4xl font-extrabold">{title}</h1>
-      <div className="flex w-full">
-        <div className="flex w-1/6 items-end justify-center  px-4 py-2 ">
-          <LegislatureLink
-            {...{ currentLegislature, urlsByLegislature }}
-            kind="previous"
-          />
-        </div>
-        <div className={`w-2/3 py-2 text-center `}>
-          <CurrentLegislature {...{ currentLegislature }} />
-        </div>
-        <div className="flex w-1/6 items-end justify-center px-4 py-2 text-right">
-          <LegislatureLink
-            {...{ currentLegislature, urlsByLegislature }}
-            kind="next"
-          />
+    <div className=" border-slate-500  ">
+      <div className="mx-auto mb-4 pt-2 ">
+        <h1 className="text-center text-4xl font-extrabold">{title}</h1>
+        <div className="flex w-full">
+          <div className="flex w-1/6 items-end justify-center  px-4 py-2 ">
+            <LegislatureLink
+              {...{ currentLegislature, urlsByLegislature }}
+              kind="previous"
+            />
+          </div>
+          <div className={`w-2/3 py-2 text-center `}>
+            <CurrentLegislature {...{ currentLegislature }} />
+          </div>
+          <div className="flex w-1/6 items-end justify-center px-4 py-2 text-right">
+            <LegislatureLink
+              {...{ currentLegislature, urlsByLegislature }}
+              kind="next"
+            />
+          </div>
         </div>
       </div>
     </div>

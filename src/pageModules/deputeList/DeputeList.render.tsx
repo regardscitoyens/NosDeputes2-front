@@ -117,7 +117,7 @@ function BigTitle({
   return (
     <>
       <h2 className="justify-left mt-12 mb-4 flex items-baseline gap-4 border-b-4 border-dotted border-slate-500 pb-2 font-extrabold">
-        <span className="block text-4xl">{label}</span>{' '}
+        <span className="block text-2xl">{label}</span>{' '}
         <span className="block text-2xl text-slate-400">{secondLabel}</span>
       </h2>
       {heading && (
