@@ -1,5 +1,6 @@
 import sortBy from 'lodash/sortBy'
 import uniq from 'lodash/uniq'
+import { BigTitle } from '../../components/BigTitle'
 import { DeputeItem } from '../../components/DeputeItem'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import { partitionDeputesByGroup } from '../../lib/utils'
@@ -101,28 +102,6 @@ function AllDeputesOfMajoriteOrOpposition({
         }
       />
       <DeputesByGroup deputes={deputes} {...{ legislature }} />
-    </>
-  )
-}
-
-function BigTitle({
-  label,
-  secondLabel,
-  heading,
-}: {
-  label: string
-  secondLabel: string
-  heading?: string
-}) {
-  return (
-    <>
-      <h2 className="justify-left mt-12 mb-4 flex items-baseline gap-4 border-b-4 border-dotted border-slate-500 pb-2 font-extrabold">
-        <span className="block text-2xl">{label}</span>{' '}
-        <span className="block text-2xl text-slate-400">{secondLabel}</span>
-      </h2>
-      {heading && (
-        <p className="text-left text-lg  text-slate-600">{heading}</p>
-      )}
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import { BigTitle } from '../../components/BigTitle'
 import { DeputeItem } from '../../components/DeputeItem'
 import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import {
@@ -109,7 +110,7 @@ export function Page({
         urlsByLegislature={legislatureNavigationUrls}
       />
       <div className="flex w-full items-center justify-center">
-        <p className="m-8 max-w-lg text-slate-600">
+        <p className="m-8 max-w-2xl rounded-xl  p-4">
           Cette page recense tous les changements de députés en cours de
           législature : députés partis au gouvernement, démissions, élections
           partielles etc.
@@ -128,22 +129,23 @@ export function Page({
           mandats,
         } = circoData
 
+        const numDptStr =
+          name_dpt !== 'Français établis hors de France' ? `${num_dpt} - ` : ''
+        const title = `${numDptStr}${name_dpt}`
+        const titleSecondPart = `${num_circo}ème circonscription`
         return (
-          <div className="my-4 flex flex-col items-center p-2" key={ref_circo}>
-            <p className="mb-2  ">
-              <span className="text-4xl font-extrabold">
-                {name_dpt}
-                {name_dpt !== 'Français établis hors de France' && (
-                  <span className="text-2xl"> ({num_dpt})</span>
-                )}{' '}
-              </span>
+          <div className="my-4 flex flex-col items-start p-2" key={ref_circo}>
+            <BigTitle label={title} secondLabel={titleSecondPart} />
+
+            {/* <p className="mb-2  ">
+              <span className="text-4xl font-extrabold">{title}</span>
               <span className="text-2xl">
                 {'>'}{' '}
                 <span className="font-bold">
                   {num_circo}ème circonscription
                 </span>
               </span>
-            </p>
+            </p> */}
             <div className="flex w-fit flex-col items-center justify-center gap-6">
               {mandats.map((mandatsSameElection, idx) => {
                 const isPartialElections = idx !== 0
