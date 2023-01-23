@@ -86,18 +86,20 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
           to="/mandats-par-circonscription"
           label="Historique des départs et remplacements"
         />
+      </Division>
+      <Division>
         <MenuLink to="/circonscription" label="Les circonscriptions" wip />
         <MenuLink
           to="/commissions-permanentes"
           label="Les commissions permanentes"
           wip
         />
-      </Division>
-      <Division>
         <MenuLink to="/seances" label="Les séances en hémicycle" wip />
         <MenuLink to="/sessions" label="Les sessions parlementaires" wip />
         <MenuLink to="/dossiers" label="Les dossiers législatifs" wip />
         <MenuLink to="/scrutins" label="Les scrutins" wip />
+      </Division>
+      <Division>
         <MenuLink to="/long" label="Page avec beaucoup de contenu" wip />
         <MenuLink to="/short" label="Page avec très peu de contenu" wip />
       </Division>
@@ -122,7 +124,7 @@ function MobileTopBar({ toggleMobileMenu }: { toggleMobileMenu: () => void }) {
 function RestOfPage({ children }: Props) {
   return (
     <div className="grow">
-      <main className="z-0 mx-auto flex w-full flex-col  pt-4 pb-6 sm:w-[640px] md:w-[768px] xl:w-[1030px] 2xl:w-[1286px]">
+      <main className="z-0 mx-auto flex h-full w-full flex-col  pt-4 pb-6 sm:w-[640px] md:w-[768px] xl:w-[1030px] 2xl:w-[1286px]">
         {children}
       </main>
     </div>
