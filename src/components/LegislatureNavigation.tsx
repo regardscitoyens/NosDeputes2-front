@@ -80,7 +80,7 @@ export function LegislatureNavigation({
   urlsByLegislature: [number, string][]
 }) {
   return (
-    <div className=" border-slate-500  ">
+    <div className="mb-8 border-slate-500  ">
       <div className="mx-auto mb-4 pt-2 ">
         <h1 className="text-center text-4xl font-extrabold">{title}</h1>
         <div className="flex w-full">

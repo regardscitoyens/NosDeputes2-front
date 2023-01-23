@@ -9,7 +9,11 @@ import {
   isCommissionPermanente,
 } from '../../../lib/hardcodedData'
 import { DeputeResponsabilite } from '../../../lib/queryDeputeResponsabilites'
-import { formatDate, getAge } from '../../../lib/utils'
+import {
+  formatDate,
+  getAge,
+  getOrdinalSuffixFeminine,
+} from '../../../lib/utils'
 import * as types from '../DeputeFiche.types'
 
 const f = formatDate
@@ -162,10 +166,6 @@ export function MandatsBlock({
       )}
     </div>
   )
-}
-
-function getOrdinalSuffixFeminine(n: number) {
-  return n === 1 ? 'ère' : `ème`
 }
 
 export function InformationsBlock(props: types.Props) {

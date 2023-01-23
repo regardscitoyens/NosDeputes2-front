@@ -9,7 +9,7 @@ export function BigTitle({
 }) {
   return (
     <>
-      <h2 className="justify-left mt-12 mb-4 flex w-full items-baseline gap-2 border-b-4 border-dotted border-slate-500 pb-2 font-extrabold">
+      <h2 className="justify-left mt-6 mb-4 flex w-full items-baseline gap-2 border-b-4 border-dotted border-slate-500 pb-2 font-extrabold">
         <span className="block text-2xl">{label}</span>{' '}
         {secondLabel && (
           <span className="block text-2xl text-slate-400 ">{secondLabel}</span>

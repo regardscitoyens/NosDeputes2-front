@@ -16,6 +16,17 @@ export function arrIfDefined<A>(a: A | undefined): A[] {
   return [a]
 }
 
+export function getOrdinalSuffixFeminine(n: number | string): string {
+  if (typeof n === 'number') {
+    return n === 1 ? 'ère' : `ème`
+  }
+  const nParsed = parseIntOrNull(n)
+  if (nParsed !== null) {
+    return getOrdinalSuffixFeminine(nParsed)
+  }
+  return 'ème'
+}
+
 export function formatYear(dateIsoString: string) {
   const str = new Date(dateIsoString).toLocaleString('fr-FR', {
     timeZone: 'Europe/Paris',

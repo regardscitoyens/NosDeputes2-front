@@ -5,6 +5,7 @@ import { LegislatureNavigation } from '../../components/LegislatureNavigation'
 import {
   dateDiffInDays,
   formatDateWithoutWeekday,
+  getOrdinalSuffixFeminine,
   lastOfArray,
 } from '../../lib/utils'
 import * as types from './MandatsParCirco.types'
@@ -87,7 +88,7 @@ function PartialElection({
           <span className="font-bold">Une nouvelle élection</span> a eu lieu
           dans cette circonscription{' '}
           <span className="italic text-slate-500">
-            C'est ce qu'on appelle une «élection partielle».
+            C'est ce qu'on appelle une élection partielle.
           </span>
         </p>
         {/* <p className="italic text-slate-500">{getLabel()}</p> */}
@@ -101,7 +102,6 @@ export function Page({
   legislatureNavigationUrls,
   dataByCirco,
 }: types.Props) {
-  console.log('@@', dataByCirco)
   return (
     <div className="">
       <LegislatureNavigation
@@ -109,127 +109,126 @@ export function Page({
         currentLegislature={legislature}
         urlsByLegislature={legislatureNavigationUrls}
       />
-      <div className="flex w-full items-center justify-center">
-        <p className="m-8 max-w-2xl rounded-xl  p-4">
+      <div className="mt-12 italic">
+        <p>
           Cette page recense tous les changements de députés en cours de
           législature : députés partis au gouvernement, démissions, élections
           partielles etc.
         </p>
+        Si une circonscription n'est pas listée, c'est que son député a gardé
+        son siège pendant tout cette législature.
       </div>
-      {dataByCirco.map(circoData => {
-        const {
-          circo: {
-            name_dpt,
-            num_dpt,
+      <div className="">
+        {dataByCirco.map(circoData => {
+          const {
+            circo: {
+              name_dpt,
+              num_dpt,
+              num_circo,
+              region,
+              region_type,
+              ref_circo,
+            },
+            mandats,
+          } = circoData
+
+          const numDptStr =
+            name_dpt !== 'Français établis hors de France'
+              ? `${num_dpt} - `
+              : ''
+          const title = `${numDptStr}${name_dpt}`
+          const titleSecondPart = `${num_circo}${getOrdinalSuffixFeminine(
             num_circo,
-            region,
-            region_type,
-            ref_circo,
-          },
-          mandats,
-        } = circoData
-
-        const numDptStr =
-          name_dpt !== 'Français établis hors de France' ? `${num_dpt} - ` : ''
-        const title = `${numDptStr}${name_dpt}`
-        const titleSecondPart = `${num_circo}ème circonscription`
-        return (
-          <div className="my-4 flex flex-col items-start p-2" key={ref_circo}>
-            <BigTitle label={title} secondLabel={titleSecondPart} />
-
-            {/* <p className="mb-2  ">
-              <span className="text-4xl font-extrabold">{title}</span>
-              <span className="text-2xl">
-                {'>'}{' '}
-                <span className="font-bold">
-                  {num_circo}ème circonscription
-                </span>
-              </span>
-            </p> */}
-            <div className="flex w-fit flex-col items-center justify-center gap-6">
-              {mandats.map((mandatsSameElection, idx) => {
-                const isPartialElections = idx !== 0
-                return (
-                  <div
-                    key={idx}
-                    className={`w-full rounded-xl bg-slate-200 py-2 px-4 shadow-lg `}
-                  >
-                    {isPartialElections && (
-                      <PartialElection
-                        cause={lastOfArray(mandats[idx - 1]).cause_fin}
-                      />
-                    )}
-                    {mandatsSameElection.map((mandat, idxInElection) => {
-                      const {
-                        depute,
-                        date_debut_mandat,
-                        date_fin_mandat,
-                        cause_fin,
-                        is_suppleant,
-                      } = mandat
-                      const elected = idxInElection === 0
-                      const f = formatDateWithoutWeekday
-                      const nbDays = dateDiffInDays(
-                        date_debut_mandat,
-                        date_fin_mandat ?? new Date().toISOString(),
-                      )
-                      const fem = depute.gender === 'F'
-                      const femE = fem ? 'e' : ''
-                      const zeroDays = nbDays == 0
-                      return (
-                        <Fragment key={date_debut_mandat}>
-                          <div className="my-2 flex flex-wrap gap-2">
-                            <DeputeItem
-                              depute={depute}
-                              legislature={legislature}
-                              className={'border border-slate-400'}
-                            />
-                            <div className="flex items-center">
-                              <span>
-                                {is_suppleant ? (
-                                  <span className="">
-                                    ({fem ? 'sa suppléante' : 'son suppléant'}){' '}
-                                  </span>
-                                ) : null}
-                                {zeroDays ? (
-                                  <>
-                                    est techniquement député{femE} pendant
-                                    quelques heures le {f(date_debut_mandat)}
-                                  </>
-                                ) : (
-                                  <>
-                                    {elected
-                                      ? `est élu${femE}`
-                                      : `est devenu${femE}`}{' '}
-                                    député{femE}{' '}
-                                    {date_fin_mandat ? 'du' : 'depuis le'}{' '}
-                                    <span className="font-bold">
-                                      {f(date_debut_mandat)}
+          )} circonscription`
+          return (
+            <div className="flex flex-col items-start" key={ref_circo}>
+              <BigTitle label={title} secondLabel={titleSecondPart} />
+              <div className="flex w-full flex-col items-center justify-center gap-6">
+                {mandats.map((mandatsSameElection, idx) => {
+                  const isPartialElections = idx !== 0
+                  return (
+                    <div
+                      key={idx}
+                      className={`w-full rounded-xl bg-slate-200 py-2 px-4 shadow-lg `}
+                    >
+                      {isPartialElections && (
+                        <PartialElection
+                          cause={lastOfArray(mandats[idx - 1]).cause_fin}
+                        />
+                      )}
+                      {mandatsSameElection.map((mandat, idxInElection) => {
+                        const {
+                          depute,
+                          date_debut_mandat,
+                          date_fin_mandat,
+                          cause_fin,
+                          is_suppleant,
+                        } = mandat
+                        const elected = idxInElection === 0
+                        const f = formatDateWithoutWeekday
+                        const nbDays = dateDiffInDays(
+                          date_debut_mandat,
+                          date_fin_mandat ?? new Date().toISOString(),
+                        )
+                        const fem = depute.gender === 'F'
+                        const femE = fem ? 'e' : ''
+                        const zeroDays = nbDays == 0
+                        return (
+                          <Fragment key={date_debut_mandat}>
+                            <div className="my-2 flex flex-wrap gap-2">
+                              <DeputeItem
+                                depute={depute}
+                                legislature={legislature}
+                                className={'border border-slate-400'}
+                              />
+                              <div className="flex items-center">
+                                <span>
+                                  {is_suppleant ? (
+                                    <span className="">
+                                      ({fem ? 'sa suppléante' : 'son suppléant'}
+                                      ){' '}
                                     </span>
-                                    {date_fin_mandat && (
-                                      <> au {f(date_fin_mandat)}</>
-                                    )}{' '}
-                                    {nbDays < 50 ? (
-                                      <>(pendant seulement {nbDays} jours)</>
-                                    ) : null}
-                                  </>
-                                )}
-                              </span>
+                                  ) : null}
+                                  {zeroDays ? (
+                                    <>
+                                      est techniquement député{femE} pendant
+                                      quelques heures le {f(date_debut_mandat)}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {elected
+                                        ? `est élu${femE}`
+                                        : `est devenu${femE}`}{' '}
+                                      député{femE}{' '}
+                                      {date_fin_mandat ? 'du' : 'depuis le'}{' '}
+                                      <span className="font-bold">
+                                        {f(date_debut_mandat)}
+                                      </span>
+                                      {date_fin_mandat && (
+                                        <> au {f(date_fin_mandat)}</>
+                                      )}{' '}
+                                      {nbDays < 50 ? (
+                                        <>(pendant seulement {nbDays} jours)</>
+                                      ) : null}
+                                    </>
+                                  )}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          {cause_fin && (
-                            <CauseChangement cause={cause_fin} {...{ fem }} />
-                          )}
-                        </Fragment>
-                      )
-                    })}
-                  </div>
-                )
-              })}
+                            {cause_fin && (
+                              <CauseChangement cause={cause_fin} {...{ fem }} />
+                            )}
+                          </Fragment>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          </div>
-        )
-      })}
+          )
+        })}
+      </div>
     </div>
   )
 }
