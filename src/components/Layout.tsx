@@ -12,22 +12,21 @@ function MenuLink({
   to,
   label,
   className,
-  temporary = false,
+  wip = false,
 }: {
   to: string
   label?: string
   className?: string
-  temporary?: boolean
+  wip?: boolean
 }) {
   return (
     <MyLink
       href={to}
-      className={`block py-4 text-lg ${
-        temporary ? 'text-sm' : ''
-      } ${className}`}
+      className={`block py-4 text-lg ${wip ? 'text-sm' : ''} ${className}`}
       textColorClassOverride="text-slate-700"
     >
       {label ?? to}
+      {wip ? <span className="text-amber-700"> (WIP)</span> : null}
     </MyLink>
   )
 }
@@ -83,31 +82,24 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
       </Division>
       <Division>
         <MenuLink to="/deputes" label="Les députés" />
-        <MenuLink to="/circonscription" label="Les circonscriptions" />
-        <MenuLink
-          to="/commissions-permanentes"
-          label="Les commissions permanentes"
-        />
-        <MenuLink to="/seances" label="Les séances en hémicycle" />
-        <MenuLink to="/dossiers" label="Les dossiers législatifs" />
-        <MenuLink to="/scrutins" label="Les scrutins" />
-      </Division>
-      <Division>
-        <MenuLink to="/faq" label="Questions fréquentes (FAQ)" />
-        <MenuLink to="/mentions-legales" label="Mention légales" />
-      </Division>
-      <Division>
         <MenuLink
           to="/mandats-par-circonscription"
           label="Historique des départs et remplacements"
-          temporary
         />
+        <MenuLink to="/circonscription" label="Les circonscriptions" wip />
         <MenuLink
-          to="/sessions"
-          label="Les sessions parlementaires"
-          temporary
+          to="/commissions-permanentes"
+          label="Les commissions permanentes"
+          wip
         />
-        <MenuLink to="/long" label="Page avec beaucoup de contenu" temporary />
+      </Division>
+      <Division>
+        <MenuLink to="/seances" label="Les séances en hémicycle" wip />
+        <MenuLink to="/sessions" label="Les sessions parlementaires" wip />
+        <MenuLink to="/dossiers" label="Les dossiers législatifs" wip />
+        <MenuLink to="/scrutins" label="Les scrutins" wip />
+        <MenuLink to="/long" label="Page avec beaucoup de contenu" wip />
+        <MenuLink to="/short" label="Page avec très peu de contenu" wip />
       </Division>
     </nav>
   )
