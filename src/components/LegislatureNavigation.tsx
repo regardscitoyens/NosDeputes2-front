@@ -16,28 +16,34 @@ function CurrentLegislature({
 }) {
   const data = findLegislatureData(legislature)
   const isPast = legislature < LATEST_LEGISLATURE
+  const PresidentLabel = data.presidentLabel ?? (() => null)
   return (
     <>
-      <p>
-        <span className="text-lg font-bold">{data.datesLabel}</span>
-      </p>
-      <p
-        className="
-       text-slate-500"
-      >
-        {isPast
-          ? `${legislature}ème législature de l'Assemblée Nationale`
-          : `Législature actuelle (la ${legislature}ème) de l'Assemblée Nationale`}
-        {isPast && (
-          <>
-            {' '}
-            <span className=" font-bold uppercase text-orange-800">
-              terminée
+      <p className="mb-4 text-lg font-bold">{data.datesLabel}</p>
+      <div className="">
+        <p className="">
+          {isPast ? (
+            `${legislature}ème législature de l'Assemblée Nationale`
+          ) : (
+            <span>
+              Nous sommes dans la{' '}
+              <span className="font-bold">{legislature}ème législature</span> de
+              l'Assemblée Nationale
             </span>
-          </>
-        )}
-      </p>
-      <span className="italic text-slate-500">{data.presidentLabel}</span>
+          )}
+          {isPast && (
+            <>
+              {' '}
+              <span className=" font-bold uppercase text-orange-800">
+                terminée
+              </span>
+            </>
+          )}
+        </p>
+        <span className="">
+          <PresidentLabel />
+        </span>
+      </div>
     </>
   )
 }
@@ -84,7 +90,7 @@ export function LegislatureNavigation({
               kind="previous"
             />
           </div>
-          <div className={`w-2/3 py-2 text-center `}>
+          <div className={`w-2/3 text-center `}>
             <CurrentLegislature {...{ currentLegislature }} />
           </div>
           <div className="flex w-1/6 items-end justify-center px-4 py-2 text-right">

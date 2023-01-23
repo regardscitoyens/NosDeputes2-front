@@ -155,7 +155,7 @@ export function Layout({ children }: Props) {
         {/* favicon commenté pour le moment car il m'embrouille dans mes onglets */}
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
-      <div className="flex min-h-screen flex-col bg-slate-300 text-slate-800">
+      <div className="flex min-h-screen flex-col bg-slate-300 text-slate-700">
         <MobileTopBar
           toggleMobileMenu={() => {
             setMobileMenuFolded(v => !v)

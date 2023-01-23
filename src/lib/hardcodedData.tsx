@@ -10,36 +10,63 @@ export const legislaturesData = [
   {
     num: 16,
     datesLabel: 'depuis juin 2022',
-    presidentLabel:
-      "Cela correspond au second mandat de président d'Emmanuel Macron",
+    presidentLabel: () => (
+      <span>
+        C'est celle qui correspond au second mandat de président d'
+        <span className="font-bold">Emmanuel Macron</span>
+      </span>
+    ),
   },
   {
     num: 15,
     datesLabel: 'de juin 2017 à juin 2022',
-    presidentLabel:
-      "Cela correspondait au premier mandat de président d'Emmanuel Macron",
+    presidentLabel: () => (
+      <span>
+        C'est celle qui correspondait au premier mandat de président d'
+        <span className="font-bold">Emmanuel Macron</span>
+      </span>
+    ),
   },
   {
     num: 14,
     datesLabel: 'de juin 2012 à juin 2017',
-    presidentLabel: 'Cela correspondait à la présidence de François Hollande',
+    presidentLabel: () => (
+      <span>
+        C'est celle qui correspondait à la présidence de{' '}
+        <span className="font-bold">François Hollande</span>
+      </span>
+    ),
   },
   {
     num: 13,
     datesLabel: 'de juin 2007 à juin 2012',
-    presidentLabel: 'Cela correspondait à la présidence de Nicolas Sarkozy',
+    presidentLabel: () => (
+      <span>
+        C'est celle qui correspondait à la présidence de{' '}
+        <span className="font-bold">Nicolas Sarkozy</span>
+      </span>
+    ),
   },
   {
     num: 12,
     datesLabel: 'de juin 2002 à juin 2007',
-    presidentLabel:
-      'Cela correspondait au second mandat de président de Jacques Chirac',
+    presidentLabel: () => (
+      <span>
+        C'est celle qui correspond au second mandat de président de
+        <span className="font-bold">Jacques Chirac</span>
+      </span>
+    ),
   },
   {
     num: 11,
     datesLabel: 'de juin 1997 à juin 2002',
-    presidentLabel:
-      'Cela correspondait à la seconde partie du premier mandat de président de Jacques Chirac',
+    presidentLabel: () => (
+      <span>
+        C'est celle qui correspond à la seconde partie du premier mandat de
+        président de
+        <span className="font-bold">Jacques Chirac</span>
+      </span>
+    ),
   },
   {
     num: 10,
