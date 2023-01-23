@@ -1,4 +1,3 @@
-import groupBy from 'lodash/groupBy'
 import sortBy from 'lodash/sortBy'
 import uniq from 'lodash/uniq'
 import { DeputeItem } from '../../components/DeputeItem'
@@ -91,10 +90,10 @@ function AllDeputesOfMajoriteOrOpposition({
       <BigTitle
         label={
           kind === 'majorite'
-            ? 'Députés de la majorité'
+            ? `Députés de la majorité`
             : "Députés de l'opposition"
         }
-        secondLabel={`(${deputes.length} députés)`}
+        secondLabel={`${deputes.length} députés`}
         heading={
           kind === 'majorite'
             ? "C'est le groupe majoritaire (en nombre de députés), et ses groupes alliés (ils ne se sont pas déclarés dans l'opposition)."
@@ -117,12 +116,12 @@ function BigTitle({
 }) {
   return (
     <>
-      <h2 className="mt-12 mb-0 text-center text-4xl font-extrabold">
-        <span className="">{label}</span>{' '}
-        <span className=" text-slate-400">{secondLabel}</span>
+      <h2 className="justify-left mt-12 mb-4 flex items-baseline gap-4 border-b-4 border-dotted border-slate-500 pb-2 font-extrabold">
+        <span className="block text-4xl">{label}</span>{' '}
+        <span className="block text-2xl text-slate-400">{secondLabel}</span>
       </h2>
       {heading && (
-        <p className="text-center text-lg  text-slate-600">{heading}</p>
+        <p className="text-left text-lg  text-slate-600">{heading}</p>
       )}
     </>
   )

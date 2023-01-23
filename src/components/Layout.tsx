@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { ReactNode, useEffect, useState } from 'react'
-import { LATEST_LEGISLATURE } from '../lib/hardcodedData'
 import { MyLink } from './MyLink'
 
 type Props = {
