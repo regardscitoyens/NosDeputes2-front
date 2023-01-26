@@ -1,6 +1,8 @@
 import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 import * as dossierTypes from '../../lib/types/dossier'
-
+export type Params = {
+  id: string
+}
 export type Props = {
   dossier: dossierTypes.Dossier
   organes: Organe[]

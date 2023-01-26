@@ -1,17 +1,13 @@
-import { GetServerSideProps } from 'next'
-import * as acteTypes from '../../lib/types/acte'
-import { dbReleve } from '../../lib/dbReleve'
-import * as dossierTypes from '../../lib/types/dossier'
-import * as types from './DossierFiche.types'
-import uniq from 'lodash/uniq'
 import { sql } from 'kysely'
-import { arrIfDefined as arrIfDefined } from '../../lib/utils'
+import uniq from 'lodash/uniq'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
+import { dbReleve } from '../../lib/dbReleve'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
-
-type Query = {
-  id: string
-}
+import * as acteTypes from '../../lib/types/acte'
+import * as dossierTypes from '../../lib/types/dossier'
+import { arrIfDefined } from '../../lib/utils'
+import * as types from './DossierFiche.types'
 
 function fixDate(date: string): string {
   // some date are like this : 2022-01-13+02:00
@@ -102,12 +98,22 @@ function collectActeursRefsFromActe(acte: acteTypes.ActeLegislatif): string[] {
   ]
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  data: types.Props
-}> = async context => {
-  const query = context.query as Query
-  const id = query.id
+export const getStaticPaths: GetStaticPaths<types.Params> = async () => {
+  const dossiers = await dbReleve.selectFrom('dossiers').select('uid').execute()
+  return {
+    paths: dossiers.map(_ => ({ params: { id: _.uid } })),
+    fallback: false,
+  }
+}
 
+export const getStaticProps: GetStaticProps<
+  types.Props,
+  types.Params
+> = async context => {
+  const id = context.params?.id
+  if (!id) {
+    throw new Error('Missing id in params')
+  }
   const dossierRaw = await dbReleve
     .selectFrom('dossiers')
     .where('uid', '=', id)
@@ -174,11 +180,9 @@ WHERE uid IN (${sql.join(acteurRefs)})
 
   return {
     props: {
-      data: {
-        dossier,
-        organes,
-        acteurs: acteursWithGroupes,
-      },
+      dossier,
+      organes,
+      acteurs: acteursWithGroupes,
     },
   }
 }
