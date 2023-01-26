@@ -3,6 +3,11 @@ import { AmendementsDeputeSummary } from '../../lib/queryDeputeAmendementsSummar
 import { DeputeResponsabilites } from '../../lib/queryDeputeResponsabilites'
 import { DeputeVotes } from '../../lib/queryDeputeVotes'
 
+export type Params = {
+  slug: string
+  legislature?: string
+}
+
 export type Props = {
   depute: Depute
   legislatureDates: {
@@ -12,6 +17,7 @@ export type Props = {
   legislature: number
   legislatureNavigationUrls: [number, string][]
 }
+
 export type Depute = WithLatestGroupOrNull<{
   uid: string
   gender: 'H' | 'F'

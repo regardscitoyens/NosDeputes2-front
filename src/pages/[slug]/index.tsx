@@ -1,12 +1,13 @@
-import { InferGetServerSidePropsType } from 'next'
+import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next'
 
-import * as render from '../../pageModules/deputeFiche/DeputeFiche.render'
-import * as server from '../../pageModules/deputeFiche/DeputeFiche.server'
+import * as render from '../../pageModulesStatic/deputeFiche/DeputeFiche.render'
+import * as server from '../../pageModulesStatic/deputeFiche/DeputeFiche.server'
 
-export const getServerSideProps = server.getServerSideProps
+export const getStaticPaths = server.getStaticPathsLatestLegislatures
+export const getStaticProps = server.getStaticProps
 
-export default function Page({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return <render.Page {...data} />
+export default function Page(
+  props: InferGetStaticPropsType<typeof getStaticProps>,
+) {
+  return <render.Page {...props} />
 }

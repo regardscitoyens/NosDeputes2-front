@@ -1,9 +1,10 @@
 import { sql } from 'kysely'
 import mapValues from 'lodash/mapValues'
-import { GetServerSideProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import { addLatestGroupToDepute } from '../../lib/addLatestGroup'
 import { dbReleve } from '../../lib/dbReleve'
 import { LATEST_LEGISLATURE } from '../../lib/hardcodedData'
-import { addLatestGroupToDepute } from '../../lib/addLatestGroup'
+import { readLegislatureFromContext } from '../../lib/routingUtils'
 import * as types from './DeputeFiche.types'
 
 async function queryStats(
@@ -93,31 +94,77 @@ FROM subquery
   ).rows
 }
 
-// two ways to access this page :
-// /nicolas-dupont-aignant
-// /nicolas-dupont-aignant/15
-type Query = {
-  slug: string // here it's actually the slug
-  legislature?: string
+export const getStaticPathsOlderLegislatures: GetStaticPaths<
+  types.Params
+> = async () => {
+  const deputes = (
+    await sql<{ slug: string; legislature: string }>`
+    SELECT DISTINCT
+      nosdeputes_deputes.slug,
+      organes.data->>'legislature' AS legislature
+  FROM acteurs
+  INNER JOIN mandats ON acteurs.uid = mandats.acteur_uid
+  INNER JOIN organes ON organes.uid = ANY(mandats.organes_uids)
+  LEFT JOIN nosdeputes_deputes ON nosdeputes_deputes.uid = acteurs.uid
+  WHERE organes.data->>'codeType' = 'ASSEMBLEE'
+  AND organes.data->>'legislature' != ${LATEST_LEGISLATURE.toString()}
+  AND nosdeputes_deputes.slug IS NOT NULL
+    `.execute(dbReleve)
+  ).rows
+
+  return {
+    paths: deputes.map(_ => {
+      const { slug, legislature } = _
+      return {
+        params: {
+          slug,
+          legislature,
+        },
+      }
+    }),
+    fallback: false,
+  }
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  data: types.Props
-}> = async context => {
-  const query = context.query as Query
-  const slug = query.slug
-  const legislatureInPath = query.legislature
-    ? parseInt(query.legislature, 10)
-    : null
-  if (legislatureInPath === LATEST_LEGISLATURE) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/${slug}`,
-      },
-    }
+export const getStaticPathsLatestLegislatures: GetStaticPaths<
+  types.Params
+> = async () => {
+  const deputes = (
+    await sql<{ slug: string }>`
+    SELECT DISTINCT
+      nosdeputes_deputes.slug
+  FROM acteurs
+  INNER JOIN mandats ON acteurs.uid = mandats.acteur_uid
+  INNER JOIN organes ON organes.uid = ANY(mandats.organes_uids)
+  LEFT JOIN nosdeputes_deputes ON nosdeputes_deputes.uid = acteurs.uid
+  WHERE organes.data->>'codeType' = 'ASSEMBLEE'
+  AND organes.data->>'legislature' = ${LATEST_LEGISLATURE.toString()}
+  AND nosdeputes_deputes.slug IS NOT NULL
+    `.execute(dbReleve)
+  ).rows
+
+  return {
+    paths: deputes.map(_ => {
+      const { slug } = _
+      return {
+        params: {
+          slug,
+        },
+      }
+    }),
+    fallback: false,
   }
-  const legislature = legislatureInPath ?? LATEST_LEGISLATURE
+}
+
+export const getStaticProps: GetStaticProps<
+  types.Props,
+  types.Params
+> = async context => {
+  if (!context.params) {
+    throw new Error('Missing params')
+  }
+  const slug = context.params.slug
+  const legislature = readLegislatureFromContext(context)
 
   const depute =
     (
@@ -228,12 +275,10 @@ WHERE
 
   return {
     props: {
-      data: {
-        legislature,
-        legislatureNavigationUrls,
-        depute: returnedDepute,
-        legislatureDates,
-      },
+      legislature,
+      legislatureNavigationUrls,
+      depute: returnedDepute,
+      legislatureDates,
     },
   }
 }
