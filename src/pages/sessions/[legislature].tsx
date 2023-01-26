@@ -1,6 +1,6 @@
 import { InferGetStaticPropsType } from 'next'
-import * as render from '../../pageModulesStatic/sessionList/SessionList.render'
-import * as server from '../../pageModulesStatic/sessionList/SessionList.server'
+import * as render from '../../pageModules/sessionList/SessionList.render'
+import * as server from '../../pageModules/sessionList/SessionList.server'
 
 export const getStaticPaths = server.getStaticPaths
 export const getStaticProps = server.getStaticProps

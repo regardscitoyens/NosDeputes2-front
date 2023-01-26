@@ -1,6 +1,6 @@
 import { InferGetServerSidePropsType } from 'next'
-import * as render from '../../pageModulesStatic/scrutinList/ScrutinList.render'
-import * as server from '../../pageModulesStatic/scrutinList/ScrutinList.server'
+import * as render from '../../pageModules/scrutinList/ScrutinList.render'
+import * as server from '../../pageModules/scrutinList/ScrutinList.server'
 
 export const getStaticProps = server.getStaticProps
 

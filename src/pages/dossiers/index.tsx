@@ -1,6 +1,6 @@
 import { InferGetStaticPropsType } from 'next'
-import * as render from '../../pageModulesStatic/dossierList/DossierList.render'
-import * as server from '../../pageModulesStatic/dossierList/DossierList.server'
+import * as render from '../../pageModules/dossierList/DossierList.render'
+import * as server from '../../pageModules/dossierList/DossierList.server'
 
 export const getStaticProps = server.getStaticProps
 
