@@ -1,21 +1,25 @@
-import { useState } from 'react'
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import Image from 'next/image'
+import { useState } from 'react'
 import { GroupeBadge } from '../../../components/GroupeBadge'
 
+import { MapDepartement } from '../../../components/MapDepartement'
+import {
+  departements,
+  getIdDepartement,
+  LATEST_LEGISLATURE,
+} from '../../../lib/hardcodedData'
 import {
   DeputeInDepartement,
   queryDeputesForDepartement,
 } from '../../../lib/queryDeputesForDepartement'
-import {
-  getIdDepartement,
-  LATEST_LEGISLATURE,
-} from '../../../lib/hardcodedData'
-import { MapDepartement } from '../../../components/MapDepartement'
 
-type Data = {
+type Params = {
+  nom_departement: string
+}
+type Props = {
   departement: {
     nom: string
     id: string
@@ -23,23 +27,29 @@ type Data = {
   deputes: DeputeInDepartement[]
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  data: Data
-}> = async context => {
-  const nomDepartement = context.query.nom_departement
-  if (!nomDepartement || Array.isArray(nomDepartement)) {
-    throw new Error(`Mandatory ${nomDepartement}`)
+export const getStaticPaths: GetStaticPaths<Params> = () => {
+  const nomDepartments = Object.keys(departements)
+  return {
+    paths: nomDepartments.map(nom_departement => ({
+      params: { nom_departement },
+    })),
+    fallback: false,
   }
+}
+
+export const getStaticProps: GetStaticProps<Props, Params> = async context => {
+  if (!context.params) {
+    throw new Error('Missing params')
+  }
+  const nomDepartement = context.params.nom_departement
   const idDepartement = getIdDepartement(nomDepartement)
   const deputes = await queryDeputesForDepartement(nomDepartement)
   return {
     props: {
-      data: {
-        deputes,
-        departement: {
-          nom: nomDepartement,
-          id: idDepartement,
-        },
+      deputes,
+      departement: {
+        nom: nomDepartement,
+        id: idDepartement,
       },
     },
   }
@@ -50,14 +60,14 @@ const beautifyNumeroCirconsription = (num: number) => {
   return `${num}ème`
 }
 
-export default function Page({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Page(
+  props: InferGetStaticPropsType<typeof getStaticProps>,
+) {
   const [circonscription, setCirconscription] = useState<null | string>(null)
   const {
     departement: { nom, id },
     deputes,
-  } = data
+  } = props
   const router = useRouter()
 
   const onCirconscriptionHover = (id: string) => {
