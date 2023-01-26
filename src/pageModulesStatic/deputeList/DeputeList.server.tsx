@@ -1,5 +1,4 @@
 import { sql } from 'kysely'
-import range from 'lodash/range'
 import sortBy from 'lodash/sortBy'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import {
@@ -10,50 +9,31 @@ import { buildGroupesData } from '../../lib/buildGroupesData'
 import { dbReleve } from '../../lib/dbReleve'
 import {
   FIRST_LEGISLATURE_FOR_DEPUTES,
-  LATEST_LEGISLATURE,
   sortGroupes,
 } from '../../lib/hardcodedData'
+import {
+  buildLegislaturesNavigationUrls,
+  buildStaticPaths,
+  readLegislatureFromContext,
+} from '../../lib/routingUtils'
 import * as types from './DeputeList.types'
 
 const basePath = '/deputes'
-
-const availableLegislatures = range(
-  FIRST_LEGISLATURE_FOR_DEPUTES,
-  LATEST_LEGISLATURE + 1,
-)
-
-function buildUrlForLegislature(l: number): string {
-  return `${basePath}${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`
-}
-
-function buildLegislatureNavigationUrls(): [number, string][] {
-  return availableLegislatures.map(l => {
-    const tuple: [number, string] = [l, buildUrlForLegislature(l)]
-    return tuple
-  })
-}
+const firstLegislature = FIRST_LEGISLATURE_FOR_DEPUTES
 
 export const getStaticPaths: GetStaticPaths<types.Params> = () => {
-  const paths = availableLegislatures
-    .filter(_ => _ !== LATEST_LEGISLATURE)
-    .map(_ => ({
-      params: { legislature: _.toString() },
-    }))
-  return {
-    paths,
-    fallback: false,
-  }
+  return buildStaticPaths(firstLegislature)
 }
 
 export const getStaticProps: GetStaticProps<
   types.Props,
   types.Params
 > = async context => {
-  const legislatureParam = context.params?.legislature
-  const legislature = legislatureParam
-    ? parseInt(legislatureParam, 10)
-    : LATEST_LEGISLATURE
-  const legislatureNavigationUrls = buildLegislatureNavigationUrls()
+  const legislature = readLegislatureFromContext(context)
+  const legislatureNavigationUrls = buildLegislaturesNavigationUrls(
+    firstLegislature,
+    basePath,
+  )
 
   const deputesRaw = (
     await sql<types.DeputeRawFromDb>`

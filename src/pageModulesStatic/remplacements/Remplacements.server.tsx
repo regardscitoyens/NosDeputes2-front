@@ -8,53 +8,30 @@ import {
   FIRST_LEGISLATURE_FOR_DEPUTES,
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
+import {
+  buildLegislaturesNavigationUrls,
+  buildStaticPaths,
+  readLegislatureFromContext,
+} from '../../lib/routingUtils'
 import * as types from './Remplacements.types'
 
 const basePath = '/historique-remplacements'
 
-const availableLegislatures = range(
-  FIRST_LEGISLATURE_FOR_DEPUTES,
-  LATEST_LEGISLATURE + 1,
-)
-
-function buildUrlForLegislature(l: number): string {
-  return `${basePath}${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`
-}
-
-function buildLegislatureNavigationUrls(): [number, string][] {
-  return availableLegislatures.map(l => {
-    const tuple: [number, string] = [l, buildUrlForLegislature(l)]
-    return tuple
-  })
-}
-
-function collectDeputesIds(
-  rows: types.DerivedDeputesMandatsRawFromDb[],
-): string[] {
-  return rows.flatMap(_ => _.mandats.flatMap(_ => _.map(_ => _.acteur_uid)))
-}
+const firstLegislature = FIRST_LEGISLATURE_FOR_DEPUTES
 
 export const getStaticPaths: GetStaticPaths<types.Params> = () => {
-  const paths = availableLegislatures
-    .filter(_ => _ !== LATEST_LEGISLATURE)
-    .map(_ => ({
-      params: { legislature: _.toString() },
-    }))
-  return {
-    paths,
-    fallback: false,
-  }
+  return buildStaticPaths(firstLegislature)
 }
 
 export const getStaticProps: GetStaticProps<
   types.Props,
   types.Params
 > = async context => {
-  const legislatureParam = context.params?.legislature
-  const legislature = legislatureParam
-    ? parseInt(legislatureParam, 10)
-    : LATEST_LEGISLATURE
-  const legislatureNavigationUrls = buildLegislatureNavigationUrls()
+  const legislature = readLegislatureFromContext(context)
+  const legislatureNavigationUrls = buildLegislaturesNavigationUrls(
+    firstLegislature,
+    basePath,
+  )
 
   const rows = (
     await dbReleve
@@ -153,4 +130,10 @@ WHERE uid IN (${sql.join(deputesIds)})
       dataByCirco: rowsFinalSorted,
     },
   }
+}
+
+function collectDeputesIds(
+  rows: types.DerivedDeputesMandatsRawFromDb[],
+): string[] {
+  return rows.flatMap(_ => _.mandats.flatMap(_ => _.map(_ => _.acteur_uid)))
 }

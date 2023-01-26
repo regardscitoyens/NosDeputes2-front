@@ -1,11 +1,11 @@
-import { InferGetServerSidePropsType } from 'next'
-import * as render from '../../pageModules/sessionList/SessionList.render'
-import * as server from '../../pageModules/sessionList/SessionList.server'
+import { InferGetStaticPropsType } from 'next'
+import * as render from '../../pageModulesStatic/sessionList/SessionList.render'
+import * as server from '../../pageModulesStatic/sessionList/SessionList.server'
 
-export const getServerSideProps = server.getServerSideProps
+export const getStaticProps = server.getStaticProps
 
-export default function Page({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return <render.Page {...data} />
+export default function Page(
+  props: InferGetStaticPropsType<typeof getStaticProps>,
+) {
+  return <render.Page {...props} />
 }
