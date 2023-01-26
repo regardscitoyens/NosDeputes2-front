@@ -15,50 +15,45 @@ import {
 } from '../../lib/hardcodedData'
 import * as types from './DeputeList.types'
 
-// two ways to access this page :
-// /deputes
-// /deputes/15
-type Params = {
-  legislature?: string
+const basePath = '/deputes'
+
+const availableLegislatures = range(
+  FIRST_LEGISLATURE_FOR_DEPUTES,
+  LATEST_LEGISLATURE + 1,
+)
+
+function buildUrlForLegislature(l: number): string {
+  return `${basePath}${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`
 }
 
-export const getStaticPaths: GetStaticPaths<Params> = () => {
+function buildLegislatureNavigationUrls(): [number, string][] {
+  return availableLegislatures.map(l => {
+    const tuple: [number, string] = [l, buildUrlForLegislature(l)]
+    return tuple
+  })
+}
+
+export const getStaticPaths: GetStaticPaths<types.Params> = () => {
+  const paths = availableLegislatures
+    .filter(_ => _ !== LATEST_LEGISLATURE)
+    .map(_ => ({
+      params: { legislature: _.toString() },
+    }))
   return {
-    paths: [
-      { params: { legislature: '15' } },
-      { params: { legislature: '14' } },
-    ],
+    paths,
     fallback: false,
   }
 }
 
 export const getStaticProps: GetStaticProps<
   types.Props,
-  Params
+  types.Params
 > = async context => {
-  const params = context.params
-  const legislatureInPath = params?.legislature
-    ? parseInt(params.legislature, 10)
-    : null
-  if (legislatureInPath === LATEST_LEGISLATURE) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/deputes`,
-      },
-    }
-  }
-  const legislature = legislatureInPath ?? LATEST_LEGISLATURE
-  const legislatureNavigationUrls = range(
-    FIRST_LEGISLATURE_FOR_DEPUTES,
-    LATEST_LEGISLATURE + 1,
-  ).map(l => {
-    const tuple: [number, string] = [
-      l,
-      `/deputes${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
-    ]
-    return tuple
-  })
+  const legislatureParam = context.params?.legislature
+  const legislature = legislatureParam
+    ? parseInt(legislatureParam, 10)
+    : LATEST_LEGISLATURE
+  const legislatureNavigationUrls = buildLegislatureNavigationUrls()
 
   const deputesRaw = (
     await sql<types.DeputeRawFromDb>`

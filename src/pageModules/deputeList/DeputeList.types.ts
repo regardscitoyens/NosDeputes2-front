@@ -1,6 +1,9 @@
 import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 import { GroupeData } from '../../lib/buildGroupesData'
 
+export type Params = {
+  legislature?: string
+}
 export type Props = {
   deputes: Depute[]
   groupesData: GroupeData[]
