@@ -1,6 +1,6 @@
 import { InferGetServerSidePropsType } from 'next'
-import * as render from '../../pageModules/mandatsParCirco/MandatsParCirco.render'
-import * as server from '../../pageModules/mandatsParCirco/MandatsParCirco.server'
+import * as render from '../../pageModules/remplacements/Remplacements.render'
+import * as server from '../../pageModules/remplacements/Remplacements.server'
 
 export const getServerSideProps = server.getServerSideProps
 

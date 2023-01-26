@@ -8,7 +8,7 @@ import {
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import { addLatestGroupToDeputes } from '../../lib/addLatestGroup'
-import * as types from './MandatsParCirco.types'
+import * as types from './Remplacements.types'
 
 type Query = {
   legislature?: string
@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps<{
     return {
       redirect: {
         permanent: false,
-        destination: `/mandats-par-circonscription`,
+        destination: `/historique-remplacements`,
       },
     }
   }
@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<{
   ).map(l => {
     const tuple: [number, string] = [
       l,
-      `/mandats-par-circonscription${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
+      `/historique-remplacements${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
     ]
     return tuple
   })

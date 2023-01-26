@@ -82,7 +82,7 @@ function SideMenu({ mobileMenuFolded }: { mobileMenuFolded: boolean }) {
       <Division>
         <MenuLink to="/deputes" label="Les députés" />
         <MenuLink
-          to="/mandats-par-circonscription"
+          to="/historique-remplacements"
           label="Historique des départs et remplacements"
         />
       </Division>

@@ -8,7 +8,7 @@ import {
   getOrdinalSuffixFeminine,
   lastOfArray,
 } from '../../lib/utils'
-import * as types from './MandatsParCirco.types'
+import * as types from './Remplacements.types'
 
 export function CauseChangement({
   cause,
