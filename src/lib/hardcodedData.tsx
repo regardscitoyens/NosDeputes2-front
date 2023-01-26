@@ -76,6 +76,10 @@ export const legislaturesData = [
     num: 9,
     datesLabel: 'de juin 1988 à avril 1993',
   },
+  {
+    num: 8,
+    datesLabel: "d'avril 1986 à mai 1988",
+  },
 ]
 
 // Legislatures 14 and before didn't have colors

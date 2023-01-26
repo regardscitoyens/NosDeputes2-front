@@ -4,8 +4,8 @@ import * as types from './SeanceFiche.types'
 
 export function Page(props: types.Props) {
   const { seance, compteRendu } = props
-  console.log('@@@@ seance', seance)
-  console.log('@@@@ compteRendu', compteRendu)
+  // console.log('@@@@ seance', seance)
+  // console.log('@@@@ compteRendu', compteRendu)
   return (
     <div className="">
       <p className="text-red-600">

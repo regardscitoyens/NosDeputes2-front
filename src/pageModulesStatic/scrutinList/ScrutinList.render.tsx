@@ -12,7 +12,7 @@ export function Page({
   legislature,
   legislatureNavigationUrls,
 }: types.Props) {
-  console.log('@@@ ', scrutins)
+  // console.log('@@@ ', scrutins)
   const scrutinsBySeanceRef = groupBy(scrutins, _ => _.seance_ref)
   return (
     <div>

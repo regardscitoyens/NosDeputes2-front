@@ -17,7 +17,7 @@ import {
 export function Page(props: types.Props) {
   const { depute, legislature, legislatureNavigationUrls, legislatureDates } =
     props
-  console.log('@@@@ depute', depute)
+  // console.log('@@@@ depute', depute)
 
   return (
     <div className="">
