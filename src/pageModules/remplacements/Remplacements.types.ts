@@ -1,5 +1,8 @@
 import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 
+export type Params = {
+  legislature?: string
+}
 export type Props = {
   legislature: number
   legislatureNavigationUrls: [number, string][]
