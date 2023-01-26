@@ -1,6 +1,8 @@
 import * as seanceTypes from '../../lib/types/seance'
 import * as compteRenduTypes from '../../lib/types/compteRendu'
-
+export type Params = {
+  uid: string
+}
 export type Props = {
   seance: Seance
   compteRendu: compteRenduTypes.CompteRendu
