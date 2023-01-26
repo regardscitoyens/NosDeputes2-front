@@ -1,21 +1,11 @@
-import { GetStaticPaths, InferGetServerSidePropsType } from 'next'
+import { InferGetStaticPropsType } from 'next'
 import * as render from '../../pageModules/deputeList/DeputeList.render'
 import * as server from '../../pageModules/deputeList/DeputeList.server'
 
-// export const getStaticPaths: GetStaticPaths = () => {
-//   return {
-//     paths: [{ params: { id: '1' } }, { params: { id: '2' } }],
+export const getStaticProps = server.getStaticProps
 
-
-
-//     fallback: false, // can also be true or 'blocking'
-//   }
-// }
-
-export const getServerSideProps = server.getServerSideProps
-
-export default function Page({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return <render.Page {...data} />
+export default function Page(
+  props: InferGetStaticPropsType<typeof getStaticProps>,
+) {
+  return <render.Page {...props} />
 }
