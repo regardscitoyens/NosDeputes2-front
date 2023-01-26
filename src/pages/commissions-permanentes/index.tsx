@@ -1,6 +1,6 @@
 import { InferGetStaticPropsType } from 'next'
-import * as render from '../../pageModules/comPermList/ComPermList.render'
-import * as server from '../../pageModules/comPermList/ComPermList.server'
+import * as render from '../../pageModulesStatic/comPermList/ComPermList.render'
+import * as server from '../../pageModulesStatic/comPermList/ComPermList.server'
 
 export const getStaticProps = server.getStaticProps
 
