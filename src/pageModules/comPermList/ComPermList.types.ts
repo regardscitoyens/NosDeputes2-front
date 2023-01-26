@@ -1,6 +1,9 @@
 import { WithLatestComPerm } from '../../lib/addLatestComPerm'
 import { WithLatestGroupOrNull } from '../../lib/addLatestGroup'
 
+export type Params = {
+  legislature?: string
+}
 export type Props = {
   deputesWithCom: DeputeWithCom[]
   deputesWithoutCom: DeputeWithoutCom[]

@@ -1,11 +1,11 @@
-import { InferGetServerSidePropsType } from 'next'
+import { InferGetStaticPropsType } from 'next'
 import * as render from '../../pageModules/comPermList/ComPermList.render'
 import * as server from '../../pageModules/comPermList/ComPermList.server'
 
-export const getServerSideProps = server.getServerSideProps
+export const getStaticProps = server.getStaticProps
 
-export default function Page({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return <render.Page {...data} />
+export default function Page(
+  props: InferGetStaticPropsType<typeof getStaticProps>,
+) {
+  return <render.Page {...props} />
 }

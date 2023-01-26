@@ -1,6 +1,6 @@
 import { sql } from 'kysely'
 import range from 'lodash/range'
-import { GetServerSideProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import {
   addLatestComPermToDeputes,
   latestComPermIsNotNull,
@@ -13,38 +13,46 @@ import {
   LATEST_LEGISLATURE,
 } from '../../lib/hardcodedData'
 import * as types from './ComPermList.types'
-import filterNot from 'lodash/filter'
 
-type Query = {
-  legislature?: string
+const basePath = '/commissions-permanentes'
+
+const availableLegislatures = range(
+  FIRST_LEGISLATURE_FOR_DEPUTES,
+  LATEST_LEGISLATURE + 1,
+)
+
+function buildUrlForLegislature(l: number): string {
+  return `${basePath}${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  data: types.Props
-}> = async context => {
-  const query = context.query as Query
-  const legislatureInPath = query.legislature
-    ? parseInt(query.legislature, 10)
-    : null
-  if (legislatureInPath === LATEST_LEGISLATURE) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/commissions-permanentes`,
-      },
-    }
-  }
-  const legislature = legislatureInPath ?? LATEST_LEGISLATURE
-  const legislatureNavigationUrls = range(
-    FIRST_LEGISLATURE_FOR_DEPUTES,
-    LATEST_LEGISLATURE + 1,
-  ).map(l => {
-    const tuple: [number, string] = [
-      l,
-      `/commissions-permanentes${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
-    ]
+function buildLegislatureNavigationUrls(): [number, string][] {
+  return availableLegislatures.map(l => {
+    const tuple: [number, string] = [l, buildUrlForLegislature(l)]
     return tuple
   })
+}
+
+export const getStaticPaths: GetStaticPaths<types.Params> = () => {
+  const paths = availableLegislatures
+    .filter(_ => _ !== LATEST_LEGISLATURE)
+    .map(_ => ({
+      params: { legislature: _.toString() },
+    }))
+  return {
+    paths,
+    fallback: false,
+  }
+}
+
+export const getStaticProps: GetStaticProps<
+  types.Props,
+  types.Params
+> = async context => {
+  const legislatureParam = context.params?.legislature
+  const legislature = legislatureParam
+    ? parseInt(legislatureParam, 10)
+    : LATEST_LEGISLATURE
+  const legislatureNavigationUrls = buildLegislatureNavigationUrls()
 
   const deputesRaw = (
     await sql<types.DeputeRawFromDb>`
@@ -101,12 +109,10 @@ WHERE
 
   return {
     props: {
-      data: {
-        legislature,
-        legislatureNavigationUrls,
-        deputesWithCom,
-        deputesWithoutCom,
-      },
+      legislature,
+      legislatureNavigationUrls,
+      deputesWithCom,
+      deputesWithoutCom,
     },
   }
 }
