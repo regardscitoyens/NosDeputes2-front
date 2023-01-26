@@ -1,46 +1,33 @@
 import { sql } from 'kysely'
-import range from 'lodash/range'
-import { GetServerSideProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
-import {
-  FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS as FIRST_LEGISLATURE_FOR_SEANCES,
-  LATEST_LEGISLATURE,
-} from '../../lib/hardcodedData'
+import { FIRST_LEGISLATURE_FOR_REUNIONS_AND_SESSIONS as FIRST_LEGISLATURE_FOR_SEANCES } from '../../lib/hardcodedData'
 import { querySessions } from '../../lib/querySessions'
+import {
+  buildLegislaturesNavigationUrls,
+  buildStaticPaths,
+  readLegislatureFromContext,
+} from '../../lib/routingUtils'
 import { transformSeanceOdj } from '../../lib/transformSeanceOdj'
-import * as types from './SeanceList.types'
 import * as seanceTypes from '../../lib/types/seance'
+import * as types from './SeanceList.types'
 
-type Query = {
-  legislature?: string
+const basePath = '/seances'
+const firstLegislature = FIRST_LEGISLATURE_FOR_SEANCES
+
+export const getStaticPaths: GetStaticPaths<types.Params> = () => {
+  return buildStaticPaths(firstLegislature)
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  data: types.Props
-}> = async context => {
-  const query = context.query as Query
-  const legislatureInPath = query.legislature
-    ? parseInt(query.legislature, 10)
-    : null
-  if (legislatureInPath === LATEST_LEGISLATURE) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/seances`,
-      },
-    }
-  }
-  const legislature = legislatureInPath ?? LATEST_LEGISLATURE
-  const legislatureNavigationUrls = range(
-    FIRST_LEGISLATURE_FOR_SEANCES,
-    LATEST_LEGISLATURE + 1,
-  ).map(l => {
-    const tuple: [number, string] = [
-      l,
-      `/seances${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
-    ]
-    return tuple
-  })
+export const getStaticProps: GetStaticProps<
+  types.Props,
+  types.Params
+> = async context => {
+  const legislature = readLegislatureFromContext(context)
+  const legislatureNavigationUrls = buildLegislaturesNavigationUrls(
+    firstLegislature,
+    basePath,
+  )
 
   const sessions = await querySessions(legislature)
 
@@ -79,11 +66,9 @@ ORDER BY start_date
 
   return {
     props: {
-      data: {
-        legislature,
-        legislatureNavigationUrls,
-        sessionsWithSeances,
-      },
+      legislature,
+      legislatureNavigationUrls,
+      sessionsWithSeances,
     },
   }
 }

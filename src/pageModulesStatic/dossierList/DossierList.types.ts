@@ -1,5 +1,5 @@
 import * as dossierTypes from '../../lib/types/dossier'
-
+export type Params = { legislature?: string }
 export type Props = {
   legislature: number
   legislatureNavigationUrls: [number, string][]

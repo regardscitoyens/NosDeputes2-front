@@ -1,6 +1,6 @@
 import * as sessionTypes from '../../lib/types/session'
 import * as seanceTypes from '../../lib/types/seance'
-
+export type Params = { legislature?: string }
 export type Props = {
   legislature: number
   legislatureNavigationUrls: [number, string][]

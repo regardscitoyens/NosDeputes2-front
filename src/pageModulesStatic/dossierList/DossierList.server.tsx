@@ -1,6 +1,6 @@
 import { sql } from 'kysely'
 import range from 'lodash/range'
-import { GetServerSideProps } from 'next'
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next'
 import { dbReleve } from '../../lib/dbReleve'
 import {
   FIRST_LEGISLATURE_FOR_DOSSIERS,
@@ -12,10 +12,11 @@ import sum from 'lodash/sum'
 import sortBy from 'lodash/sortBy'
 import * as dossierTypes from '../../lib/types/dossier'
 import * as acteTypes from '../../lib/types/acte'
-
-type Query = {
-  legislature?: string
-}
+import {
+  buildLegislaturesNavigationUrls,
+  buildStaticPaths,
+  readLegislatureFromContext,
+} from '../../lib/routingUtils'
 
 function extractActesConcret(
   actes: acteTypes.ActeLegislatif[] | null,
@@ -63,32 +64,22 @@ function countActes(actes: acteTypes.ActeLegislatif[] | null) {
   return sum((actes ?? []).map(inner))
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  data: types.Props
-}> = async context => {
-  const query = context.query as Query
-  const legislatureInPath = query.legislature
-    ? parseInt(query.legislature, 10)
-    : null
-  if (legislatureInPath === LATEST_LEGISLATURE) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/dossiers`,
-      },
-    }
-  }
-  const legislature = legislatureInPath ?? LATEST_LEGISLATURE
-  const legislatureNavigationUrls = range(
-    FIRST_LEGISLATURE_FOR_DOSSIERS,
-    LATEST_LEGISLATURE + 1,
-  ).map(l => {
-    const tuple: [number, string] = [
-      l,
-      `/dossiers${l !== LATEST_LEGISLATURE ? `/${l}` : ''}`,
-    ]
-    return tuple
-  })
+const basePath = '/dossiers'
+const firstLegislature = FIRST_LEGISLATURE_FOR_DOSSIERS
+
+export const getStaticPaths: GetStaticPaths<types.Params> = () => {
+  return buildStaticPaths(firstLegislature)
+}
+
+export const getStaticProps: GetStaticProps<
+  types.Props,
+  types.Params
+> = async context => {
+  const legislature = readLegislatureFromContext(context)
+  const legislatureNavigationUrls = buildLegislaturesNavigationUrls(
+    firstLegislature,
+    basePath,
+  )
 
   const dossiersWithActes = (
     await sql<{
@@ -133,11 +124,9 @@ ORDER BY title
 
   return {
     props: {
-      data: {
-        legislature,
-        legislatureNavigationUrls,
-        dossiers,
-      },
+      legislature,
+      legislatureNavigationUrls,
+      dossiers,
     },
   }
 }

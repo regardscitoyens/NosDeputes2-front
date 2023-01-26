@@ -1,12 +1,12 @@
-import { InferGetServerSidePropsType } from 'next'
-import * as render from '../../pageModulesStatic/remplacements/Remplacements.render'
-import * as server from '../../pageModulesStatic/remplacements/Remplacements.server'
+import { InferGetStaticPropsType } from 'next'
+import * as render from '../../pageModulesStatic/remplacementsList/RemplacementsList.render'
+import * as server from '../../pageModulesStatic/remplacementsList/RemplacementsList.server'
 
 export const getStaticPaths = server.getStaticPaths
 export const getStaticProps = server.getStaticProps
 
 export default function Page(
-  props: InferGetServerSidePropsType<typeof getStaticProps>,
+  props: InferGetStaticPropsType<typeof getStaticProps>,
 ) {
   return <render.Page {...props} />
 }

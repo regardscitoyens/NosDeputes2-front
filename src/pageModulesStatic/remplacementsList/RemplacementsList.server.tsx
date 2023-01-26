@@ -13,10 +13,9 @@ import {
   buildStaticPaths,
   readLegislatureFromContext,
 } from '../../lib/routingUtils'
-import * as types from './Remplacements.types'
+import * as types from './RemplacementsList.types'
 
 const basePath = '/historique-remplacements'
-
 const firstLegislature = FIRST_LEGISLATURE_FOR_DEPUTES
 
 export const getStaticPaths: GetStaticPaths<types.Params> = () => {
